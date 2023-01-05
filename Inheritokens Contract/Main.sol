@@ -5,7 +5,8 @@ pragma solidity ^0.8.0;
 /// @title Owner & Nominee Functionality
 /// @author Bhumi Sadariya
 
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
+// import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract Main is Ownable {
     constructor() Ownable() {}
@@ -41,19 +42,24 @@ contract Main is Ownable {
     struct Token {
         address token_address;
         string token_name;
-        uint share;
-        uint allocated_share;
+        uint256 allocated_share;
         bool isMultipleNominee;
         bool isPriorityNominee;
     }
     // mapping of token address to Token struct
     mapping(address => Token) public tokenAddressToTokenStruct;
-    // mapping of nominee address to token address to bool
-    mapping(address => mapping(address => bool))
-        public nomineeAddressToTokenAddressToRight;
     // mapping of owner address to token address to nominee address
-    mapping(address => mapping(address => address))
-        public ownerToTokenAddressToNominee;
+    mapping(address => mapping(address => address[]))
+        public ownerToTokenAddressToNomineeArray;
+    // mapping of owner address to nominee address to token address array
+    mapping(address => mapping(address => address[]))
+        public ownerToNomineeToTokenAddressArray;
+    // mapping of owner address to nominee address to token address to share
+    mapping(address => mapping(address => mapping(address => uint256)))
+        public ownerToNomineeToTokenAddressToShare;
+    // mapping of nominee address to token address to bool
+    mapping(address => mapping(address => mapping(address => bool)))
+        public ownerToNomineeAddressToTokenAddressToRight;
     // mapping of owner address to the token address to the bool
     mapping(address => mapping(address => bool)) public isNominated;
 
@@ -131,25 +137,31 @@ contract Main is Ownable {
 
     /// @param _owner is the owner address
     /// @return array of nominees's id
-    function getAllNominees(
-        address _owner
-    ) public view returns (address[] memory) {
+    function getAllNominees(address _owner)
+        public
+        view
+        returns (address[] memory)
+    {
         return ownerToNominees[_owner];
     }
 
     /// @param _nominee is the nominee address
     /// @return nominee structure
-    function getNomineeDetails(
-        address _nominee
-    ) public view returns (Nominee memory) {
+    function getNomineeDetails(address _nominee)
+        public
+        view
+        returns (Nominee memory)
+    {
         return addressToNominee[_nominee];
     }
 
     /// @param owner_address is the owner's address
     /// @return owner structure
-    function getOwnerDetails(
-        address owner_address
-    ) public view returns (Owner memory) {
+    function getOwnerDetails(address owner_address)
+        public
+        view
+        returns (Owner memory)
+    {
         return addressToOwner[owner_address];
     }
 
@@ -164,7 +176,6 @@ contract Main is Ownable {
     // wants to allocate to the nominee, _isMultipleNominee is the boolean value indicating whether this
     // process of nomination involves multiple nominees or not, _isPriorityNominee is a boolean value
     // that indicates whether or not this nomination process is prioritised in terms of nominees
-
     /// @notice If the share is allocated to 100%, then the owner will not be able to add more nominees for
     // this token. Either he has to remove or edit any of those nominees.
     function assignTokensToNominee(
@@ -172,7 +183,7 @@ contract Main is Ownable {
         address _nominee,
         address _tokenAddress,
         string memory _tokenName,
-        uint _share,
+        uint256 _share,
         bool _isMultipleNominee,
         bool _isPriorityNominee
     ) public {
@@ -183,19 +194,24 @@ contract Main is Ownable {
         // ownerToTokenAddressToNominee[_owner][_tokenAddress]=_nominee;
         // isNominated[_owner][_tokenAddress]=true;
 
-        uint amount = tokenAddressToTokenStruct[_tokenAddress].allocated_share +
-            _share;
+        uint256 amount = tokenAddressToTokenStruct[_tokenAddress]
+            .allocated_share + _share;
         require(amount <= 100, "100% share is already allocated...");
         tokenAddressToTokenStruct[_tokenAddress] = Token(
             _tokenAddress,
             _tokenName,
-            _share,
             amount,
             _isMultipleNominee,
             _isPriorityNominee
         );
-        nomineeAddressToTokenAddressToRight[_nominee][_tokenAddress] = true;
-        ownerToTokenAddressToNominee[_owner][_tokenAddress] = _nominee;
+        ownerToTokenAddressToNomineeArray[_owner][_tokenAddress].push(_nominee);
+        ownerToNomineeToTokenAddressArray[_owner][_nominee].push(_tokenAddress);
+        ownerToNomineeToTokenAddressToShare[_owner][_nominee][
+            _tokenAddress
+        ] = _share;
+        ownerToNomineeAddressToTokenAddressToRight[_owner][_nominee][
+            _tokenAddress
+        ] = true;
         isNominated[_owner][_tokenAddress] = true;
     }
 
@@ -207,68 +223,81 @@ contract Main is Ownable {
     // this nomination process is prioritised in terms of nominees
     function editAssignedTokensToNominee(
         address _owner,
-        address _oldNominee,
-        address _newNominee,
+        address _nominee,
         address _tokenAddress,
-        string memory _tokenName,
-        uint _share,
-        bool _isMultipleNominee,
-        bool _isPriorityNominee
+        uint256 _oldShare,
+        uint256 _share,
+        bool _isMultipleNominee
     ) public {
-        nomineeAddressToTokenAddressToRight[_oldNominee][_tokenAddress] = false;
-        nomineeAddressToTokenAddressToRight[_newNominee][_tokenAddress] = true;
+        require(_isMultipleNominee, "It is only for multiple nominee");
+        ownerToNomineeToTokenAddressToShare[_owner][_nominee][
+            _tokenAddress
+        ] = _share;
+        uint256 amount = tokenAddressToTokenStruct[_tokenAddress]
+            .allocated_share -
+            _oldShare +
+            _share;
+        tokenAddressToTokenStruct[_tokenAddress].allocated_share = amount;
     }
 
-    // function ChangeAssetsToNomiee(
-    //     address _owner,
-    //     address old_nominee,
-    //     address new_nominee,
-    //     string memory _token_name,
-    //     address _token_address,
-    //     uint256 _approvedBalance,
-    //     uint256 _nftId
-    // ) public {
-    //     for (uint16 i = 0; i < nomineeToAssets[old_nominee].length; i++) {
-    //         if (
-    //             nomineeToAssets[old_nominee][i].token_address == _token_address
-    //         ) {
-    //             nomineeToAssets[old_nominee][i].hasRight = false;
-    //         }
-    //     }
-    //     if (_approvedBalance > 0) {
-    //         nomineeToAssets[new_nominee].push(
-    //             Assets(
-    //                 _token_address,
-    //                 _token_name,
-    //                 _approvedBalance,
-    //                 0,
-    //                 true,
-    //                 true
-    //             )
-    //         );
-    //         ownerTokenIdToAddress[_owner][_token_address] = new_nominee;
-    //     } else {
-    //         nomineeToAssets[new_nominee].push(
-    //             Assets(_token_address, "", 0, _nftId, false, true)
-    //         );
-    //         ownerTokenIdToAddress[_owner][_token_address] = new_nominee;
-    //     }
-    // }
-
-    /// @return nominee address
-    // function getAssetsToNominee(address _owner, address _token_address)
-    //     public
-    //     view
-    //     returns (address)
-    // {
-    //     return ownerTokenIdToAddress[_owner][_token_address];
-    // }
-
-    /// @return nominee address
-    function checkIsNominated(
+    /// @return an array of nominee's address
+    /// @notice view function to get all the nominees who are nominated for a given token address
+    function getAllNomineesAssignedForToken(
         address _owner,
-        address _token_address
+        address _tokenAddress
+    ) public view returns (address[] memory) {
+        return ownerToTokenAddressToNomineeArray[_owner][_tokenAddress];
+    }
+
+    /// @return an array of token's address
+    /// @notice view function to get all the tokens for whome nominee is nominated
+    function getAllTokensNomineeIsNominated(address _owner, address _nominee)
+        public
+        view
+        returns (address[] memory)
+    {
+        return ownerToNomineeToTokenAddressArray[_owner][_nominee];
+    }
+
+    /// @return uint indicating share allocated to the nominee for a given token
+    function getNomineeToTokenShare(
+        address _owner,
+        address _nominee,
+        address _tokenAddress
+    ) public view returns (uint256) {
+        return
+            ownerToNomineeToTokenAddressToShare[_owner][_nominee][
+                _tokenAddress
+            ];
+    }
+
+    /// @return bool indicating whether nominee has right or not for a given token
+    function getNomineeToTokenRight(
+        address _owner,
+        address _nominee,
+        address _tokenAddress
     ) public view returns (bool) {
+        return
+            ownerToNomineeAddressToTokenAddressToRight[_owner][_nominee][
+                _tokenAddress
+            ];
+    }
+
+    /// @return bool indicating whether token has nominee or not
+    function getIsNominated(address _owner, address _tokenAddress)
+        public
+        view
+        returns (bool)
+    {
+        return isNominated[_owner][_tokenAddress];
+    }
+
+    /// @return nominee address
+    function checkIsNominated(address _owner, address _token_address)
+        public
+        view
+        returns (bool)
+    {
         return isNominated[_owner][_token_address];
     }
 
@@ -278,10 +307,10 @@ contract Main is Ownable {
     }
 
     /// @param _owner is the owner's address, _date is the date on which we sent the first mail to the nominee.
-    function setResponseDate(
-        address _owner,
-        string memory _date
-    ) public onlyOwner {
+    function setResponseDate(address _owner, string memory _date)
+        public
+        onlyOwner
+    {
         ownerToResponse[_owner].date = _date;
     }
 
@@ -296,9 +325,11 @@ contract Main is Ownable {
     }
 
     /// @return string of the owner's date when we first send mail to the owner
-    function getResponseDate(
-        address _owner
-    ) public view returns (string memory) {
+    function getResponseDate(address _owner)
+        public
+        view
+        returns (string memory)
+    {
         return ownerToResponse[_owner].date;
     }
 

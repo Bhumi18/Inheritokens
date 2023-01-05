@@ -41,19 +41,22 @@ contract Main is Ownable {
     struct Token {
         address token_address;
         string token_name;
-        uint share;
         uint allocated_share;
         bool isMultipleNominee;
         bool isPriorityNominee;
     }
     // mapping of token address to Token struct
     mapping(address => Token) public tokenAddressToTokenStruct;
-    // mapping of nominee address to token address to bool
-    mapping(address => mapping(address => bool))
-        public nomineeAddressToTokenAddressToRight;
     // mapping of owner address to token address to nominee address
-    mapping(address => mapping(address => address))
-        public ownerToTokenAddressToNominee;
+    mapping(address => mapping(address => address[]))
+        public ownerToTokenAddressToNomineeArray;
+    // mapping of owner address to nominee address to token address array
+    mapping(address => mapping(address=>address[])) public ownerToNomineeToTokenAddressArray;
+    // mapping of owner address to nominee address to token address to share
+    mapping(address => mapping(address=> mapping(address=>uint))) public ownerToNomineeToTokenAddressToShare;
+    // mapping of nominee address to token address to bool
+    mapping(address => mapping(address => mapping(address => bool)))
+        public ownerToNomineeAddressToTokenAddressToRight;
     // mapping of owner address to the token address to the bool
     mapping(address => mapping(address => bool)) public isNominated;
 
@@ -164,7 +167,6 @@ contract Main is Ownable {
     // wants to allocate to the nominee, _isMultipleNominee is the boolean value indicating whether this
     // process of nomination involves multiple nominees or not, _isPriorityNominee is a boolean value
     // that indicates whether or not this nomination process is prioritised in terms of nominees
-
     /// @notice If the share is allocated to 100%, then the owner will not be able to add more nominees for
     // this token. Either he has to remove or edit any of those nominees.
     function assignTokensToNominee(
@@ -189,13 +191,14 @@ contract Main is Ownable {
         tokenAddressToTokenStruct[_tokenAddress] = Token(
             _tokenAddress,
             _tokenName,
-            _share,
             amount,
             _isMultipleNominee,
             _isPriorityNominee
         );
-        nomineeAddressToTokenAddressToRight[_nominee][_tokenAddress] = true;
-        ownerToTokenAddressToNominee[_owner][_tokenAddress] = _nominee;
+        ownerToTokenAddressToNomineeArray[_owner][_tokenAddress].push(_nominee);
+        ownerToNomineeToTokenAddressArray[_owner][_nominee].push(_tokenAddress);
+        ownerToNomineeToTokenAddressToShare[_owner][_nominee][_tokenAddress]=_share;
+        ownerToNomineeAddressToTokenAddressToRight[_owner][_nominee][_tokenAddress] = true;
         isNominated[_owner][_tokenAddress] = true;
     }
 
@@ -207,62 +210,44 @@ contract Main is Ownable {
     // this nomination process is prioritised in terms of nominees
     function editAssignedTokensToNominee(
         address _owner,
-        address _oldNominee,
-        address _newNominee,
+        address _nominee,
         address _tokenAddress,
-        string memory _tokenName,
+        uint _oldShare,
         uint _share,
-        bool _isMultipleNominee,
-        bool _isPriorityNominee
+        bool _isMultipleNominee
     ) public {
-        nomineeAddressToTokenAddressToRight[_oldNominee][_tokenAddress] = false;
-        nomineeAddressToTokenAddressToRight[_newNominee][_tokenAddress] = true;
+        require(_isMultipleNominee,"It is only for multiple nominee");
+        ownerToNomineeToTokenAddressToShare[_owner][_nominee][_tokenAddress]=_share;
+        uint amount = tokenAddressToTokenStruct[_tokenAddress].allocated_share - _oldShare + _share;
+        tokenAddressToTokenStruct[_tokenAddress].allocated_share = amount;
     }
 
-    // function ChangeAssetsToNomiee(
-    //     address _owner,
-    //     address old_nominee,
-    //     address new_nominee,
-    //     string memory _token_name,
-    //     address _token_address,
-    //     uint256 _approvedBalance,
-    //     uint256 _nftId
-    // ) public {
-    //     for (uint16 i = 0; i < nomineeToAssets[old_nominee].length; i++) {
-    //         if (
-    //             nomineeToAssets[old_nominee][i].token_address == _token_address
-    //         ) {
-    //             nomineeToAssets[old_nominee][i].hasRight = false;
-    //         }
-    //     }
-    //     if (_approvedBalance > 0) {
-    //         nomineeToAssets[new_nominee].push(
-    //             Assets(
-    //                 _token_address,
-    //                 _token_name,
-    //                 _approvedBalance,
-    //                 0,
-    //                 true,
-    //                 true
-    //             )
-    //         );
-    //         ownerTokenIdToAddress[_owner][_token_address] = new_nominee;
-    //     } else {
-    //         nomineeToAssets[new_nominee].push(
-    //             Assets(_token_address, "", 0, _nftId, false, true)
-    //         );
-    //         ownerTokenIdToAddress[_owner][_token_address] = new_nominee;
-    //     }
-    // }
+    /// @return an array of nominee's address
+    /// @notice view function to get all the nominees who are nominated for a given token address
+    function getAllNomineesAssignedForToken(address _owner, address _tokenAddress) public view returns(address[] memory){
+        return ownerToTokenAddressToNomineeArray[_owner][_tokenAddress];
+    }
 
-    /// @return nominee address
-    // function getAssetsToNominee(address _owner, address _token_address)
-    //     public
-    //     view
-    //     returns (address)
-    // {
-    //     return ownerTokenIdToAddress[_owner][_token_address];
-    // }
+    /// @return an array of token's address
+    /// @notice view function to get all the tokens for whome nominee is nominated
+    function getAllTokensNomineeIsNominated(address _owner,address _nominee) public view returns(address[] memory){
+        return ownerToNomineeToTokenAddressArray[_owner][_nominee];
+    }
+
+    /// @return uint indicating share allocated to the nominee for a given token
+    function getNomineeToTokenShare(address _owner,address _nominee,address _tokenAddress) public view returns(uint){
+        return ownerToNomineeToTokenAddressToShare[_owner][_nominee][_tokenAddress];
+    }
+
+    /// @return bool indicating whether nominee has right or not for a given token
+    function getNomineeToTokenRight(address _owner,address _nominee,address _tokenAddress) public view returns(bool){
+        return ownerToNomineeAddressToTokenAddressToRight[_owner][_nominee][_tokenAddress];
+    }
+
+    /// @return bool indicating whether token has nominee or not
+    function getIsNominated(address _owner,address _tokenAddress) public view returns(bool){
+        return isNominated[_owner][_tokenAddress];
+    }
 
     /// @return nominee address
     function checkIsNominated(

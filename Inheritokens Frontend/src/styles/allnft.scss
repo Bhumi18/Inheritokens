@@ -1,0 +1,161 @@
+.all-nft-main {
+  margin-top: 3rem;
+
+  width: 100%;
+
+  .nft-image-parent {
+    display: grid;
+    row-gap: 2.5rem;
+    // gap: 1rem;
+    -webkit-column-gap: 2rem;
+    column-gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+
+    .nft-image-child {
+      width: 100%;
+      max-width: 300px;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      border-radius: 40px;
+      transition: box-shadow 0.25s ease-in-out;
+
+      &:hover {
+        -webkit-box-shadow: 0px 10px 25px 10px rgba(0, 0, 0, 0.1);
+        -moz-box-shadow: 0px 10px 25px 10px rgba(0, 0, 0, 0.1);
+        box-shadow: 0px 10px 25px 10px rgba(0, 0, 0, 0.1);
+
+        .image-div {
+          border-radius: 40px;
+          //   max-width: 100%;
+
+          img {
+            scale: 1.1;
+          }
+        }
+      }
+
+      .image-div {
+        height: 20rem;
+        position: relative;
+        border-radius: 40px;
+        flex-shrink: 0;
+        display: flex;
+        overflow: hidden;
+
+        // height: 0;
+        img {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          top: 0;
+          border-radius: 40px;
+          object-fit: cover;
+          width: 100%;
+          height: 100%;
+          will-change: transform;
+          transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+          transition-duration: 0.3s;
+        }
+      }
+
+      .nft-image-child-inside {
+        min-width: 80%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        h3 {
+          cursor: default;
+          width: 100%;
+          max-width: 100%;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+          text-align: center;
+          margin: 10px auto;
+          padding: 1rem 0;
+          border-bottom: 1px solid #f3f4f6;
+          font-family: "Josefin Sans";
+          font-weight: 400;
+        }
+
+        button.below-nft-button {
+          align-self: center;
+          // cursor: pointer;
+          margin: 10px;
+          padding: 0.5rem 1rem;
+          border-radius: 9999px;
+          font-family: "Josefin Sans";
+          font-weight: 400;
+          color: white;
+          border: 1px solid #dcd6fc;
+          background: #dcd6fc;
+          background-image: linear-gradient(to right, #9f8ff7 0%, #5a88e1 100%);
+          background-image: -moz-linear-gradient(
+            left,
+            #9f8ff7 0%,
+            #5a88e1 100%
+          );
+          background-image: -webkit-linear-gradient(
+            left,
+            #9f8ff7 0%,
+            #5a88e1 100%
+          );
+
+          &:hover {
+            background-image: none;
+            background-color: black;
+            color: white;
+            border: 1px solid black;
+          }
+        }
+      }
+    }
+  }
+}
+
+.all-nft-main-empty {
+  width: 100%;
+  margin: 50px 0;
+  height: 300px;
+  border-radius: 40px;
+  transition: box-shadow 0.25s ease-in-out;
+  -webkit-box-shadow: 0px 10px 25px 10px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 0px 10px 25px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 10px 25px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 40px;
+}
+
+@media only screen and (max-width: 768px) {
+  .all-nft-main {
+    .nft-image-parent {
+      row-gap: 2rem;
+      column-gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+
+      .nft-image-child {
+        .image-div {
+          height: 12rem;
+          border-radius: 20px;
+          img {
+            border-radius: 20px;
+          }
+        }
+        .nft-image-child-inside {
+          h3 {
+            font-size: 15px;
+          }
+          button.below-nft-button {
+            padding: 10px 20px;
+            font-size: 14px;
+            margin: 5px;
+          }
+        }
+      }
+    }
+  }
+}

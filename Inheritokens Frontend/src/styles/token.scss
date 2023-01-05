@@ -1,0 +1,98 @@
+.token-main {
+  margin-top: 3rem;
+  width: 100%;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  -webkit-box-shadow: 0px 10px 25px 10px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 0px 10px 25px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 10px 25px 10px rgba(0, 0, 0, 0.1);
+  font-family: "Josefin Sans";
+
+  .token-table {
+    width: 100%;
+    // border: 1px solid black;
+
+    .token-parent {
+      table {
+        width: 100%;
+
+        th,
+        td {
+          padding: 20px;
+          text-align: left;
+          border-bottom: 1px solid #ddd;
+        }
+        tr {
+          td {
+            button {
+              padding: 1rem 1rem;
+              background-color: #ffffff;
+              color: #000000;
+              border: 1px solid #000000;
+              border-radius: 99999px;
+
+              &:hover {
+                background-color: #000000;
+                color: #ffffff;
+                border: 1px solid #000000;
+              }
+            }
+          }
+          td.token-symbol {
+            font-family: "JosefinSans";
+            font-weight: 700;
+            color: #5a88e1;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .token-main {
+    padding: 10px;
+    .token-table {
+      .token-parent {
+        table {
+          width: 100%;
+
+          th,
+          td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+          }
+          tr {
+            td {
+              font-size: 15px;
+              button {
+                padding: 0px 10px;
+                background-color: #ffffff;
+                color: #000000;
+                border: 1px solid #000000;
+                border-radius: 99999px;
+                font-size: 10px;
+
+                &:hover {
+                  background-color: #000000;
+                  color: #ffffff;
+                  border: 1px solid #000000;
+                }
+              }
+            }
+            td:last-of-type {
+              padding: 10px 0px;
+            }
+            td.token-symbol {
+              font-family: "JosefinSans";
+              font-weight: 700;
+              color: #5a88e1;
+              padding: 10px;
+            }
+          }
+        }
+      }
+    }
+  }
+}

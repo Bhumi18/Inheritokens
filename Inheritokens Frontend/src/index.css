@@ -1,0 +1,56 @@
+* {
+  box-sizing: border-box;
+}
+
+a,
+button {
+  cursor: pointer;
+}
+
+body {
+  /* max-width: 100vw; */
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+/* montserrat-regular - latin */
+@font-face {
+  font-family: "Josefin Sans";
+  font-style: normal;
+  font-weight: 400;
+  src: local(""),
+    url("./components/fonts/JosefinSans-Regular.ttf") format("truetype"); /* Safari, Android, iOS */
+}
+
+@font-face {
+  font-family: "JosefinSans";
+  font-style: normal;
+  font-weight: 300;
+  src: local(""),
+    url("./components/fonts/JosefinSans-Light.ttf") format("truetype"); /* Safari, Android, iOS */
+}
+
+@font-face {
+  font-family: "JosefinSans";
+  font-style: normal;
+  font-weight: 200;
+  src: local(""),
+    url("./components/fonts/JosefinSans-ExtraLight.ttf") format("truetype"); /* Safari, Android, iOS */
+}
+
+@font-face {
+  font-family: "JosefinSans";
+  font-style: normal;
+  font-weight: 700;
+  src: local(""),
+    url("./components/fonts/JosefinSans-Bold.ttf") format("truetype"); /* Safari, Android, iOS */
+}

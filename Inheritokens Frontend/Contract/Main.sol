@@ -1,3 +1,5 @@
+// import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
+
 //SPDX-License-Identifier:MIT
 
 pragma solidity ^0.8.0;
@@ -5,7 +7,7 @@ pragma solidity ^0.8.0;
 /// @title Owner & Nominee Functionality
 /// @author Bhumi Sadariya
 
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
+import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
 
 contract Main is Ownable {
     constructor() Ownable() {}
@@ -59,6 +61,8 @@ contract Main is Ownable {
         public ownerToNomineeAddressToTokenAddressToRight;
     // mapping of owner address to the token address to the bool
     mapping(address => mapping(address => bool)) public isNominated;
+    // priority
+    mapping(address=>mapping(address=>address[])) public ownerToTokenAddressToPriorityArray;
 
     // struct to store owner's response
     struct Response {
@@ -162,6 +166,8 @@ contract Main is Ownable {
         return ownerToRecoverAddress[_owner];
     }
 
+    // multiple nominee--------------------------------------------------------------------------
+
     /// @param _owner is the address of the owner; _nominee is the address of the nominee; _tokenAddress is
     // the address of the token contract, _tokenName is the name of the token, _share is the amount the owner
     // wants to allocate to the nominee, _isMultipleNominee is the boolean value indicating whether this
@@ -169,7 +175,7 @@ contract Main is Ownable {
     // that indicates whether or not this nomination process is prioritised in terms of nominees
     /// @notice If the share is allocated to 100%, then the owner will not be able to add more nominees for
     // this token. Either he has to remove or edit any of those nominees.
-    function assignTokensToNominee(
+    function assignTokensToMultipleNominee(
         address _owner,
         address _nominee,
         address _tokenAddress,
@@ -188,13 +194,16 @@ contract Main is Ownable {
         uint amount = tokenAddressToTokenStruct[_tokenAddress].allocated_share +
             _share;
         require(amount <= 100, "100% share is already allocated...");
-        tokenAddressToTokenStruct[_tokenAddress] = Token(
+        if(!isNominated[_owner][_tokenAddress]){
+            tokenAddressToTokenStruct[_tokenAddress] = Token(
             _tokenAddress,
             _tokenName,
             amount,
             _isMultipleNominee,
             _isPriorityNominee
         );
+        }
+        tokenAddressToTokenStruct[_tokenAddress].allocated_share=amount;
         ownerToTokenAddressToNomineeArray[_owner][_tokenAddress].push(_nominee);
         ownerToNomineeToTokenAddressArray[_owner][_nominee].push(_tokenAddress);
         ownerToNomineeToTokenAddressToShare[_owner][_nominee][_tokenAddress]=_share;
@@ -208,7 +217,7 @@ contract Main is Ownable {
     // _isMultipleNominee is the boolean value indicating whether this process of nomination involves
     // multiple nominees or not, _isPriorityNominee is a boolean value that indicates whether or not
     // this nomination process is prioritised in terms of nominees
-    function editAssignedTokensToNominee(
+    function editAssignedTokensToMultipleNominee(
         address _owner,
         address _nominee,
         address _tokenAddress,
@@ -216,9 +225,10 @@ contract Main is Ownable {
         uint _share,
         bool _isMultipleNominee
     ) public {
-        require(_isMultipleNominee,"It is only for multiple nominee");
-        ownerToNomineeToTokenAddressToShare[_owner][_nominee][_tokenAddress]=_share;
+        require(_isMultipleNominee,"It is only for multiple nominee");        
         uint amount = tokenAddressToTokenStruct[_tokenAddress].allocated_share - _oldShare + _share;
+        require(amount <= 100, "100% share is already allocated...");
+        ownerToNomineeToTokenAddressToShare[_owner][_nominee][_tokenAddress]=_share;
         tokenAddressToTokenStruct[_tokenAddress].allocated_share = amount;
     }
 
@@ -249,12 +259,49 @@ contract Main is Ownable {
         return isNominated[_owner][_tokenAddress];
     }
 
-    /// @return nominee address
-    function checkIsNominated(
-        address _owner,
-        address _token_address
-    ) public view returns (bool) {
-        return isNominated[_owner][_token_address];
+    // priority nominee-------------------------------------------------
+    /// @param _owner is the owner's address, _nominee is the nominee's address, _tokenAddress is the address of the token,
+    // _tokenName is the name of the token, _isMultipleNominee is the boolean value indicating whether this process of 
+    // nomination involves multiple nominees or not, _isPriorityNominee is a boolean value that indicates whether or 
+    // not this nomination process is prioritised in terms of nominees
+    function assignedTokensToPriorityNominee(address _owner,
+        address _nominee, 
+        address _tokenAddress,
+        string memory _tokenName,
+        bool _isMultipleNominee,
+        bool _isPriorityNominee) public {
+            if(!isNominated[_owner][_tokenAddress]){
+            tokenAddressToTokenStruct[_tokenAddress] = Token(
+            _tokenAddress,
+            _tokenName,
+            0,
+            _isMultipleNominee,
+            _isPriorityNominee
+        ); 
+        }
+            ownerToNomineeToTokenAddressArray[_owner][_nominee].push(_tokenAddress);
+            ownerToTokenAddressToPriorityArray[_owner][_tokenAddress].push(_nominee);
+            ownerToNomineeAddressToTokenAddressToRight[_owner][_nominee][_tokenAddress] = true;
+            isNominated[_owner][_tokenAddress] = true;
+        }
+
+    /// @param _owner is the owner's address, _oldNominee is the current nominee's address, _newNominee is the address
+    // of the nominee which owner wants to edit with the current address, _tokenAddress is the address of the token
+    function editAssignedPriorityNomineeAddressToToken(address _owner,address _oldNominee, address _newNominee, 
+    address _tokenAddress) public{
+        for(uint i=0; i<ownerToTokenAddressToPriorityArray[_owner][_tokenAddress].length;i++){
+            if(ownerToTokenAddressToPriorityArray[_owner][_tokenAddress][i]==_oldNominee){
+                ownerToTokenAddressToPriorityArray[_owner][_tokenAddress][i]=_newNominee;
+            }
+        }
+        
+    }
+
+    /// @param _owner is the owner's address, _nominee is the address of the nominee, _tokenAddress is the address of
+    // the token.
+    function removeAssignedPriorityNomineeAddressToToken(address _owner,address _nominee, address _tokenAddress) public{
+        ownerToNomineeAddressToTokenAddressToRight[_owner][_nominee][_tokenAddress]=false;
+        
     }
 
     /// @return an array of owner's address

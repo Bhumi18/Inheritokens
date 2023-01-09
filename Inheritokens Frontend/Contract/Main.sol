@@ -40,7 +40,7 @@ contract Main is Ownable {
     mapping(address => address[]) public ownerToNominees;
 
     // Charity
-    struct Charity {
+    struct Charity{
         uint id;
         address charity_address;
         string charity_name;
@@ -48,7 +48,8 @@ contract Main is Ownable {
         string charity_image;
     }
     uint charity_id;
-    mapping(uint => Charity) public idToCharity;
+    mapping(uint=>Charity) public idToCharity;
+    mapping(address=>uint[]) public ownerToWhitelistedCharities;
 
     // Token Structure
     struct Token {
@@ -64,19 +65,16 @@ contract Main is Ownable {
     mapping(address => mapping(address => address[]))
         public ownerToTokenAddressToNomineeArray;
     // mapping of owner address to nominee address to token address array
-    mapping(address => mapping(address => address[]))
-        public ownerToNomineeToTokenAddressArray;
+    mapping(address => mapping(address=>address[])) public ownerToNomineeToTokenAddressArray;
     // mapping of owner address to nominee address to token address to share
-    mapping(address => mapping(address => mapping(address => uint)))
-        public ownerToNomineeToTokenAddressToShare;
+    mapping(address => mapping(address=> mapping(address=>uint))) public ownerToNomineeToTokenAddressToShare;
     // mapping of nominee address to token address to bool
     mapping(address => mapping(address => mapping(address => bool)))
         public ownerToNomineeAddressToTokenAddressToRight;
     // mapping of owner address to the token address to the bool
     mapping(address => mapping(address => bool)) public isNominated;
     // priority
-    mapping(address => mapping(address => address[]))
-        public ownerToTokenAddressToPriorityArray;
+    mapping(address=>mapping(address=>address[])) public ownerToTokenAddressToPriorityArray;
 
     // struct to store owner's response
     struct Response {
@@ -182,50 +180,45 @@ contract Main is Ownable {
 
     // charity----------------------------------------------------------------------------------
 
-    /// @param _charityAddress is the address of the charity, _charityName is the name of the charity,
+    /// @param _charityAddress is the address of the charity, _charityName is the name of the charity, 
     // _charityDescription is the description about the charity, _charityImage is the cid of the image
-    function addCharity(
-        address _charityAddress,
-        string memory _charityName,
-        string memory _charityDescription,
-        string memory _charityImage
-    ) public {
-        charity_id = charity_id + 1;
-        idToCharity[charity_id] = Charity(
-            charity_id,
-            _charityAddress,
-            _charityName,
-            _charityDescription,
-            _charityImage
-        );
+    function addCharity(address _charityAddress,string memory _charityName, string memory _charityDescription,
+    string memory _charityImage) public{
+        charity_id=charity_id+1;
+        idToCharity[charity_id]=Charity(charity_id,_charityAddress,_charityName,_charityDescription,_charityImage);
     }
 
-    /// @param _charityId is the id of the charity, _charityAddress is the address of the charity, _charityName is the name of the charity,
+    /// @param _charityId is the id of the charity, _charityAddress is the address of the charity, _charityName is the name of the charity, 
     // _charityDescription is the description about the charity, _charityImage is the cid of the image
-    function editCharityDetails(
-        uint _charityId,
-        address _charityAddress,
-        string memory _charityName,
-        string memory _charityDescription,
-        string memory _charityImage
-    ) public {
-        idToCharity[_charityId].charity_address = _charityAddress;
-        idToCharity[_charityId].charity_name = _charityName;
-        idToCharity[_charityId].charity_description = _charityDescription;
-        idToCharity[_charityId].charity_image = _charityImage;
+    function editCharityDetails(uint _charityId, address _charityAddress,string memory _charityName,
+    string memory _charityDescription, string memory _charityImage)public{
+        idToCharity[_charityId].charity_address=_charityAddress;
+        idToCharity[_charityId].charity_name=_charityName;
+        idToCharity[_charityId].charity_description=_charityDescription;
+        idToCharity[_charityId].charity_image=_charityImage;
+    }
+
+    /// @param _owner is the address of the owner, _charityId is the id of the chairty owner wants to keep in white
+    // listed array
+    function setWhiteListedCharities(address _owner, uint _charityId) public{
+        ownerToWhitelistedCharities[_owner].push(_charityId);
     }
 
     /// @param _charityId is the id of the charity
     /// @return struct of the charity
-    function getCharityDetailsById(
-        uint _charityId
-    ) public view returns (Charity memory) {
+    function getCharityDetailsById(uint _charityId) public view returns(Charity memory){
         return idToCharity[_charityId];
     }
 
     /// @return the number of the charity available on platform
-    function getTotalNumberOfCharity() public view returns (uint) {
+    function getTotalNumberOfCharity() public view returns(uint){
         return charity_id;
+    }
+
+    /// @param _owner is the address of the owner
+    /// @return an array of the white listed charities for a given owner
+    function getAllWhiteListedCharities(address _owner) public view returns(uint[] memory){
+        return ownerToWhitelistedCharities[_owner];
     }
 
     // multiple nominee--------------------------------------------------------------------------
@@ -256,24 +249,20 @@ contract Main is Ownable {
         uint amount = tokenAddressToTokenStruct[_tokenAddress].allocated_share +
             _share;
         require(amount <= 100, "100% share is already allocated...");
-        if (!isNominated[_owner][_tokenAddress]) {
+        if(!isNominated[_owner][_tokenAddress]){
             tokenAddressToTokenStruct[_tokenAddress] = Token(
-                _tokenAddress,
-                _tokenName,
-                amount,
-                _isMultipleNominee,
-                _isPriorityNominee
-            );
+            _tokenAddress,
+            _tokenName,
+            amount,
+            _isMultipleNominee,
+            _isPriorityNominee
+        );
         }
-        tokenAddressToTokenStruct[_tokenAddress].allocated_share = amount;
+        tokenAddressToTokenStruct[_tokenAddress].allocated_share=amount;
         ownerToTokenAddressToNomineeArray[_owner][_tokenAddress].push(_nominee);
         ownerToNomineeToTokenAddressArray[_owner][_nominee].push(_tokenAddress);
-        ownerToNomineeToTokenAddressToShare[_owner][_nominee][
-            _tokenAddress
-        ] = _share;
-        ownerToNomineeAddressToTokenAddressToRight[_owner][_nominee][
-            _tokenAddress
-        ] = true;
+        ownerToNomineeToTokenAddressToShare[_owner][_nominee][_tokenAddress]=_share;
+        ownerToNomineeAddressToTokenAddressToRight[_owner][_nominee][_tokenAddress] = true;
         isNominated[_owner][_tokenAddress] = true;
     }
 
@@ -291,134 +280,83 @@ contract Main is Ownable {
         uint _share,
         bool _isMultipleNominee
     ) public {
-        require(_isMultipleNominee, "It is only for multiple nominee");
-        uint amount = tokenAddressToTokenStruct[_tokenAddress].allocated_share -
-            _oldShare +
-            _share;
+        require(_isMultipleNominee,"It is only for multiple nominee");        
+        uint amount = tokenAddressToTokenStruct[_tokenAddress].allocated_share - _oldShare + _share;
         require(amount <= 100, "100% share is already allocated...");
-        ownerToNomineeToTokenAddressToShare[_owner][_nominee][
-            _tokenAddress
-        ] = _share;
+        ownerToNomineeToTokenAddressToShare[_owner][_nominee][_tokenAddress]=_share;
         tokenAddressToTokenStruct[_tokenAddress].allocated_share = amount;
     }
 
     /// @return an array of nominee's address
     /// @notice view function to get all the nominees who are nominated for a given token address
-    function getAllNomineesAssignedForToken(
-        address _owner,
-        address _tokenAddress
-    ) public view returns (address[] memory) {
+    function getAllNomineesAssignedForToken(address _owner, address _tokenAddress) public view returns(address[] memory){
         return ownerToTokenAddressToNomineeArray[_owner][_tokenAddress];
     }
 
     /// @return an array of token's address
     /// @notice view function to get all the tokens for whome nominee is nominated
-    function getAllTokensNomineeIsNominated(
-        address _owner,
-        address _nominee
-    ) public view returns (address[] memory) {
+    function getAllTokensNomineeIsNominated(address _owner,address _nominee) public view returns(address[] memory){
         return ownerToNomineeToTokenAddressArray[_owner][_nominee];
     }
 
     /// @return uint indicating share allocated to the nominee for a given token
-    function getNomineeToTokenShare(
-        address _owner,
-        address _nominee,
-        address _tokenAddress
-    ) public view returns (uint) {
-        return
-            ownerToNomineeToTokenAddressToShare[_owner][_nominee][
-                _tokenAddress
-            ];
+    function getNomineeToTokenShare(address _owner,address _nominee,address _tokenAddress) public view returns(uint){
+        return ownerToNomineeToTokenAddressToShare[_owner][_nominee][_tokenAddress];
     }
 
     /// @return bool indicating whether nominee has right or not for a given token
-    function getNomineeToTokenRight(
-        address _owner,
-        address _nominee,
-        address _tokenAddress
-    ) public view returns (bool) {
-        return
-            ownerToNomineeAddressToTokenAddressToRight[_owner][_nominee][
-                _tokenAddress
-            ];
+    function getNomineeToTokenRight(address _owner,address _nominee,address _tokenAddress) public view returns(bool){
+        return ownerToNomineeAddressToTokenAddressToRight[_owner][_nominee][_tokenAddress];
     }
 
     /// @return bool indicating whether token has nominee or not
-    function getIsNominated(
-        address _owner,
-        address _tokenAddress
-    ) public view returns (bool) {
+    function getIsNominated(address _owner,address _tokenAddress) public view returns(bool){
         return isNominated[_owner][_tokenAddress];
     }
 
     // priority nominee-------------------------------------------------
     /// @param _owner is the owner's address, _nominee is the nominee's address, _tokenAddress is the address of the token,
-    // _tokenName is the name of the token, _isMultipleNominee is the boolean value indicating whether this process of
-    // nomination involves multiple nominees or not, _isPriorityNominee is a boolean value that indicates whether or
+    // _tokenName is the name of the token, _isMultipleNominee is the boolean value indicating whether this process of 
+    // nomination involves multiple nominees or not, _isPriorityNominee is a boolean value that indicates whether or 
     // not this nomination process is prioritised in terms of nominees
-    function assignedTokensToPriorityNominee(
-        address _owner,
-        address _nominee,
+    function assignedTokensToPriorityNominee(address _owner,
+        address _nominee, 
         address _tokenAddress,
         string memory _tokenName,
         bool _isMultipleNominee,
-        bool _isPriorityNominee
-    ) public {
-        if (!isNominated[_owner][_tokenAddress]) {
+        bool _isPriorityNominee) public {
+            if(!isNominated[_owner][_tokenAddress]){
             tokenAddressToTokenStruct[_tokenAddress] = Token(
-                _tokenAddress,
-                _tokenName,
-                0,
-                _isMultipleNominee,
-                _isPriorityNominee
-            );
+            _tokenAddress,
+            _tokenName,
+            0,
+            _isMultipleNominee,
+            _isPriorityNominee
+        ); 
         }
-        ownerToNomineeToTokenAddressArray[_owner][_nominee].push(_tokenAddress);
-        ownerToTokenAddressToPriorityArray[_owner][_tokenAddress].push(
-            _nominee
-        );
-        ownerToNomineeAddressToTokenAddressToRight[_owner][_nominee][
-            _tokenAddress
-        ] = true;
-        isNominated[_owner][_tokenAddress] = true;
-    }
+            ownerToNomineeToTokenAddressArray[_owner][_nominee].push(_tokenAddress);
+            ownerToTokenAddressToPriorityArray[_owner][_tokenAddress].push(_nominee);
+            ownerToNomineeAddressToTokenAddressToRight[_owner][_nominee][_tokenAddress] = true;
+            isNominated[_owner][_tokenAddress] = true;
+        }
 
     /// @param _owner is the owner's address, _oldNominee is the current nominee's address, _newNominee is the address
     // of the nominee which owner wants to edit with the current address, _tokenAddress is the address of the token
-    function editAssignedPriorityNomineeAddressToToken(
-        address _owner,
-        address _oldNominee,
-        address _newNominee,
-        address _tokenAddress
-    ) public {
-        for (
-            uint i = 0;
-            i <
-            ownerToTokenAddressToPriorityArray[_owner][_tokenAddress].length;
-            i++
-        ) {
-            if (
-                ownerToTokenAddressToPriorityArray[_owner][_tokenAddress][i] ==
-                _oldNominee
-            ) {
-                ownerToTokenAddressToPriorityArray[_owner][_tokenAddress][
-                    i
-                ] = _newNominee;
+    function editAssignedPriorityNomineeAddressToToken(address _owner,address _oldNominee, address _newNominee, 
+    address _tokenAddress) public{
+        for(uint i=0; i<ownerToTokenAddressToPriorityArray[_owner][_tokenAddress].length;i++){
+            if(ownerToTokenAddressToPriorityArray[_owner][_tokenAddress][i]==_oldNominee){
+                ownerToTokenAddressToPriorityArray[_owner][_tokenAddress][i]=_newNominee;
             }
         }
+        
     }
 
     /// @param _owner is the owner's address, _nominee is the address of the nominee, _tokenAddress is the address of
     // the token.
-    function removeAssignedPriorityNomineeAddressToToken(
-        address _owner,
-        address _nominee,
-        address _tokenAddress
-    ) public {
-        ownerToNomineeAddressToTokenAddressToRight[_owner][_nominee][
-            _tokenAddress
-        ] = false;
+    function removeAssignedPriorityNomineeAddressToToken(address _owner,address _nominee, address _tokenAddress) public{
+        ownerToNomineeAddressToTokenAddressToRight[_owner][_nominee][_tokenAddress]=false;
+        
     }
 
     /// @return an array of owner's address

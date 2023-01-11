@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "D:\\Lampros Projects\\Inheritokens\\Inheritokens Frontend\\contracts\\Inheritokens.sol": {
-      "lastModificationDate": 1673412245660,
-      "contentHash": "3cb841e5edc606dab23048479d510c88",
+      "lastModificationDate": 1673421532944,
+      "contentHash": "257f69e42979459e1ee010b7aaca6070",
       "sourceName": "contracts/Inheritokens.sol",
       "solcConfig": {
         "version": "0.8.17",

@@ -172,6 +172,11 @@ contract Inheritokens is Ownable {
         return addressToOwner[owner_address];
     }
 
+    /// @return uint indicating the total number of owners on our platform
+    function getTotalOwner() public view returns(uint){
+        return owners.length;
+    }
+
     /// @param _owner is the address of the owner
     /// @return recovery address
     function getRecoveryAddress(address _owner) public view returns (address) {

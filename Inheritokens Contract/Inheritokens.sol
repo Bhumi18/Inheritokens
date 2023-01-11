@@ -9,7 +9,7 @@ pragma solidity ^0.8.0;
 
 import "../Inheritokens Frontend/node_modules/@openzeppelin/contracts/access/Ownable.sol";
 
-contract Main is Ownable {
+contract Inheritokens is Ownable {
     constructor() Ownable() {}
 
     // all owners' arrays and mappings to check if the owner is already added or not.

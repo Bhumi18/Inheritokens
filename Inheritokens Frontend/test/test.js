@@ -47,4 +47,23 @@ describe("Inheritokens", function () {
         const len = ((await inheritokens.getAllNominees(owner.address)).length)
         expect(len).to.equal(2)
     })
+
+    // for adding charity
+    it("should able to add charity", async function () {
+        await inheritokens.addCharity(charity1.address, "charity1", "charity1", "abc")
+        charity_id += 1
+        expect(await inheritokens.getTotalNumberOfCharity()).to.equal(1)
+    })
+
+    it("should able to add second charity", async function () {
+        await inheritokens.addCharity(charity2.address, "charity2", "charity2", "abc")
+        charity_id += 1
+        expect(await inheritokens.getTotalNumberOfCharity()).to.equal(2)
+    })
+
+    it("should allow owner to set charity as white list", async function () {
+        await inheritokens.setWhiteListedCharities(owner.address, 1)
+        const len = ((await inheritokens.getAllWhiteListedCharities(owner.address)).length)
+        expect(len).to.equal(1)
+    })
 })

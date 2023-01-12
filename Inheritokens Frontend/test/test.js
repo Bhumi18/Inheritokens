@@ -34,4 +34,17 @@ describe("Inheritokens", function () {
         await inheritokens.addWalletRecovery(owner.address, recover_address.address)
         expect(await inheritokens.getRecoveryAddress(owner.address)).to.equal(recover_address.address)
     })
+
+    // for adding nominee
+    it("should able to add nominee", async function () {
+        await inheritokens.addNomineesDetails("Bhumi1", "bhumi1@gmail.com", nominee1.address)
+        const len = ((await inheritokens.getAllNominees(owner.address)).length)
+        expect(len).to.equal(1)
+    })
+
+    it("should able to add second nominee", async function () {
+        await inheritokens.addNomineesDetails("Bhumi2", "bhumi2@gmail.com", nominee2.address)
+        const len = ((await inheritokens.getAllNominees(owner.address)).length)
+        expect(len).to.equal(2)
+    })
 })

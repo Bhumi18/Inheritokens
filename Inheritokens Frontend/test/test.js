@@ -28,4 +28,10 @@ describe("Inheritokens", function () {
         await inheritokens.addOwnerDetails("Lajja", "lajja@gmail.com", "abc")
         expect(await inheritokens.isOwnerAdded(owner.address)).to.equal(true)
     })
+
+    // for wallet recovery
+    it("should able to add recovery address", async function () {
+        await inheritokens.addWalletRecovery(owner.address, recover_address.address)
+        expect(await inheritokens.getRecoveryAddress(owner.address)).to.equal(recover_address.address)
+    })
 })

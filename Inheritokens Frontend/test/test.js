@@ -2,10 +2,11 @@ const { expect } = require("chai")
 const { ethers } = require("hardhat")
 
 describe("Inheritokens", function () {
-    let inheritokens, owner, owner1, recover_address, nominee1, nominee2, nominee3
+    let inheritokens, owner, owner1, recover_address, nominee1, nominee2, nominee3, charity1, charity2
+    let charity_id = 0
     before(async function () {
         // get accounts
-        [owner, owner1, recover_address, nominee1, nominee2, nominee3] = await ethers.getSigners()
+        [owner, owner1, recover_address, nominee1, nominee2, nominee3, charity1, charity2] = await ethers.getSigners()
         // contract deployment
         const Inheritokens = await ethers.getContractFactory("Inheritokens")
         inheritokens = Inheritokens.deploy()
@@ -18,13 +19,13 @@ describe("Inheritokens", function () {
         expect(await inheritokens.isOwnerAdded(owner.address)).to.equal(true)
     })
 
-    it("should not register again", async function(){
+    it("should not register again", async function () {
         const len = await inheritokens.getTotalOwner()
         await inheritokens.addOwnerDetails("Bhumi", "bhumi@gmail.com", "abc")
         expect(await inheritokens.getTotalOwner()).to.equal(len)
     })
 
-    it("should allow new owner to register", async function(){
+    it("should allow new owner to register", async function () {
         await inheritokens.addOwnerDetails("Lajja", "lajja@gmail.com", "abc")
         expect(await inheritokens.isOwnerAdded(owner.address)).to.equal(true)
     })
@@ -65,5 +66,46 @@ describe("Inheritokens", function () {
         await inheritokens.setWhiteListedCharities(owner.address, 1)
         const len = ((await inheritokens.getAllWhiteListedCharities(owner.address)).length)
         expect(len).to.equal(1)
+    })
+
+    // for multiple nominee
+    it("should able to assign token to multiple nominee", async function () {
+        await inheritokens.assignTokensToMultipleNominee(owner.address, nominee1.address, "0x53d00397f03147a9bd9c40443a105a82780deaf1", "fTUSD Fake Token", 50, true, false)
+        const amount = (await inheritokens.tokenAddressToTokenStruct("0x53d00397f03147a9bd9c40443a105a82780deaf1"))[2]
+        expect(parseInt(amount)).to.equal(50)
+    })
+
+    it("should assigned nominee for token address", async function () {
+        expect((await inheritokens.getAllNomineesAssignedForToken(owner.address, "0x53d00397f03147a9bd9c40443a105a82780deaf1")).length).to.equal(1)
+    })
+
+    it("shoul assigned token to nominee mapping", async function () {
+        expect((await inheritokens.getAllTokensNomineeIsNominated(owner.address, nominee1.address)).length).to.equal(1)
+    })
+
+    it("should assign proper share of token to nominee", async function () {
+        expect(await inheritokens.ownerToNomineeToTokenAddressToShare(owner.address, nominee1.address, "0x53d00397f03147a9bd9c40443a105a82780deaf1")).to.equal(50)
+    })
+
+    it("should be able to update the nominee right for assigned token", async function () {
+        expect(await inheritokens.ownerToNomineeAddressToTokenAddressToRight(owner.address, nominee1.address, "0x53d00397f03147a9bd9c40443a105a82780deaf1")).to.equal(true)
+    })
+
+    it("should be able to change the value for whether token is nominated or not", async function () {
+        expect(await inheritokens.isNominated(owner.address, "0x53d00397f03147a9bd9c40443a105a82780deaf1")).to.equal(true)
+    })
+
+    it("should able to assign token to second multiple nominee", async function () {
+        await inheritokens.assignTokensToMultipleNominee(owner.address, nominee2.address, "0x53d00397f03147a9bd9c40443a105a82780deaf1", "fTUSD Fake Token", 50, true, false)
+        const amount = (await inheritokens.tokenAddressToTokenStruct("0x53d00397f03147a9bd9c40443a105a82780deaf1"))[2]
+        expect(parseInt(amount)).to.equal(100)
+    })
+
+    it("should allow owner to change the share of the nominee", async function () {
+        await inheritokens.editAssignedTokensToMultipleNominee(owner.address, nominee1.address, "0x53d00397f03147a9bd9c40443a105a82780deaf1", 50, 40, true)
+        const amount = (await inheritokens.ownerToNomineeToTokenAddressToShare(owner.address, nominee1.address, "0x53d00397f03147a9bd9c40443a105a82780deaf1"))
+        expect((amount)).to.equal(40)
+        const total_share = (await inheritokens.tokenAddressToTokenStruct("0x53d00397f03147a9bd9c40443a105a82780deaf1"))[2]
+        expect(parseInt(total_share)).to.equal(90)
     })
 })

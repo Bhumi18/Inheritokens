@@ -377,6 +377,10 @@ contract Inheritokens is Ownable {
         ownerToResponse[_owner].date = _date;
     }
 
+    function getOwnerToTokenAddressToPriorityArray(address _owner,address _tokenAddress) public view returns(address[] memory){
+        return ownerToTokenAddressToPriorityArray[_owner][_tokenAddress];
+    }
+
     /// @param _owner is the owner's address, _response is whether the owner has replied to the email or not.
     function setResponse(address _owner, bool _response) public {
         ownerToResponse[_owner].isResponsed = _response;

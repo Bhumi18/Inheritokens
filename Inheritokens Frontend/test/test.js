@@ -108,4 +108,53 @@ describe("Inheritokens", function () {
         const total_share = (await inheritokens.tokenAddressToTokenStruct("0x53d00397f03147a9bd9c40443a105a82780deaf1"))[2]
         expect(parseInt(total_share)).to.equal(90)
     })
+
+    // for priority nominee
+    it("should able to assign token to priority nominee", async function () {
+        await inheritokens.assignedTokensToPriorityNominee(owner.address, nominee1.address, "0x88271d333c72e51516b67f5567c728e702b3eee8", "fDAI Fake Token", false, true)
+        expect(await inheritokens.ownerToNomineeAddressToTokenAddressToRight(owner.address, nominee1.address, "0x88271d333c72e51516b67f5567c728e702b3eee8")).to.equal(true)
+    })
+
+    it("should change nominee to token address array", async function () {
+        const arr = await inheritokens.getAllTokensNomineeIsNominated(owner.address, nominee1.address)
+        let flag
+        for (let i = 0; i < arr.length; i++) {
+            if (arr[i].toLowerCase() === "0x88271d333c72e51516b67f5567c728e702b3eee8") {
+                flag = true
+            }
+        }
+        expect(flag).to.equal(true)
+    })
+
+    it("should change token to priority nominee array", async function () {
+        const arr = await inheritokens.getOwnerToTokenAddressToPriorityArray(owner.address, "0x88271d333c72e51516b67f5567c728e702b3eee8")
+        let flag
+        for (let i = 0; i < arr.length; i++) {
+            if (arr[i].toLowerCase() === nominee1.address.toLowerCase()) {
+                flag = true
+            }
+        }
+        expect(flag).to.equal(true)
+    })
+
+    it("should be able to change the value for whether token is nominated or not", async function () {
+        expect(await inheritokens.isNominated(owner.address, "0x88271d333c72e51516b67f5567c728e702b3eee8")).to.equal(true)
+    })
+
+    it("should allow to change assignedPriority nominee address to token",async function(){
+        await inheritokens.editAssignedPriorityNomineeAddressToToken(owner.address,nominee1.address,nominee3.address,"0x88271d333c72e51516b67f5567c728e702b3eee8")
+        const arr = await inheritokens.getOwnerToTokenAddressToPriorityArray(owner.address,"0x88271d333c72e51516b67f5567c728e702b3eee8")
+        let flag=false
+        for(let i=0;i<arr.length;i++){
+            if (arr[i].toLowerCase()===nominee1.address){
+                flag=true
+            }
+        }
+        expect(flag).to.equal(false)
+    })
+
+    it("should allow owner to remove nominee from assigned token",async function(){
+        await inheritokens.removeAssignedPriorityNomineeAddressToToken(owner.address,nominee1.address,"0x88271d333c72e51516b67f5567c728e702b3eee8")
+        expect(await inheritokens.ownerToNomineeAddressToTokenAddressToRight(owner.address,nominee1.address,"0x88271d333c72e51516b67f5567c728e702b3eee8")).to.equal(false)
+    })
 })

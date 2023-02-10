@@ -167,24 +167,46 @@ describe("Inheritokens", function () {
     // console.log(await inheritokens.getAllNominees(owner.address));
   });
 
-  // // for adding charity
-  // it("should able to add charity", async function () {
-  //     await inheritokens.addCharity(charity1.address, "charity1", "charity1", "abc")
-  //     charity_id += 1
-  //     expect(await inheritokens.getTotalNumberOfCharity()).to.equal(1)
-  // })
+  // for adding charity
+  it("should able to add charity", async function () {
+    await charityContract.addCharity(
+      charity1.address,
+      "charity1",
+      "charity1",
+      "abc"
+    );
+    expect(await charityContract.getTotalNumberOfCharity()).to.equal(1);
+  });
 
-  // it("should able to add second charity", async function () {
-  //     await inheritokens.addCharity(charity2.address, "charity2", "charity2", "abc")
-  //     charity_id += 1
-  //     expect(await inheritokens.getTotalNumberOfCharity()).to.equal(2)
-  // })
+  it("should able to add second charity", async function () {
+    await charityContract.addCharity(
+      charity2.address,
+      "charity2",
+      "charity2",
+      "abc"
+    );
+    expect(await charityContract.getTotalNumberOfCharity()).to.equal(2);
+  });
 
-  // it("should allow owner to set charity as white list", async function () {
-  //     await inheritokens.setWhiteListedCharities(owner.address, 1)
-  //     const len = ((await inheritokens.getAllWhiteListedCharities(owner.address)).length)
-  //     expect(len).to.equal(1)
-  // })
+  it("should allow to change the charity details", async function () {
+    await charityContract.editCharityDetails(
+      1,
+      charity1.address,
+      "char-ity1",
+      "charity1",
+      "abc"
+    );
+    expect(
+      (await charityContract.getCharityDetailsById(1)).charity_name
+    ).to.equal("char-ity1");
+  });
+
+  it("should allow owner to set charity as white list", async function () {
+    await inheritokens.setWhiteListedCharities(owner.address, 1);
+    const len = (await inheritokens.getAllWhiteListedCharities(owner.address))
+      .length;
+    expect(len).to.equal(1);
+  });
 
   // // for multiple nominee
   // it("should able to assign token to multiple nominee", async function () {

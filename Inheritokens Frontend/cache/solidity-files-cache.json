@@ -111,8 +111,8 @@
       ]
     },
     "D:\\Lampros Projects\\Inheritokens\\Inheritokens Frontend\\contracts\\Charity.sol": {
-      "lastModificationDate": 1676011977580,
-      "contentHash": "d8060e1ca5536a84ea417df0f83091a5",
+      "lastModificationDate": 1676023054568,
+      "contentHash": "26ab67ab002cceadfff1ae7bb95a94d8",
       "sourceName": "contracts/Charity.sol",
       "solcConfig": {
         "version": "0.8.17",
@@ -137,7 +137,9 @@
           }
         }
       },
-      "imports": [],
+      "imports": [
+        "../node_modules/@openzeppelin/contracts/access/Ownable.sol"
+      ],
       "versionPragmas": [
         "^0.8.0"
       ],

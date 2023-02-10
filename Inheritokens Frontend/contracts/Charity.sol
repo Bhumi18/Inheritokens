@@ -2,10 +2,14 @@
 
 pragma solidity ^0.8.0;
 
+import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
+
 /// @title Charity Functionality
 /// @author Bhumi Sadariya
 
-contract CharityContract {
+contract CharityContract is Ownable{
+    constructor() Ownable() {}
+
     // Charity structure, mapping of charity id to Charity struct, and mapping of owner's address to array of whitelisted charity id
     struct Charity {
         uint id;
@@ -14,7 +18,7 @@ contract CharityContract {
         string charity_description;
         string charity_image;
     }
-    uint charity_id;
+    uint public charity_id;
     mapping(uint => Charity) public idToCharity;
 
     // charity----------------------------------------------------------------------------------
@@ -26,7 +30,7 @@ contract CharityContract {
         string memory _charityName,
         string memory _charityDescription,
         string memory _charityImage
-    ) public {
+    ) public onlyOwner {
         charity_id = charity_id + 1;
         idToCharity[charity_id] = Charity(
             charity_id,
@@ -45,7 +49,7 @@ contract CharityContract {
         string memory _charityName,
         string memory _charityDescription,
         string memory _charityImage
-    ) public {
+    ) public onlyOwner{
         idToCharity[_charityId].charity_address = _charityAddress;
         idToCharity[_charityId].charity_name = _charityName;
         idToCharity[_charityId].charity_description = _charityDescription;

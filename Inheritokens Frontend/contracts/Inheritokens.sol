@@ -16,7 +16,7 @@ contract Inheritokens is Ownable {
     address[] public owners;
     mapping(address => bool) public isOwnerAdded;
 
-    // Owner structure and address mapping with owner structure
+    // Owner structure and mapping of owner's address with Owner struct
     struct Owner {
         string owner_name;
         string owner_email;
@@ -28,8 +28,7 @@ contract Inheritokens is Ownable {
     // mapping of owner's address to recovery address for wallet recovery functionality
     mapping(address => address) public ownerToRecoverAddress;
 
-    // Nominee structure, mapping of owner to nominee's address array, and mapping of address to nominee
-    // structure
+    // Nominee structure, mapping of owner's address to array of nominee's address, and mapping of nominee's address to nominee struct
     struct Nominee {
         string nominee_name;
         string nominee_email;
@@ -39,7 +38,7 @@ contract Inheritokens is Ownable {
     mapping(address => Nominee) public addressToNominee;
     mapping(address => address[]) public ownerToNominees;
 
-    // Charity
+    // Charity structure, mapping of charity id to Charity struct, and mapping of owner's address to array of whitelisted charity id
     struct Charity {
         uint id;
         address charity_address;
@@ -61,21 +60,27 @@ contract Inheritokens is Ownable {
     }
     // mapping of token address to Token struct
     mapping(address => Token) public tokenAddressToTokenStruct;
-    // mapping of owner address to token address to nominee address
+
+    // mapping of owner address to token address to array of nominee address
     mapping(address => mapping(address => address[]))
         public ownerToTokenAddressToNomineeArray;
+
     // mapping of owner address to nominee address to token address array
     mapping(address => mapping(address => address[]))
         public ownerToNomineeToTokenAddressArray;
+
     // mapping of owner address to nominee address to token address to share
     mapping(address => mapping(address => mapping(address => uint)))
         public ownerToNomineeToTokenAddressToShare;
+
     // mapping of nominee address to token address to bool
     mapping(address => mapping(address => mapping(address => bool)))
         public ownerToNomineeAddressToTokenAddressToRight;
+
     // mapping of owner address to the token address to the bool
     mapping(address => mapping(address => bool)) public isNominated;
-    // priority
+
+    // priority, mapping of owner's address to token address to array of priority nominee addresses
     mapping(address => mapping(address => address[]))
         public ownerToTokenAddressToPriorityArray;
 
@@ -95,33 +100,37 @@ contract Inheritokens is Ownable {
     ) public {
         if (!isOwnerAdded[msg.sender]) {
             owners.push(msg.sender);
-            isOwnerAdded[msg.sender] = true;
             addressToOwner[msg.sender] = Owner(name, email, cid, false, true);
+            isOwnerAdded[msg.sender] = true;
         }
     }
 
     /// @param _owner is the owner's address.
     function verifyOwner(address _owner) public onlyOwner {
+        require(isOwnerAdded[_owner], "First do registration");
+        require(
+            addressToOwner[_owner].isEmailVerified,
+            "Already your email is verified"
+        );
         addressToOwner[_owner].isEmailVerified = true;
     }
 
-    /// @param _owner is the address of the owner, _recover is the address which owner wants to add as a
-    // backup address
+    /// @param _owner is the address of the owner, _recover is the address which owner wants to add as a backup address
     function addWalletRecovery(address _owner, address _recover) public {
         ownerToRecoverAddress[_owner] = _recover;
     }
 
     /// @return uint indicating the total number of owners on our platform
-    function getTotalOwner() public view returns(uint){
+    function getTotalOwner() public view returns (uint) {
         return owners.length;
     }
 
-    /// @param name is the nominee's name, email is the nominee's email, and nominee_address
-    /// is the nominee's address
+    /// @param name is the nominee's name, email is the nominee's email, and nominee_address is the nominee's address
     function addNomineesDetails(
         string memory name,
         string memory email,
-        address nominee_address
+        address nominee_address,
+        address _owner
     ) public {
         addressToNominee[nominee_address] = Nominee(
             name,
@@ -129,32 +138,32 @@ contract Inheritokens is Ownable {
             nominee_address,
             false
         );
-        ownerToNominees[msg.sender].push(nominee_address);
+        ownerToNominees[_owner].push(nominee_address);
     }
 
-    /// @param name is the nominee's name, email is the nominee's email, and nominee_address
-    /// is the nominee's address
-    // function editNomineeDetails(
-    //     address _owner,
-    //     address _oldNomineeAddress,
-    //     string memory name,
-    //     string memory email,
-    //     address nominee_address
-    // ) public {
-    //     if (_oldNomineeAddress == nominee_address) {
-    //         addressToNominee[_oldNomineeAddress].nominee_name = name;
-    //         addressToNominee[_oldNomineeAddress].nominee_email = email;
-    //     } else {
-    //         addressToNominee[nominee_address].nominee_name = name;
-    //         addressToNominee[nominee_address].nominee_email = email;
-    //         addressToNominee[nominee_address].nominee_address = nominee_address;
-    //         for (uint256 i = 0; i < ownerToNominees[_owner].length; i++) {
-    //             if (ownerToNominees[_owner][i] == _oldNomineeAddress) {
-    //                 ownerToNominees[_owner][i] = nominee_address;
-    //             }
-    //         }
-    //     }
-    // }
+    /// @param _owner is the address of the owner, _oldNomineeAddress is the old account address of the nominee,
+    // name is the nominee's name, email is the nominee's email, and nominee_address is the nominee's address
+    function editNomineeDetails(
+        address _owner,
+        address _oldNomineeAddress,
+        string memory name,
+        string memory email,
+        address nominee_address
+    ) public {
+        if (_oldNomineeAddress == nominee_address) {
+            addressToNominee[_oldNomineeAddress].nominee_name = name;
+            addressToNominee[_oldNomineeAddress].nominee_email = email;
+        } else {
+            addressToNominee[nominee_address].nominee_name = name;
+            addressToNominee[nominee_address].nominee_email = email;
+            addressToNominee[nominee_address].nominee_address = nominee_address;
+            for (uint256 i = 0; i < ownerToNominees[_owner].length; i++) {
+                if (ownerToNominees[_owner][i] == _oldNomineeAddress) {
+                    ownerToNominees[_owner][i] = nominee_address;
+                }
+            }
+        }
+    }
 
     /// @param _owner is the owner address
     /// @return array of nominees's id
@@ -208,18 +217,18 @@ contract Inheritokens is Ownable {
 
     /// @param _charityId is the id of the charity, _charityAddress is the address of the charity, _charityName is the name of the charity,
     // _charityDescription is the description about the charity, _charityImage is the cid of the image
-    // function editCharityDetails(
-    //     uint _charityId,
-    //     address _charityAddress,
-    //     string memory _charityName,
-    //     string memory _charityDescription,
-    //     string memory _charityImage
-    // ) public {
-    //     idToCharity[_charityId].charity_address = _charityAddress;
-    //     idToCharity[_charityId].charity_name = _charityName;
-    //     idToCharity[_charityId].charity_description = _charityDescription;
-    //     idToCharity[_charityId].charity_image = _charityImage;
-    // }
+    function editCharityDetails(
+        uint _charityId,
+        address _charityAddress,
+        string memory _charityName,
+        string memory _charityDescription,
+        string memory _charityImage
+    ) public {
+        idToCharity[_charityId].charity_address = _charityAddress;
+        idToCharity[_charityId].charity_name = _charityName;
+        idToCharity[_charityId].charity_description = _charityDescription;
+        idToCharity[_charityId].charity_image = _charityImage;
+    }
 
     /// @param _owner is the address of the owner, _charityId is the id of the chairty owner wants to keep in white
     // listed array
@@ -255,28 +264,67 @@ contract Inheritokens is Ownable {
     // wants to allocate to the nominee, _isMultipleNominee is the boolean value indicating whether this
     // process of nomination involves multiple nominees or not, _isPriorityNominee is a boolean value
     // that indicates whether or not this nomination process is prioritised in terms of nominees
+
     /// @notice If the share is allocated to 100%, then the owner will not be able to add more nominees for
     // this token. Either he has to remove or edit any of those nominees.
-    function assignTokensToMultipleNominee(
+    // function assignTokensToMultipleNominee(
+    //     address _owner,
+    //     address _nominee,
+    //     address _tokenAddress,
+    //     string memory _tokenName,
+    //     uint _share,
+    //     bool _isMultipleNominee,
+    //     bool _isPriorityNominee
+    // ) public {
+    //     // uint amount = ownerToNomineeToTokenAddressToTokenStruct[_owner][_nominee][_tokenAddress].allocated_share+_share;
+    //     // require(amount<=100, "100% share is already allocated...");
+    //     // ownerToNomineeToTokenAddressToTokenStruct[_owner][_nominee][_tokenAddress]= Token(_tokenAddress,
+    //     // _tokenName, _share, amount, true,_isMultipleNominee,_isPriorityNominee);
+    //     // ownerToTokenAddressToNominee[_owner][_tokenAddress]=_nominee;
+    //     // isNominated[_owner][_tokenAddress]=true;
+
+    //     uint amount = tokenAddressToTokenStruct[_tokenAddress].allocated_share +
+    //         _share;
+    //     require(amount <= 100, "Reduce the share amount...");
+    //     if (!isNominated[_owner][_tokenAddress]) {
+    //         tokenAddressToTokenStruct[_tokenAddress] = Token(
+    //             _tokenAddress,
+    //             _tokenName,
+    //             amount,
+    //             _isMultipleNominee,
+    //             _isPriorityNominee
+    //         );
+    //     }
+    //     tokenAddressToTokenStruct[_tokenAddress].allocated_share = amount;
+    //     ownerToTokenAddressToNomineeArray[_owner][_tokenAddress].push(_nominee);
+    //     ownerToNomineeToTokenAddressArray[_owner][_nominee].push(_tokenAddress);
+    //     ownerToNomineeToTokenAddressToShare[_owner][_nominee][
+    //         _tokenAddress
+    //     ] = _share;
+    //     ownerToNomineeAddressToTokenAddressToRight[_owner][_nominee][
+    //         _tokenAddress
+    //     ] = true;
+    //     isNominated[_owner][_tokenAddress] = true;
+    // }
+
+    //------------
+    /// @notice If the share is allocated to 100%, then the owner will not be able to add more nominees for
+    // this token. Either he has to remove or edit any of those nominees.
+    function assignTokensToMultipleNominees(
         address _owner,
-        address _nominee,
+        address[] memory _nominee,
         address _tokenAddress,
         string memory _tokenName,
-        uint _share,
+        uint[] memory _share,
         bool _isMultipleNominee,
         bool _isPriorityNominee
     ) public {
-        // uint amount = ownerToNomineeToTokenAddressToTokenStruct[_owner][_nominee][_tokenAddress].allocated_share+_share;
-        // require(amount<=100, "100% share is already allocated...");
-        // ownerToNomineeToTokenAddressToTokenStruct[_owner][_nominee][_tokenAddress]= Token(_tokenAddress,
-        // _tokenName, _share, amount, true,_isMultipleNominee,_isPriorityNominee);
-        // ownerToTokenAddressToNominee[_owner][_tokenAddress]=_nominee;
-        // isNominated[_owner][_tokenAddress]=true;
 
-        uint amount = tokenAddressToTokenStruct[_tokenAddress].allocated_share +
-            _share;
-        require(amount <= 100, "100% share is already allocated...");
-        if (!isNominated[_owner][_tokenAddress]) {
+        for(uint i=0;i<_nominee.length;i++){
+            uint amount = tokenAddressToTokenStruct[_tokenAddress].allocated_share +
+            _share[i];
+            require(amount <= 100, "Reduce the share amount...");
+            if (!isNominated[_owner][_tokenAddress]) {
             tokenAddressToTokenStruct[_tokenAddress] = Token(
                 _tokenAddress,
                 _tokenName,
@@ -286,23 +334,21 @@ contract Inheritokens is Ownable {
             );
         }
         tokenAddressToTokenStruct[_tokenAddress].allocated_share = amount;
-        ownerToTokenAddressToNomineeArray[_owner][_tokenAddress].push(_nominee);
-        ownerToNomineeToTokenAddressArray[_owner][_nominee].push(_tokenAddress);
-        ownerToNomineeToTokenAddressToShare[_owner][_nominee][
+        ownerToTokenAddressToNomineeArray[_owner][_tokenAddress].push(_nominee[i]);
+        ownerToNomineeToTokenAddressArray[_owner][_nominee[i]].push(_tokenAddress);
+        ownerToNomineeToTokenAddressToShare[_owner][_nominee[i]][
             _tokenAddress
-        ] = _share;
-        ownerToNomineeAddressToTokenAddressToRight[_owner][_nominee][
+        ] = _share[i];
+        ownerToNomineeAddressToTokenAddressToRight[_owner][_nominee[i]][
             _tokenAddress
         ] = true;
         isNominated[_owner][_tokenAddress] = true;
+        }   
     }
 
-    /// @param _owner is the address of the owner; _oldNominee is the address of the old nominee;
-    // _newNominee is the address of the new nominee,  _tokenAddress is the address of the token contract,
-    // _tokenName is the name of the token, _share is the amount the owner wants to allocate to the nominee,
-    // _isMultipleNominee is the boolean value indicating whether this process of nomination involves
-    // multiple nominees or not, _isPriorityNominee is a boolean value that indicates whether or not
-    // this nomination process is prioritised in terms of nominees
+    /// @param _owner is the address of the owner; _nominee is the address of the nominee; _tokenAddress is the address of the token contract,
+    //  _oldShare is the old share of the nominee for a particular token, _share is the amount the owner wants to allocate to the nominee,
+    // _isMultipleNominee is the boolean value indicating whether this process of nomination involves multiple nominees or not,
     function editAssignedTokensToMultipleNominee(
         address _owner,
         address _nominee,
@@ -322,7 +368,7 @@ contract Inheritokens is Ownable {
         tokenAddressToTokenStruct[_tokenAddress].allocated_share = amount;
     }
 
-    /// @return an array of nominee's address
+    /// @return array of nominee's address
     /// @notice view function to get all the nominees who are nominated for a given token address
     function getAllNomineesAssignedForToken(
         address _owner,
@@ -441,7 +487,10 @@ contract Inheritokens is Ownable {
         ] = false;
     }
 
-    function getOwnerToTokenAddressToPriorityArray(address _owner,address _tokenAddress) public view returns(address[] memory){
+    function getOwnerToTokenAddressToPriorityArray(
+        address _owner,
+        address _tokenAddress
+    ) public view returns (address[] memory) {
         return ownerToTokenAddressToPriorityArray[_owner][_tokenAddress];
     }
 

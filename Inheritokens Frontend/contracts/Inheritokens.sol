@@ -109,12 +109,14 @@ contract Inheritokens is Ownable {
         return owners.length;
     }
 
+    // nominee part
     /// @param _name is the nominee's name, _email is the nominee's email, and _nominee is the nominee's address
     function addNomineesDetails(
         string memory _name,
         string memory _email,
         address _nominee
     ) public {
+        require(isOwnerAdded[msg.sender],"First register and verify your email");
         addressToNominee[_nominee] = Nominee(_name, _email, _nominee, false);
         addressToOwner[msg.sender].nominees.push(_nominee);
     }

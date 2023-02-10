@@ -303,7 +303,9 @@ svg.animate-spin {
   .signup-main {
     padding: calc(120px + 2rem) 0 0 0;
   }
-
+  .login-card.recovery-card {
+    width: 500px;
+  }
   .login-card {
     margin: 0 auto;
     // margin-top: 2rem;

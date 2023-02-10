@@ -69,7 +69,6 @@ function AllNfts({ nftData }) {
           setLoading(false);
         } else if (chainId === 1029) {
           setLoading(false);
-
         } else {
           alert(
             "Please connect to the mumbai test network or BTTC test network!"

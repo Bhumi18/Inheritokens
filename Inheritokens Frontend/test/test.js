@@ -51,35 +51,64 @@ describe("Inheritokens", function () {
     priorityNominee = await (await priorityNominee).deployed();
   });
 
-  it("check", async function () {
-    console.log(inheritokens.address);
-    console.log(charityContract.address);
-    console.log(multipleNominee.address);
-    console.log(priorityNominee.address);
-  });
+  //   it("check", async function () {
+  //     console.log(inheritokens.address);
+  //     console.log(charityContract.address);
+  //     console.log(multipleNominee.address);
+  //     console.log(priorityNominee.address);
+  //   });
 
   // for owner registration
-  // it("should register owner details", async function () {
-  //     await inheritokens.addOwnerDetails("Bhumi", "bhumi@gmail.com", "abc")
-  //     expect(await inheritokens.isOwnerAdded(owner.address)).to.equal(true)
-  // })
+  it("should register owner details", async function () {
+    await inheritokens.addOwnerDetails("Bhumi", "bhumi@gmail.com", "abc");
+    expect(await inheritokens.isOwnerAdded(owner.address)).to.equal(true);
+  });
 
-  // it("should not register again", async function () {
-  //     const len = await inheritokens.getTotalOwner()
-  //     await inheritokens.addOwnerDetails("Bhumi", "bhumi@gmail.com", "abc")
-  //     expect(await inheritokens.getTotalOwner()).to.equal(len)
-  // })
+  //   it("should not register again", async function () {
+  //     const len = await inheritokens.getTotalOwners();
+  //     await inheritokens.addOwnerDetails("Bhumi", "bhumi@gmail.com", "abc");
+  //     expect(await inheritokens.getTotalOwners()).to.equal(len);
+  //   });
 
-  // it("should allow new owner to register", async function () {
-  //     await inheritokens.addOwnerDetails("Lajja", "lajja@gmail.com", "abc")
-  //     expect(await inheritokens.isOwnerAdded(owner.address)).to.equal(true)
-  // })
+  it("should allow new owner to register", async function () {
+    await inheritokens
+      .connect(owner1)
+      .addOwnerDetails("Lajja", "lajja@gmail.com", "abc");
+    expect(await inheritokens.getTotalOwners()).to.equal(2);
+  });
 
-  // // for wallet recovery
-  // it("should able to add recovery address", async function () {
-  //     await inheritokens.addWalletRecovery(owner.address, recover_address.address)
-  //     expect(await inheritokens.getRecoveryAddress(owner.address)).to.equal(recover_address.address)
-  // })
+  it("verify first owner's email address", async function () {
+    console.log(
+      (await inheritokens.addressToOwner(owner.address)).isEmailVerified
+    );
+    expect(await inheritokens.isOwnerAdded(owner.address)).to.equal(true);
+    await inheritokens.connect(owner).verifyOwnerEmail(owner.address);
+    expect(
+      (await inheritokens.addressToOwner(owner.address)).isEmailVerified
+    ).to.equal(true);
+  });
+
+  it("verify second owner's email address", async function () {
+    console.log(
+      (await inheritokens.addressToOwner(owner1.address)).isEmailVerified
+    );
+    expect(await inheritokens.isOwnerAdded(owner1.address)).to.equal(true);
+    await inheritokens.connect(owner).verifyOwnerEmail(owner1.address);
+    expect(
+      (await inheritokens.addressToOwner(owner1.address)).isEmailVerified
+    ).to.equal(true);
+  });
+
+  // for wallet recovery
+  //   it("should able to add recovery address", async function () {
+  //     await inheritokens.addWalletRecovery(
+  //       owner.address,
+  //       recover_address.address
+  //     );
+  //     expect(await inheritokens.getRecoveryAddress(owner.address)).to.equal(
+  //       recover_address.address
+  //     );
+  //   });
 
   // // for adding nominee
   // it("should able to add nominee", async function () {

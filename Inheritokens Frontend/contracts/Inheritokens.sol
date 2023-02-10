@@ -76,22 +76,21 @@ contract Inheritokens is Ownable {
         string memory _email,
         string memory _cid
     ) public {
-        if (!isOwnerAdded[msg.sender]) {
-            owners.push(msg.sender);
-            addressToOwner[msg.sender].owner_name = _name;
-            addressToOwner[msg.sender].owner_email = _email;
-            addressToOwner[msg.sender].image_cid = _cid;
-            addressToOwner[msg.sender].isEmailVerified = false;
-            addressToOwner[msg.sender].isAlive = true;
-            isOwnerAdded[msg.sender] = true;
-        }
+        require(!isOwnerAdded[msg.sender], "Already registered");
+        owners.push(msg.sender);
+        addressToOwner[msg.sender].owner_name = _name;
+        addressToOwner[msg.sender].owner_email = _email;
+        addressToOwner[msg.sender].image_cid = _cid;
+        addressToOwner[msg.sender].isEmailVerified = false;
+        addressToOwner[msg.sender].isAlive = true;
+        isOwnerAdded[msg.sender] = true;
     }
 
     /// @param _owner is the owner's address.
     function verifyOwnerEmail(address _owner) public onlyOwner {
         require(isOwnerAdded[_owner], "First do registration");
         require(
-            addressToOwner[_owner].isEmailVerified,
+            !addressToOwner[_owner].isEmailVerified,
             "Already your email is verified"
         );
         addressToOwner[_owner].isEmailVerified = true;

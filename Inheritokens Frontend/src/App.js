@@ -30,6 +30,7 @@ import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { ConnectKitProvider } from "connectkit";
 import SendingEmailRequest from "./components/SendingEmailRequest";
 import EmailVerified from "./components/EmailVerified";
+import ChooseNominee from "./pages/ChooseNominee";
 
 const { provider, webSocketProvider } = configureChains(defaultChains, [
   alchemyProvider({ apiKey: "O5NYvtwLMNG0LjAXPQEk0YJT2l3UxTAY" }),
@@ -42,23 +43,24 @@ const { provider, webSocketProvider } = configureChains(defaultChains, [
 // );
 const customChain = {
   id: 1029,
-  name: 'BitTorrent Chain Donau',
-  network: 'BitTorrent Chain Donau',
+  name: "BitTorrent Chain Donau",
+  network: "BitTorrent Chain Donau",
   nativeCurrency: {
     decimals: 18,
-    name: 'BitTorrent Chain Donau',
-    symbol: 'BTT'
+    name: "BitTorrent Chain Donau",
+    symbol: "BTT",
   },
   rpcUrls: {
-    default: 'https://pre-rpc.bittorrentchain.io/'
+    default: "https://pre-rpc.bittorrentchain.io/",
   },
   blockExplorers: {
     default: {
-      name: 'BitTorrent Chain Donau', url: 'https://testscan.bt.io'
-    }
+      name: "BitTorrent Chain Donau",
+      url: "https://testscan.bt.io",
+    },
   },
-  testnet: true
-}
+  testnet: true,
+};
 
 const chains = [chain.polygonMumbai, customChain];
 
@@ -125,6 +127,7 @@ function App() {
               <Route path="/user/profile" element={<Profile />} />
               <Route path="/verify/email" element={<SendingEmailRequest />} />
               <Route path="/email/verified/:slug" element={<EmailVerified />} />
+              <Route path="/nominee/nft" element={<ChooseNominee />} />
 
               <Route path="/*" element={<Home />} />
             </Routes>

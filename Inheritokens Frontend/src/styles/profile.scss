@@ -96,6 +96,74 @@ section.profile-main {
           p {
             font-family: "Josefin Sans";
             font-weight: 300;
+            font-size: 1.2rem;
+          }
+          p.email-p {
+            display: flex;
+            align-items: center;
+            svg {
+              cursor: pointer;
+              fill: #5a88e1;
+            }
+            span {
+              margin-left: 10px;
+            }
+          }
+          p.address-p {
+            display: flex;
+            align-items: center;
+
+            svg {
+              cursor: pointer;
+              fill: #5a88e1;
+            }
+            span {
+              margin-left: 10px;
+            }
+          }
+          svg.copy-address {
+            cursor: pointer;
+            fill: #5a88e1;
+            margin-left: 10px;
+          }
+          div.recovery-address {
+            font-family: "Josefin Sans";
+            font-weight: 300;
+            display: flex;
+            align-items: center;
+            font-size: 1.2rem;
+            span {
+              font-weight: 700;
+              margin-left: 5px;
+            }
+            button {
+              font-family: "Josefin Sans";
+              font-weight: 400;
+              margin-left: 10px;
+              background: #dcd6fc;
+              // background: linear-gradient(90deg, #dcd6fc, #9bb7ed);
+              background-image: linear-gradient(
+                to right,
+                #9f8ff7 0%,
+                #5a88e1 100%
+              );
+              background-image: -moz-linear-gradient(
+                left,
+                #9f8ff7 0%,
+                #5a88e1 100%
+              );
+              background-image: -webkit-linear-gradient(
+                left,
+                #9f8ff7 0%,
+                #5a88e1 100%
+              );
+              padding: 10px 20px;
+              border-radius: 20px;
+              border: none;
+              color: #ffffff;
+              height: max-content;
+              font-size: 1.1rem;
+            }
           }
         }
 
@@ -304,7 +372,7 @@ section.profile-main {
           justify-content: center;
           align-items: center;
           .image-parent {
-            margin-top: 2rem;
+            margin-top: 1rem;
             width: 8rem;
             flex-shrink: 0;
             .image-child {
@@ -318,13 +386,31 @@ section.profile-main {
             padding: 0px 20px;
             h1 {
               font-size: 18px;
-              line-height: 1.5rem;
+              line-height: 1.1rem;
               text-align: center;
-              padding: 10px 0px;
+              padding: 8px 0px;
             }
             p {
               text-align: center;
-              font-size: 0.9rem;
+              font-size: 1rem;
+              margin: 10px 0px;
+            }
+            p.email-p {
+              justify-content: center;
+            }
+            p.address-p {
+              justify-content: center;
+              font-size: 1rem;
+            }
+
+            div.recovery-address {
+              flex-direction: column;
+              font-size: 1.1rem;
+              margin-top: 10px;
+              button {
+                margin-top: 10px;
+                font-size: 1.1rem;
+              }
             }
           }
           button.profile-edit-button {
@@ -334,6 +420,59 @@ section.profile-main {
       }
     }
     .profile-second-section {
+      button {
+        padding: 10px 15px;
+      }
+    }
+  }
+}
+
+@media (max-width: 1024px) and (min-width: 768px) {
+  section.profile-main {
+    .profile-first-section {
+      .profile-card {
+        margin-top: -5rem;
+        max-width: 900px;
+        .profile-card-inside {
+          flex-direction: row;
+          justify-content: center;
+          align-items: flex-start;
+          padding: 1rem;
+          .image-parent {
+            // margin-top: 2rem;
+            width: 8rem;
+            flex-shrink: 0;
+            .image-child {
+              height: 8rem;
+            }
+          }
+          .user-profile {
+            // padding-top: 1.25rem;
+
+            word-break: break-word;
+            padding: 0px 10px;
+            h1 {
+              font-size: 1.5rem;
+              line-height: 1.5rem;
+              text-align: left;
+              padding: 10px 0px;
+            }
+            p {
+              text-align: left;
+              font-size: 1.1rem;
+            }
+          }
+          button.profile-edit-button {
+            margin: 20px 20px;
+            width: max-content;
+          }
+        }
+      }
+    }
+    .profile-second-section {
+      max-width: 1024px;
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
       button {
         padding: 10px 15px;
       }

@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "D:\\Lampros Projects\\Inheritokens\\Inheritokens Frontend\\contracts\\Inheritokens.sol": {
-      "lastModificationDate": 1676020943249,
-      "contentHash": "e2e9ccab5638e504137c8b1147e9ae11",
+      "lastModificationDate": 1676283342791,
+      "contentHash": "8f859cb313e1331e2bce7737e126251c",
       "sourceName": "contracts/Inheritokens.sol",
       "solcConfig": {
         "version": "0.8.17",
@@ -29,7 +29,8 @@
         }
       },
       "imports": [
-        "../node_modules/@openzeppelin/contracts/access/Ownable.sol"
+        "../node_modules/@openzeppelin/contracts/access/Ownable.sol",
+        "hardhat/console.sol"
       ],
       "versionPragmas": [
         "^0.8.0"
@@ -185,8 +186,8 @@
       ]
     },
     "D:\\Lampros Projects\\Inheritokens\\Inheritokens Frontend\\contracts\\MultipleNominee.sol": {
-      "lastModificationDate": 1676018629958,
-      "contentHash": "5b4ed322c7c1cd6b88af047ed1b86785",
+      "lastModificationDate": 1676282893682,
+      "contentHash": "d83a6542e2311bcf87e5870ecc8bd747",
       "sourceName": "contracts/MultipleNominee.sol",
       "solcConfig": {
         "version": "0.8.17",
@@ -212,6 +213,7 @@
         }
       },
       "imports": [
+        "hardhat/console.sol",
         "./Inheritokens.sol"
       ],
       "versionPragmas": [
@@ -219,6 +221,41 @@
       ],
       "artifacts": [
         "MultipleNominee"
+      ]
+    },
+    "D:\\Lampros Projects\\Inheritokens\\Inheritokens Frontend\\node_modules\\hardhat\\console.sol": {
+      "lastModificationDate": 1673412112713,
+      "contentHash": "4ff3cd2f6272c9a6516e9ee4f2b967d3",
+      "sourceName": "hardhat/console.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">= 0.4.22 <0.9.0"
+      ],
+      "artifacts": [
+        "console"
       ]
     }
   }

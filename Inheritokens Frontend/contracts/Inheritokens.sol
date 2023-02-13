@@ -8,6 +8,7 @@ pragma solidity ^0.8.0;
 /// @author Bhumi Sadariya
 
 import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
+import "hardhat/console.sol";
 
 contract Inheritokens is Ownable {
     constructor() Ownable() {}
@@ -116,7 +117,10 @@ contract Inheritokens is Ownable {
         string memory _email,
         address _nominee
     ) public {
-        require(isOwnerAdded[msg.sender],"First register and verify your email");
+        require(
+            isOwnerAdded[msg.sender],
+            "First register and verify your email"
+        );
         addressToNominee[_nominee] = Nominee(_name, _email, _nominee, false);
         addressToOwner[msg.sender].nominees.push(_nominee);
     }
@@ -230,6 +234,7 @@ contract Inheritokens is Ownable {
         ownerToNomineeAddressToTokenAddressToRight[_owner][_nominee[index]][
             _tokenAddress
         ] = true;
+        tokenAddressToTokenStruct[_tokenAddress].isNominated = true;
     }
 
     function processEditForMultiple(address _tokenAddress, uint amount) public {

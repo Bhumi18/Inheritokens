@@ -2,6 +2,8 @@
 
 pragma solidity ^0.8.0;
 
+import "hardhat/console.sol";
+
 /// @title Multiple nominee Functionality
 /// @author Bhumi Sadariya
 
@@ -9,12 +11,12 @@ import "./Inheritokens.sol";
 
 contract MultipleNominee {
     address public inheritokensAddress;
+    Inheritokens public inheritokens;
 
     constructor(address _inheritokensAddress) {
         inheritokensAddress = _inheritokensAddress;
+        inheritokens = Inheritokens(inheritokensAddress);
     }
-
-    Inheritokens inheritokens = Inheritokens(inheritokensAddress);
 
     // struct for multiple nominee
     struct Multiple {
@@ -48,6 +50,8 @@ contract MultipleNominee {
             .tokenAddressToTokenStruct(_tokenAddress);
         require(!nominated, "Already token is nominated");
         for (uint i = 0; i < _nominee.length; i++) {
+             (, , _allocateShare, , , nominated) = inheritokens
+            .tokenAddressToTokenStruct(_tokenAddress);
             uint amount = _allocateShare + _share[i];
             require(amount <= 100, "Reduce the share amount...");
             if (!nominated) {

@@ -50,8 +50,8 @@ contract MultipleNominee {
             .tokenAddressToTokenStruct(_tokenAddress);
         require(!nominated, "Already token is nominated");
         for (uint i = 0; i < _nominee.length; i++) {
-             (, , _allocateShare, , , nominated) = inheritokens
-            .tokenAddressToTokenStruct(_tokenAddress);
+            (, , _allocateShare, , , nominated) = inheritokens
+                .tokenAddressToTokenStruct(_tokenAddress);
             uint amount = _allocateShare + _share[i];
             require(amount <= 100, "Reduce the share amount...");
             if (!nominated) {
@@ -63,7 +63,7 @@ contract MultipleNominee {
                     _isPriorityNominee
                 );
             }
-            inheritokens.processEditForMultiple(_tokenAddress, amount);
+            inheritokens.updateAllocatedShare(_tokenAddress, amount);
             inheritokens.processAfterAssignedMultiple(
                 _owner,
                 _tokenAddress,
@@ -86,64 +86,66 @@ contract MultipleNominee {
         uint[] memory _share,
         bool _isMultipleNominee
     ) public {
-        bool nominated;
-        uint _allocateShare;
-        (, , _allocateShare, , , nominated) = inheritokens
-            .tokenAddressToTokenStruct(_tokenAddress);
-        require(_isMultipleNominee, "It is only for multiple nominee");
-        require(nominated, "First nominate the Asset!");
-        bool flag;
-        for (uint i = 0; i < _nominee.length; i++) {
-            for (
-                uint j = 0;
-                j < ownerToTokenToMultipleStruct[_owner][_tokenAddress].length;
-                j++
-            ) {
-                if (
-                    ownerToTokenToMultipleStruct[_owner][_tokenAddress][j]
-                        .nominee == _nominee[i]
-                ) {
-                    uint amount = _allocateShare -
-                        ownerToTokenToMultipleStruct[_owner][_tokenAddress][j]
-                            .share +
-                        _share[i];
-                    require(
-                        amount <= 100,
-                        "100% share is already allocated..."
-                    );
-                    ownerToTokenToMultipleStruct[_owner][_tokenAddress][j]
-                        .share = _share[i];
-                    inheritokens.processEditForMultiple(_tokenAddress, amount);
-                    flag = true;
-                    break;
-                } else {
-                    uint amount = _allocateShare -
-                        ownerToTokenToMultipleStruct[_owner][_tokenAddress][j]
-                            .share;
-                    require(
-                        amount <= 100,
-                        "100% share is already allocated..."
-                    );
-                    ownerToTokenToMultipleStruct[_owner][_tokenAddress][j]
-                        .share = 0;
-                    inheritokens.processEditForMultiple(_tokenAddress, amount);
-                }
-            }
-            if (flag == false) {
-                uint amount = _allocateShare + _share[i];
-                require(amount <= 100, "100% share is already allocated...");
-                ownerToTokenToMultipleStruct[_owner][_tokenAddress].push(
-                    Multiple(_nominee[i], _share[i])
-                );
-                inheritokens.processEditForMultiple(_tokenAddress, amount);
-                inheritokens.processAfterAssignedMultiple(
-                    _owner,
-                    _tokenAddress,
-                    _nominee,
-                    i
-                );
-            }
-        }
+        delete ownerToTokenToMultipleStruct[_owner][_tokenAddress];
+
+        // bool nominated;
+        // uint _allocateShare;
+        // (, , _allocateShare, , , nominated) = inheritokens
+        //     .tokenAddressToTokenStruct(_tokenAddress);
+        // require(_isMultipleNominee, "It is only for multiple nominee");
+        // require(nominated, "First nominate the Asset!");
+        // inheritokens.processEditForMultiple(_tokenAddress, 0);
+        // bool flag;
+        // for (uint i = 0; i < _nominee.length; i++) {
+        //     for (
+        //         uint j = 0;
+        //         j < ownerToTokenToMultipleStruct[_owner][_tokenAddress].length;
+        //         j++
+        //     ) {
+        //         if (
+        //             ownerToTokenToMultipleStruct[_owner][_tokenAddress][j]
+        //                 .nominee == _nominee[i]
+        //         ) {
+        //             (, , _allocateShare, , , nominated) = inheritokens
+        //                 .tokenAddressToTokenStruct(_tokenAddress);
+        //             uint amount = _allocateShare + _share[i];
+        //             console.log(amount);
+        //             require(
+        //                 amount <= 100,
+        //                 "100% share is already allocated..."
+        //             );
+        //             ownerToTokenToMultipleStruct[_owner][_tokenAddress][j]
+        //                 .share = _share[i];
+        //             console.log(
+        //                 ownerToTokenToMultipleStruct[_owner][_tokenAddress][j]
+        //                     .share
+        //             );
+        //             inheritokens.processEditForMultiple(_tokenAddress, amount);
+        //             flag = true;
+        //             break;
+        //         } else {
+        //             ownerToTokenToMultipleStruct[_owner][_tokenAddress][j]
+        //                 .share = 0;
+        //         }
+        //     }
+        //     if (flag == false) {
+        //         uint amount = _allocateShare + _share[i];
+        //         require(
+        //             amount <= 100,
+        //             "100% share is already allocated........."
+        //         );
+        //         ownerToTokenToMultipleStruct[_owner][_tokenAddress].push(
+        //             Multiple(_nominee[i], _share[i])
+        //         );
+        //         inheritokens.processEditForMultiple(_tokenAddress, amount);
+        //         inheritokens.processAfterAssignedMultiple(
+        //             _owner,
+        //             _tokenAddress,
+        //             _nominee,
+        //             i
+        //         );
+        //     }
+        // }
     }
 
     /// @return uint indicating share allocated to the nominee for a given token

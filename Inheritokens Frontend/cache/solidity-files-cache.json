@@ -186,8 +186,8 @@
       ]
     },
     "D:\\Lampros Projects\\Inheritokens\\Inheritokens Frontend\\contracts\\MultipleNominee.sol": {
-      "lastModificationDate": 1676282893682,
-      "contentHash": "d83a6542e2311bcf87e5870ecc8bd747",
+      "lastModificationDate": 1676375828500,
+      "contentHash": "6d2b80fce773e7e3e6200138806b2455",
       "sourceName": "contracts/MultipleNominee.sol",
       "solcConfig": {
         "version": "0.8.17",

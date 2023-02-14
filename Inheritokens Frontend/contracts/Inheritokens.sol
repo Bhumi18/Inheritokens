@@ -237,7 +237,7 @@ contract Inheritokens is Ownable {
         tokenAddressToTokenStruct[_tokenAddress].isNominated = true;
     }
 
-    function processEditForMultiple(address _tokenAddress, uint amount) public {
+    function updateAllocatedShare(address _tokenAddress, uint amount) public {
         tokenAddressToTokenStruct[_tokenAddress].allocated_share = amount;
     }
 

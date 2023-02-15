@@ -215,9 +215,7 @@ describe("Inheritokens", function () {
       [nominee1.address, nominee2.address],
       "0x53d00397f03147a9bd9c40443a105a82780deaf1",
       "fTUSD Fake Token",
-      [40, 50],
-      true,
-      false
+      [40, 50]
     );
     // console.log(
     //   await inheritokens.tokenAddressToTokenStruct(
@@ -226,6 +224,7 @@ describe("Inheritokens", function () {
     // );
     const amount = (
       await inheritokens.tokenAddressToTokenStruct(
+        owner.address,
         "0x53d00397f03147a9bd9c40443a105a82780deaf1"
       )
     )[2];
@@ -281,19 +280,21 @@ describe("Inheritokens", function () {
   it("should be able to change the value for whether token is nominated or not", async function () {
     expect(
       await inheritokens.getIsNominated(
+        owner.address,
         "0x53d00397f03147a9bd9c40443a105a82780deaf1"
       )
     ).to.equal(true);
   });
 
   it("should allow to edit", async function () {
-    console.log("main")
+    console.log("main");
     console.log(
       await inheritokens.tokenAddressToTokenStruct(
+        owner.address,
         "0x53d00397f03147a9bd9c40443a105a82780deaf1"
       )
     );
-    console.log("n1")
+    console.log("n1");
     console.log(
       await multipleNominee.ownerToTokenToMultipleStruct(
         owner.address,
@@ -301,7 +302,7 @@ describe("Inheritokens", function () {
         0
       )
     );
-    console.log("n2")
+    console.log("n2");
     console.log(
       await multipleNominee.ownerToTokenToMultipleStruct(
         owner.address,
@@ -309,35 +310,36 @@ describe("Inheritokens", function () {
         1
       )
     );
-    await multipleNominee.editAssignedTokensToMultipleNominees(
+    await multipleNominee.assignTokensToMultipleNominees(
       owner.address,
       [nominee1.address, nominee2.address],
       "0x53d00397f03147a9bd9c40443a105a82780deaf1",
-      [10, 30],
-      true
+      "fTUSD Fake Token",
+      [10, 30]
     );
-    console.log("main")
+    console.log("main");
     console.log(
       await inheritokens.tokenAddressToTokenStruct(
+        owner.address,
         "0x53d00397f03147a9bd9c40443a105a82780deaf1"
       )
     );
-    // console.log("n1")
-    // console.log(
-    //   await multipleNominee.ownerToTokenToMultipleStruct(
-    //     owner.address,
-    //     "0x53d00397f03147a9bd9c40443a105a82780deaf1",
-    //     0
-    //   )
-    // );
-    // console.log("n2")
-    // console.log(
-    //   await multipleNominee.ownerToTokenToMultipleStruct(
-    //     owner.address,
-    //     "0x53d00397f03147a9bd9c40443a105a82780deaf1",
-    //     1
-    //   )
-    // );
+    console.log("n1");
+    console.log(
+      await multipleNominee.ownerToTokenToMultipleStruct(
+        owner.address,
+        "0x53d00397f03147a9bd9c40443a105a82780deaf1",
+        0
+      )
+    );
+    console.log("n2");
+    console.log(
+      await multipleNominee.ownerToTokenToMultipleStruct(
+        owner.address,
+        "0x53d00397f03147a9bd9c40443a105a82780deaf1",
+        1
+      )
+    );
   });
 
   // it("should allow owner to change the share of the nominee", async function () {

@@ -30,7 +30,7 @@ contract Inheritokens is Ownable {
     }
     mapping(address => Owner) public addressToOwner;
 
-    // Nominee structure, mapping of owner's address to array of nominee's address, and mapping of nominee's address to nominee struct
+    // Nominee structure, and mapping of nominee's address to nominee struct
     struct Nominee {
         string nominee_name;
         string nominee_email;
@@ -44,12 +44,10 @@ contract Inheritokens is Ownable {
         address token_address;
         string token_name;
         uint allocated_share;
-        bool isMultipleNominee;
-        bool isPriorityNominee;
         bool isNominated;
     }
-    // mapping of token address to Token struct
-    mapping(address => Token) public tokenAddressToTokenStruct;
+    // mapping of owner address to token address to Token struct
+    mapping(address => mapping(address => Token)) public tokenAddressToTokenStruct;
 
     // mapping of owner address to token address to array of nominee address
     mapping(address => mapping(address => address[]))
@@ -71,6 +69,7 @@ contract Inheritokens is Ownable {
     // mapping of owner address to the Response struct
     mapping(address => Response) public ownerToResponse;
 
+    // owner-----------------------------------------------------------------------
     /// @param _name is the owner's name, _email is the owner's email, and _cid is the cid of profile image.
     function addOwnerDetails(
         string memory _name,
@@ -110,7 +109,21 @@ contract Inheritokens is Ownable {
         return owners.length;
     }
 
-    // nominee part
+    /// @param _owner is the owner's address
+    /// @return owner structure
+    function getOwnerDetails(
+        address _owner
+    ) public view returns (Owner memory) {
+        return addressToOwner[_owner];
+    }
+
+    /// @param _owner is the address of the owner
+    /// @return recovery address
+    function getRecoveryAddress(address _owner) public view returns (address) {
+        return addressToOwner[_owner].recoveryAddress;
+    }
+
+    // nominee-----------------------------------------------------------------------------------
     /// @param _name is the nominee's name, _email is the nominee's email, and _nominee is the nominee's address
     function addNomineesDetails(
         string memory _name,
@@ -170,21 +183,7 @@ contract Inheritokens is Ownable {
         return addressToNominee[_nominee];
     }
 
-    /// @param _owner is the owner's address
-    /// @return owner structure
-    function getOwnerDetails(
-        address _owner
-    ) public view returns (Owner memory) {
-        return addressToOwner[_owner];
-    }
-
-    /// @param _owner is the address of the owner
-    /// @return recovery address
-    function getRecoveryAddress(address _owner) public view returns (address) {
-        return addressToOwner[_owner].recoveryAddress;
-    }
-
-    // charity
+    // charity-----------------------------------------------------------------------------------
 
     /// @param _owner is the address of the owner, _charityId is the id of the chairty owner wants to keep in white
     // listed array
@@ -202,19 +201,16 @@ contract Inheritokens is Ownable {
 
     // multiple nominee--------------------------------------------------------------------------
 
-    function pushMultipleNominee(
+    function assignTokenStruct(
+        address _owner,
         address _tokenAddress,
         string memory _tokenName,
-        uint amount,
-        bool _isMultipleNominee,
-        bool _isPriorityNominee
+        uint amount
     ) public {
-        tokenAddressToTokenStruct[_tokenAddress] = Token(
+        tokenAddressToTokenStruct[_owner][_tokenAddress] = Token(
             _tokenAddress,
             _tokenName,
             amount,
-            _isMultipleNominee,
-            _isPriorityNominee,
             true
         );
     }
@@ -234,11 +230,11 @@ contract Inheritokens is Ownable {
         ownerToNomineeAddressToTokenAddressToRight[_owner][_nominee[index]][
             _tokenAddress
         ] = true;
-        tokenAddressToTokenStruct[_tokenAddress].isNominated = true;
+        tokenAddressToTokenStruct[_owner][_tokenAddress].isNominated = true;
     }
 
-    function updateAllocatedShare(address _tokenAddress, uint amount) public {
-        tokenAddressToTokenStruct[_tokenAddress].allocated_share = amount;
+    function updateAllocatedShare(address _owner, address _tokenAddress, uint amount) public {
+        tokenAddressToTokenStruct[_owner][_tokenAddress].allocated_share = amount;
     }
 
     /// @return array of nominee's address
@@ -272,8 +268,8 @@ contract Inheritokens is Ownable {
     }
 
     /// @return bool indicating whether token has nominee or not
-    function getIsNominated(address _tokenAddress) public view returns (bool) {
-        return tokenAddressToTokenStruct[_tokenAddress].isNominated;
+    function getIsNominated(address _owner, address _tokenAddress) public view returns (bool) {
+        return tokenAddressToTokenStruct[_owner][_tokenAddress].isNominated;
     }
 
     // // priority nominee-------------------------------------------------

@@ -41,18 +41,16 @@ contract PriorityNominee {
     ) public {
         bool nominated;
         uint _allocateShare;
-        (, , _allocateShare, , , nominated) = inheritokens
-            .tokenAddressToTokenStruct(_tokenAddress);
+        (, , _allocateShare, nominated) = inheritokens
+            .tokenAddressToTokenStruct(_owner,_tokenAddress);
         require(!nominated, "Already token is nominated");
         uint amount = 0;
         for (uint i = 0; i < _nominee.length; i++) {
             if (!nominated) {
-                inheritokens.pushMultipleNominee(
+                inheritokens.assignTokenStruct(_owner,
                     _tokenAddress,
                     _tokenName,
-                    amount,
-                    _isMultipleNominee,
-                    _isPriorityNominee
+                    amount
                 );
             }
             ownerToTokenToPriorityStruct[_owner][_tokenAddress].push(
@@ -78,8 +76,8 @@ contract PriorityNominee {
     ) public {
         bool nominated;
         uint _allocateShare;
-        (, , _allocateShare, , , nominated) = inheritokens
-            .tokenAddressToTokenStruct(_tokenAddress);
+        (, , _allocateShare, nominated) = inheritokens
+            .tokenAddressToTokenStruct(_owner,_tokenAddress);
         require(_isPriorityNominee, "It is only for priority nominee");
         require(nominated, "First nominate the Asset!");
         bool flag;

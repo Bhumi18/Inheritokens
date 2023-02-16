@@ -12,6 +12,7 @@ describe("Inheritokens", function () {
     nominee1,
     nominee2,
     nominee3,
+    nominee4,
     charity1,
     charity2;
   let charity_id = 0;
@@ -24,6 +25,7 @@ describe("Inheritokens", function () {
       nominee1,
       nominee2,
       nominee3,
+      nominee4,
       charity1,
       charity2,
     ] = await ethers.getSigners();
@@ -46,9 +48,9 @@ describe("Inheritokens", function () {
     multipleNominee = await (await multipleNominee).deployed();
 
     // deploy priority nominee contract
-    const PriorityNominee = await ethers.getContractFactory("PriorityNominee");
-    priorityNominee = await PriorityNominee.deploy(inheritokens.address);
-    priorityNominee = await (await priorityNominee).deployed();
+    // const PriorityNominee = await ethers.getContractFactory("PriorityNominee");
+    // priorityNominee = await PriorityNominee.deploy(inheritokens.address);
+    // priorityNominee = await (await priorityNominee).deployed();
   });
 
   // it("check", async function () {
@@ -212,13 +214,19 @@ describe("Inheritokens", function () {
   it("should able to assign token to multiple nominees", async function () {
     await multipleNominee.assignTokensToMultipleNominees(
       owner.address,
-      [nominee1.address, nominee2.address],
       "0x53d00397f03147a9bd9c40443a105a82780deaf1",
       "fTUSD Fake Token",
-      [40, 50]
+      "20",
+      0,
+      90,
+      [
+        [40, [nominee1.address, nominee2.address], [false, false]],
+        [50, [nominee3.address, nominee4.address], [false, false]],
+      ]
     );
     // console.log(
     //   await inheritokens.tokenAddressToTokenStruct(
+    //     owner.address,
     //     "0x53d00397f03147a9bd9c40443a105a82780deaf1"
     //   )
     // );
@@ -227,175 +235,121 @@ describe("Inheritokens", function () {
         owner.address,
         "0x53d00397f03147a9bd9c40443a105a82780deaf1"
       )
-    )[2];
+    )[4];
     expect(parseInt(amount)).to.equal(90);
-    expect(
-      await multipleNominee.getNomineeToTokenShare(
-        owner.address,
-        nominee1.address,
-        "0x53d00397f03147a9bd9c40443a105a82780deaf1"
-      )
-    ).to.equal(40);
-    expect(
-      await multipleNominee.getNomineeToTokenShare(
-        owner.address,
-        nominee2.address,
-        "0x53d00397f03147a9bd9c40443a105a82780deaf1"
-      )
-    ).to.equal(50);
-  });
-
-  it("should assigned nominee for token address", async function () {
-    expect(
-      (
-        await inheritokens.getAllNomineesAssignedForToken(
-          owner.address,
-          "0x53d00397f03147a9bd9c40443a105a82780deaf1"
-        )
-      ).length
-    ).to.equal(2);
-  });
-
-  it("should assigned token to nominee mapping", async function () {
-    expect(
-      (
-        await inheritokens.getAllTokensNomineeIsNominated(
-          owner.address,
-          nominee1.address
-        )
-      ).length
-    ).to.equal(1);
-  });
-
-  it("should be able to update the nominee right for assigned token", async function () {
-    expect(
-      await inheritokens.ownerToNomineeAddressToTokenAddressToRight(
-        owner.address,
-        nominee1.address,
-        "0x53d00397f03147a9bd9c40443a105a82780deaf1"
-      )
-    ).to.equal(true);
-  });
-
-  it("should be able to change the value for whether token is nominated or not", async function () {
-    expect(
-      await inheritokens.getIsNominated(
-        owner.address,
-        "0x53d00397f03147a9bd9c40443a105a82780deaf1"
-      )
-    ).to.equal(true);
-  });
-
-  it("should allow to edit", async function () {
-    console.log("main");
     console.log(
-      await inheritokens.tokenAddressToTokenStruct(
-        owner.address,
-        "0x53d00397f03147a9bd9c40443a105a82780deaf1"
-      )
-    );
-    console.log("n1");
-    console.log(
-      await multipleNominee.ownerToTokenToMultipleStruct(
+      await multipleNominee.getAllStructs(
         owner.address,
         "0x53d00397f03147a9bd9c40443a105a82780deaf1",
         0
       )
     );
-    console.log("n2");
-    console.log(
-      await multipleNominee.ownerToTokenToMultipleStruct(
-        owner.address,
-        "0x53d00397f03147a9bd9c40443a105a82780deaf1",
-        1
-      )
-    );
+    // expect(
+    //   (
+    //     await multipleNominee.getMultipleStruct(
+    //       owner.address,
+    //       "0x53d00397f03147a9bd9c40443a105a82780deaf1",
+    //       0
+    //     )
+    //   )[0]
+    // ).to.equal(40);
+    // expect(
+    //   (
+    //     await multipleNominee.getMultipleStruct(
+    //       owner.address,
+    //       "0x53d00397f03147a9bd9c40443a105a82780deaf1",
+    //       1
+    //     )
+    //   )[0]
+    // ).to.equal(50);
+    // expect(
+    //   (
+    //     await multipleNominee.getMultipleStruct(
+    //       owner.address,
+    //       "0x53d00397f03147a9bd9c40443a105a82780deaf1",
+    //       0
+    //     )
+    //   )[1][0]
+    // ).to.equal(nominee1.address);
+    // expect(
+    //   (
+    //     await multipleNominee.getMultipleStruct(
+    //       owner.address,
+    //       "0x53d00397f03147a9bd9c40443a105a82780deaf1",
+    //       0
+    //     )
+    //   )[1][1]
+    // ).to.equal(nominee2.address);
+  });
+
+  it("should able to edit token to multiple nominees", async function () {
     await multipleNominee.assignTokensToMultipleNominees(
       owner.address,
-      [nominee1.address, nominee2.address],
       "0x53d00397f03147a9bd9c40443a105a82780deaf1",
       "fTUSD Fake Token",
-      [10, 30]
+      "20",
+      0,
+      20,
+      [
+        [10, [nominee1.address, nominee2.address], [false, false]],
+        [10, [nominee3.address, nominee4.address], [false, false]],
+      ]
     );
-    console.log("main");
-    console.log(
+    // console.log(
+    //   await inheritokens.tokenAddressToTokenStruct(
+    //     owner.address,
+    //     "0x53d00397f03147a9bd9c40443a105a82780deaf1"
+    //   )
+    // );
+    const amount = (
       await inheritokens.tokenAddressToTokenStruct(
         owner.address,
         "0x53d00397f03147a9bd9c40443a105a82780deaf1"
       )
-    );
-    console.log("n1");
+    )[4];
+    expect(parseInt(amount)).to.equal(20);
     console.log(
-      await multipleNominee.ownerToTokenToMultipleStruct(
+      await multipleNominee.getAllStructs(
         owner.address,
         "0x53d00397f03147a9bd9c40443a105a82780deaf1",
         0
       )
     );
-    console.log("n2");
-    console.log(
-      await multipleNominee.ownerToTokenToMultipleStruct(
-        owner.address,
-        "0x53d00397f03147a9bd9c40443a105a82780deaf1",
-        1
-      )
-    );
+    // expect(
+    //   (
+    //     await multipleNominee.getMultipleStruct(
+    //       owner.address,
+    //       "0x53d00397f03147a9bd9c40443a105a82780deaf1",
+    //       0
+    //     )
+    //   )[0]
+    // ).to.equal(40);
+    // expect(
+    //   (
+    //     await multipleNominee.getMultipleStruct(
+    //       owner.address,
+    //       "0x53d00397f03147a9bd9c40443a105a82780deaf1",
+    //       1
+    //     )
+    //   )[0]
+    // ).to.equal(50);
+    // expect(
+    //   (
+    //     await multipleNominee.getMultipleStruct(
+    //       owner.address,
+    //       "0x53d00397f03147a9bd9c40443a105a82780deaf1",
+    //       0
+    //     )
+    //   )[1][0]
+    // ).to.equal(nominee1.address);
+    // expect(
+    //   (
+    //     await multipleNominee.getMultipleStruct(
+    //       owner.address,
+    //       "0x53d00397f03147a9bd9c40443a105a82780deaf1",
+    //       0
+    //     )
+    //   )[1][1]
+    // ).to.equal(nominee2.address);
   });
-
-  // it("should allow owner to change the share of the nominee", async function () {
-  //     await inheritokens.editAssignedTokensToMultipleNominee(owner.address, nominee1.address, "0x53d00397f03147a9bd9c40443a105a82780deaf1", 50, 40, true)
-  //     const amount = (await inheritokens.ownerToNomineeToTokenAddressToShare(owner.address, nominee1.address, "0x53d00397f03147a9bd9c40443a105a82780deaf1"))
-  //     expect((amount)).to.equal(40)
-  //     const total_share = (await inheritokens.tokenAddressToTokenStruct("0x53d00397f03147a9bd9c40443a105a82780deaf1"))[2]
-  //     expect(parseInt(total_share)).to.equal(90)
-  // })
-
-  // // for priority nominee
-  // it("should able to assign token to priority nominee", async function () {
-  //     await inheritokens.assignedTokensToPriorityNominee(owner.address, nominee1.address, "0x88271d333c72e51516b67f5567c728e702b3eee8", "fDAI Fake Token", false, true)
-  //     expect(await inheritokens.ownerToNomineeAddressToTokenAddressToRight(owner.address, nominee1.address, "0x88271d333c72e51516b67f5567c728e702b3eee8")).to.equal(true)
-  // })
-
-  // it("should change nominee to token address array", async function () {
-  //     const arr = await inheritokens.getAllTokensNomineeIsNominated(owner.address, nominee1.address)
-  //     let flag
-  //     for (let i = 0; i < arr.length; i++) {
-  //         if (arr[i].toLowerCase() === "0x88271d333c72e51516b67f5567c728e702b3eee8") {
-  //             flag = true
-  //         }
-  //     }
-  //     expect(flag).to.equal(true)
-  // })
-
-  // it("should change token to priority nominee array", async function () {
-  //     const arr = await inheritokens.getOwnerToTokenAddressToPriorityArray(owner.address, "0x88271d333c72e51516b67f5567c728e702b3eee8")
-  //     let flag
-  //     for (let i = 0; i < arr.length; i++) {
-  //         if (arr[i].toLowerCase() === nominee1.address.toLowerCase()) {
-  //             flag = true
-  //         }
-  //     }
-  //     expect(flag).to.equal(true)
-  // })
-
-  // it("should be able to change the value for whether token is nominated or not", async function () {
-  //     expect(await inheritokens.isNominated(owner.address, "0x88271d333c72e51516b67f5567c728e702b3eee8")).to.equal(true)
-  // })
-
-  // it("should allow to change assignedPriority nominee address to token",async function(){
-  //     await inheritokens.editAssignedPriorityNomineeAddressToToken(owner.address,nominee1.address,nominee3.address,"0x88271d333c72e51516b67f5567c728e702b3eee8")
-  //     const arr = await inheritokens.getOwnerToTokenAddressToPriorityArray(owner.address,"0x88271d333c72e51516b67f5567c728e702b3eee8")
-  //     let flag=false
-  //     for(let i=0;i<arr.length;i++){
-  //         if (arr[i].toLowerCase()===nominee1.address){
-  //             flag=true
-  //         }
-  //     }
-  //     expect(flag).to.equal(false)
-  // })
-
-  // it("should allow owner to remove nominee from assigned token",async function(){
-  //     await inheritokens.removeAssignedPriorityNomineeAddressToToken(owner.address,nominee1.address,"0x88271d333c72e51516b67f5567c728e702b3eee8")
-  //     expect(await inheritokens.ownerToNomineeAddressToTokenAddressToRight(owner.address,nominee1.address,"0x88271d333c72e51516b67f5567c728e702b3eee8")).to.equal(false)
-  // })
 });

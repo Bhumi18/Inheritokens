@@ -8,10 +8,12 @@ import SelectNominees from "./SelectNominees";
 import { useAccount } from "wagmi";
 import { ethers } from "ethers";
 import contract from "../artifacts/Main.json";
+import { useNavigate } from "react-router-dom";
 export const CONTRACT_ADDRESS = "0xaEF8eb4EDCB0177A5ef6a5e3f46E581a5908eef4";
 
 function AllNfts({ nftData }) {
   const [indexValue, setIndexValue] = useState();
+  const navigate = useNavigate();
   // console.log(nftData);
   const [showNomineesComponent, setNomineesComponent] = useState(false);
   const [nftData2, setNftData2] = useState([]);
@@ -91,6 +93,10 @@ function AllNfts({ nftData }) {
     temp();
   }, [nftData2, checkChainId]);
 
+  const handleChooseNominee = (item) => {
+    navigate("/nominee/nft", { state: { item: item } });
+  };
+
   // if (nftData.length === 0) {
   //   return (
   //     <>
@@ -157,8 +163,9 @@ function AllNfts({ nftData }) {
                     <button
                       className="below-nft-button"
                       onClick={() => {
-                        setNomineesComponent(true);
-                        setIndexValue({ key });
+                        // setNomineesComponent(true);
+                        // setIndexValue({ key });
+                        handleChooseNominee(nftData[key]);
                         // console.log(temp2.key);
                       }}
                     >

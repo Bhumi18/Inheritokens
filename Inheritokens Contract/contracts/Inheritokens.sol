@@ -7,8 +7,8 @@ pragma solidity ^0.8.0;
 /// @title Owner & Nominee Functionality
 /// @author Bhumi Sadariya
 
-import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
-import "hardhat/console.sol";
+import "../../Inheritokens Frontend/node_modules/@openzeppelin/contracts/access/Ownable.sol";
+import "../../Inheritokens Frontend/node_modules/hardhat/console.sol";
 
 contract Inheritokens is Ownable {
     constructor() Ownable() {}

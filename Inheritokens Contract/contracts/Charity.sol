@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
+import "../../Inheritokens Frontend/node_modules/@openzeppelin/contracts/access/Ownable.sol";
 
 /// @title Charity Functionality
 /// @author Bhumi Sadariya

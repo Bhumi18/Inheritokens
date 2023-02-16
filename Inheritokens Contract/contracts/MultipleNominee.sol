@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-import "hardhat/console.sol";
+import "../../Inheritokens Frontend/node_modules/hardhat/console.sol";
 
 /// @title Multiple nominee Functionality
 /// @author Bhumi Sadariya

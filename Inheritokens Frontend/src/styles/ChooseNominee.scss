@@ -10,7 +10,8 @@
 
   .cn-sub-hero-section {
     width: 100%;
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     justify-content: center;
     gap: 2rem;
     padding: 2rem;
@@ -21,23 +22,33 @@
     // -moz-box-shadow: 0px 10px 25px 10px rgba(0, 0, 0, 0.1);
     // box-shadow: 0px 10px 25px 10px rgba(0, 0, 0, 0.1);
     .sub-left {
-      width: 40%;
+      // width: 40%;
       padding: 10px;
-      height: fit-content;
-      // min-height: 350px;
-      // height: 350px;
-      max-height: 80%;
+      height: max-content;
+      min-height: 200px;
+      margin: 0px auto;
+      // height: 200px;
 
-      img.nft-image {
+      .img-background {
+        margin: 0 auto;
         width: 100%;
         height: 100%;
-
+        max-width: 400px;
+        // position: relative;
+        border-radius: 20px;
+        // max-width: 30vw;
+      }
+      img.nft-image {
+        // position: absolute;
+        // top: 0%;
+        // left: 0%;
+        max-width: 100%;
         border-radius: 20px;
       }
     }
     .sub-right {
-      width: 60%;
-      margin-right: 2rem;
+      // width: 60%;
+      // margin-right: 2rem;
       padding: 10px;
       // border: 1px solid black;
       span.contract-type {
@@ -89,8 +100,11 @@
         }
       }
       .sub-right-inner {
-        padding: 0.5rem 1rem;
-        overflow: hidden;
+        margin: 0.5rem 0rem;
+        padding: 0rem 1rem;
+        max-height: 300px;
+        overflow-x: hidden;
+        overflow-y: auto;
       }
       .sub-right-inner.details {
         display: flex;
@@ -108,18 +122,20 @@
         span.main-span {
           font-size: 15px;
           color: #111827;
+          word-break: break-all;
         }
       }
     }
   }
   .second-section {
     width: 100%;
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
     align-items: flex-start;
     gap: 1rem;
 
     .all-nominees-list {
-      width: 45%;
+      // width: 45%;
       padding: 1.5rem;
       border-radius: 20px;
       border: 1px solid rgb(243, 244, 246);
@@ -169,7 +185,7 @@
     }
 
     .selected-nominees-list {
-      width: 55%;
+      // width: 55%;
       padding: 1.5rem;
       border-radius: 20px;
       background-color: #fff;
@@ -261,7 +277,12 @@
       p,
       h2 {
         margin: 0;
+      }
+      h2 {
         font-size: 15px;
+      }
+      p {
+        font-size: 12px;
       }
       thead {
         th {
@@ -277,7 +298,7 @@
           font-size: 0.75rem;
           letter-spacing: 2px;
           line-height: 1rem;
-          padding: 0.25rem 0.625rem;
+          padding: 0.5rem 1.625rem;
           border-radius: 9999px;
           background: #dcd6fc;
           background-image: linear-gradient(to right, #9f8ff7 0%, #5a88e1 100%);
@@ -316,7 +337,7 @@
         td:first-of-type {
           padding: 0px 10px;
         }
-        td:last-of-type {
+        td.add-this {
           text-align: center;
         }
         td:first-child {
@@ -348,12 +369,6 @@
   }
 }
 
-@media (min-width: 768px) {
-  section.choose-nominees-main {
-    max-width: 640px;
-  }
-}
-
 @media (min-width: 1024px) {
   section.choose-nominees-main {
     max-width: 1024px;
@@ -375,15 +390,118 @@
     padding-right: 128px;
   }
 }
-
 @media only screen and (max-width: 768px) {
-}
+  section.choose-nominees-main {
+    max-width: 640px;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    .cn-sub-hero-section {
+      gap: 1rem;
+      padding: 5px;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      .sub-left {
+        width: 100%;
+        .img-background {
+          max-width: 200px;
+        }
+      }
+      .sub-right {
+        .nft-name {
+          p {
+            font-size: 1.5rem;
+            margin: 1rem;
+          }
+        }
+      }
+    }
+    .second-section {
+      width: 90vw;
+      margin-bottom: 50px;
+      .all-nominees-list {
+        max-width: calc(100vw - 5%);
+        padding: 10px;
 
+        .table-title {
+          gap: 1rem;
+        }
+        .table-div {
+          padding: 5px;
+          min-height: 50vh;
+          max-height: 50vh;
+        }
+      }
+      .selected-nominees-list {
+        max-width: calc(100vw - 5%);
+        padding: 10px;
+      }
+      img.nominee-profile {
+        margin-right: 10px;
+      }
+      table {
+        h2 {
+          font-size: 15px;
+          max-width: 100%;
+          word-break: break-all;
+        }
+        p {
+          max-width: 100%;
+          word-break: break-all;
+        }
+        thead {
+          th {
+            padding: 5px;
+            font-size: 12px;
+          }
+        }
+        tbody {
+          span.action-btn {
+            padding: 10px;
+          }
+          td.arrows {
+            width: 10%;
+          }
+          td.priority {
+            max-width: 5%;
+            font-size: large;
+            padding: 0px;
+          }
+          td.add-this {
+            width: 30%;
+          }
+        }
+      }
+    }
+  }
+}
 @media (max-width: 1024px) and (min-width: 768px) {
   section.choose-nominees-main {
     max-width: 1024px;
     padding-left: 1.5rem;
     padding-right: 1.5rem;
+
+    .cn-sub-hero-section {
+      gap: 1rem;
+      padding: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      .sub-left {
+        width: 100%;
+        .img-background {
+          max-width: 320px;
+        }
+      }
+      .sub-right {
+        margin-right: 0px;
+        padding: 5px;
+
+        .nft-name {
+          // padding: 0.5rem 1rem;
+          p {
+            font-size: 1.5rem;
+            margin: 1rem;
+          }
+        }
+      }
+    }
   }
 }
 

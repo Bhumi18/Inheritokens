@@ -160,6 +160,7 @@ function ChooseNominee({ nftsrc }) {
               <h2>{person.name}</h2>
               <p>{person.email}</p>
               <p>
+                {/* {person.w_add} */}
                 {person.w_add.substring(0, 5) +
                   "..." +
                   person.w_add.substring(
@@ -170,7 +171,7 @@ function ChooseNominee({ nftsrc }) {
             </div>
           </div>
         </td>
-        <td>
+        <td className="add-this">
           <span
             className="action-btn"
             onClick={() => handleAddElement(filteredPersons[key])}
@@ -189,11 +190,13 @@ function ChooseNominee({ nftsrc }) {
       <section className="choose-nominees-main">
         <div className="cn-sub-hero-section">
           <div className="sub-left">
-            <img
-              src={nftData.img ? nftData.img : ""}
-              alt="nft"
-              className="nft-image"
-            />
+            <div className="img-background">
+              <img
+                src={nftData.img ? nftData.img : ""}
+                alt="nft"
+                className="nft-image"
+              />
+            </div>
           </div>
           <div className="sub-right">
             <span className="contract-type">
@@ -330,7 +333,6 @@ function ChooseNominee({ nftsrc }) {
               )}
             </div>
           </div>
-          <hr />
           <div className="selected-nominees-list">
             <div className="table-title">
               <span className="active">Nominated</span>
@@ -352,7 +354,7 @@ function ChooseNominee({ nftsrc }) {
                         return (
                           <tr key={key}>
                             <td className="priority">{key + 1}</td>
-                            <td>
+                            <td className="arrows">
                               {key === 0 ? (
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
@@ -413,7 +415,7 @@ function ChooseNominee({ nftsrc }) {
                               )}
                             </td>
 
-                            <td>
+                            <td className="nominee-details">
                               <div className="nominee-details">
                                 <img
                                   src={item.img}

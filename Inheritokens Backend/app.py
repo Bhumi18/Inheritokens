@@ -20,6 +20,7 @@ smtp = smtplib.SMTP("smtp.gmail.com", 587)
 load_dotenv()
 
 
+
 @app.route("/")
 def hello_world():
     response_body = {"status": 200, "data": "Hi"}
@@ -29,7 +30,7 @@ def hello_world():
 alchemy_url = "https://polygon-mumbai.g.alchemy.com/v2/ALbcNieoFrIRYYNDrcr4dAASXUCZbm-i"
 web3 = Web3(Web3.HTTPProvider(alchemy_url))
 nominee_factory = "0xaEF8eb4EDCB0177A5ef6a5e3f46E581a5908eef4"
-file = open("Nominee.json")
+file = open("D:/Lampros Projects/Inheritokens/Inheritokens Backend/Nominee.json")
 abi = json.load(file)
 contract = web3.eth.contract(address=nominee_factory, abi=abi)
 

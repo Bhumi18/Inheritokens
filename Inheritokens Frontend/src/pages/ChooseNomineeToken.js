@@ -184,37 +184,39 @@ function ChooseNomineeToken() {
         <div className="hero-section">
           <div className="sub-hero">
             <div className="sub-hero-left">
-              {tokenDetails ? tokenDetails.token_symbol : ""}
+              <span>{tokenDetails ? tokenDetails.token_symbol : ""}</span>
             </div>
             <div className="sub-hero-right">
-              <span>{chain.name}</span>
-              <div className="token-name">
-                <span>Token Name</span>
-                <p className="token-name">
-                  {tokenDetails ? tokenDetails.token_name : ""}
-                </p>
+              <span className="chain-name">{chain.name}</span>
+              <div className="token-details">
+                <span className="token-sub">Balance</span>
+                <div className="token-balance">
+                  <p className="token-balance">
+                    {tokenDetails.token_balance === 0
+                      ? "0"
+                      : String(
+                          (
+                            tokenDetails.token_balance /
+                            Math.pow(10, parseInt(tokenDetails.token_decimals))
+                          ).toFixed(10)
+                        )}
+                  </p>{" "}
+                  <span className="token-name">
+                    {tokenDetails ? tokenDetails.token_name : ""}
+                  </span>
+                </div>
               </div>
-              <div className="token-balance">
-                <p className="token-balance">
-                  {tokenDetails.token_balance === 0
-                    ? "0"
-                    : String(
-                        tokenDetails.token_balance /
-                          Math.pow(10, parseInt(tokenDetails.token_decimals))
-                      )}
-                </p>
-              </div>
-              <div className="token-address">
-                <span>Token Address</span>
-                <p className="token-address">
+              <div className="token-details">
+                <span className="token-sub">Token Address</span>
+                <span className="token-address">
                   {tokenDetails ? tokenDetails.token_address : ""}
-                </p>
+                </span>
               </div>
-              <div className="token-decimals">
-                <span>Token Decimals</span>
-                <p className="token-decimals">
+              <div className="token-details">
+                <span className="token-sub">Token Decimals</span>
+                <span className="token-decimals">
                   {tokenDetails ? tokenDetails.token_decimals : ""}
-                </p>
+                </span>
               </div>
             </div>
           </div>

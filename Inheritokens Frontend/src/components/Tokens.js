@@ -244,9 +244,7 @@ function Tokens() {
                                   token_address: val.token_address,
                                   token_name: val.name,
                                   token_symbol: val.symbol,
-                                  token_balance: Number(
-                                    String(val.balance).substring(0, 16)
-                                  ),
+                                  token_balance: val.balance,
                                   token_decimals: val.decimals,
                                 };
                                 handleClick();

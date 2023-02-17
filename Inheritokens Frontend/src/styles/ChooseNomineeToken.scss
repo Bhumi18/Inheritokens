@@ -7,7 +7,128 @@
   padding-bottom: 2rem;
   padding-top: 2rem;
   // border: 1px solid black;
+  .hero-section {
+    width: 100%;
+    // border: 1px solid black;
+    // height: 500px;
 
+    .sub-hero {
+      margin: 0px auto;
+      margin-bottom: 40px;
+      width: 90%;
+      //   border: 1px solid black;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .sub-hero-left {
+        width: 30%;
+        min-height: 100px;
+        height: max-content;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 50px 1rem;
+        // border: 1px solid black;
+        border-radius: 1.5rem;
+        // border: 10px solid #9f8ff7;
+        background-color: #fff;
+        -webkit-box-shadow: 0px 10px 25px 10px rgba(0, 0, 0, 0.1);
+        -moz-box-shadow: 0px 10px 25px 10px rgba(0, 0, 0, 0.1);
+        box-shadow: 0px 10px 25px 10px rgba(0, 0, 0, 0.1);
+
+        span {
+          font-size: 4rem;
+          max-width: 100%;
+          word-wrap: break-word;
+          font-weight: bolder;
+          background-image: linear-gradient(to right, #9f8ff7 0%, #5a88e1 100%);
+          background-image: -moz-linear-gradient(
+            left,
+            #9f8ff7 0%,
+            #5a88e1 100%
+          );
+          background-image: -webkit-linear-gradient(
+            left,
+            #9f8ff7 0%,
+            #5a88e1 100%
+          );
+
+          -webkit-background-clip: text;
+          //   background-clip: text;
+          color: transparent;
+        }
+      }
+      .sub-hero-right {
+        padding: 1rem 3rem;
+        width: 70%;
+        // border: 1px solid black;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        span.chain-name {
+          margin-bottom: 10px;
+          max-width: max-content;
+          background: #dcd6fc;
+          // background: linear-gradient(90deg, #dcd6fc, #9bb7ed);
+          background-image: linear-gradient(to right, #9f8ff7 0%, #5a88e1 100%);
+          background-image: -moz-linear-gradient(
+            left,
+            #9f8ff7 0%,
+            #5a88e1 100%
+          );
+          background-image: -webkit-linear-gradient(
+            left,
+            #9f8ff7 0%,
+            #5a88e1 100%
+          );
+          padding: 5px 10px;
+          border-radius: 20px;
+          font-size: 12px;
+          color: #ffffff;
+        }
+        .token-details {
+          display: flex;
+          flex-direction: column;
+          span {
+            padding: 0.5rem 1rem;
+          }
+          span.token-sub {
+            background-color: rgb(243, 244, 246);
+            border-radius: 5px;
+            font-size: small;
+            font-weight: 500;
+          }
+
+          .token-balance {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            // gap: 0.5rem;
+            p.token-balance {
+              margin: 10px 0rem;
+              margin-left: 1rem;
+              margin-right: 10px;
+              font-size: 2rem;
+              font-weight: 700;
+              max-width: 70%;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+            span {
+              padding: 0px;
+              font-weight: 600;
+              font-size: 1.2rem;
+            }
+          }
+        }
+      }
+    }
+  }
   .second-section {
     width: 100%;
     display: grid;
@@ -276,25 +397,6 @@
     max-width: 640px;
     padding-top: 1rem;
     padding-bottom: 1rem;
-    .cn-sub-hero-section {
-      gap: 1rem;
-      padding: 5px;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      .sub-left {
-        width: 100%;
-        .img-background {
-          max-width: 200px;
-        }
-      }
-      .sub-right {
-        .nft-name {
-          p {
-            font-size: 1.5rem;
-            margin: 1rem;
-          }
-        }
-      }
-    }
     .second-section {
       width: 90vw;
       margin-bottom: 50px;
@@ -359,30 +461,6 @@
     max-width: 1024px;
     padding-left: 1.5rem;
     padding-right: 1.5rem;
-
-    .cn-sub-hero-section {
-      gap: 1rem;
-      padding: 10px;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      .sub-left {
-        width: 100%;
-        .img-background {
-          max-width: 320px;
-        }
-      }
-      .sub-right {
-        margin-right: 0px;
-        padding: 5px;
-
-        .nft-name {
-          // padding: 0.5rem 1rem;
-          p {
-            font-size: 1.5rem;
-            margin: 1rem;
-          }
-        }
-      }
-    }
   }
 }
 

@@ -30,7 +30,8 @@ import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { ConnectKitProvider } from "connectkit";
 import SendingEmailRequest from "./components/SendingEmailRequest";
 import EmailVerified from "./components/EmailVerified";
-import ChooseNominee from "./pages/ChooseNominee";
+import ChooseNomineeNFT from "./pages/ChooseNomineeNFT";
+import ChooseNomineeToken from "./pages/ChooseNomineeToken";
 
 const { provider, webSocketProvider } = configureChains(defaultChains, [
   alchemyProvider({ apiKey: "O5NYvtwLMNG0LjAXPQEk0YJT2l3UxTAY" }),
@@ -127,7 +128,8 @@ function App() {
               <Route path="/user/profile" element={<Profile />} />
               <Route path="/verify/email" element={<SendingEmailRequest />} />
               <Route path="/email/verified/:slug" element={<EmailVerified />} />
-              <Route path="/nominee/nft" element={<ChooseNominee />} />
+              <Route path="/nominee/nft" element={<ChooseNomineeNFT />} />
+              <Route path="/nominee/token" element={<ChooseNomineeToken />} />
 
               <Route path="/*" element={<Home />} />
             </Routes>

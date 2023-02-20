@@ -106,7 +106,8 @@
             display: flex;
             flex-direction: row;
             justify-content: flex-start;
-            align-items: center;
+            flex-direction: column;
+            align-items: flex-start;
             // gap: 0.5rem;
             p.token-balance {
               margin: 10px 0rem;
@@ -118,11 +119,11 @@
               white-space: nowrap;
               overflow: hidden;
               text-overflow: ellipsis;
-            }
-            span {
-              padding: 0px;
-              font-weight: 600;
-              font-size: 1.2rem;
+              span {
+                padding: 0px;
+                font-weight: 600;
+                font-size: 1.2rem;
+              }
             }
           }
         }
@@ -397,11 +398,59 @@
     max-width: 640px;
     padding-top: 1rem;
     padding-bottom: 1rem;
+    padding-left: 5px;
+    padding-right: 5px;
+    .hero-section {
+      .sub-hero {
+        flex-direction: column;
+
+        .sub-hero-left {
+          width: 100%;
+          margin-top: 20px;
+          padding: 30px 1rem;
+          span {
+            font-size: 3.5rem;
+          }
+        }
+        .sub-hero-right {
+          width: 100%;
+          margin-top: 20px;
+          padding: 0px;
+          span.chain-name {
+            font-size: 10px;
+          }
+          .token-details {
+            .token-balance {
+              // flex-wrap: wrap;
+              flex-direction: column;
+              align-items: flex-start;
+              gap: 10px;
+              p.token-balance {
+                max-width: 100%;
+                // margin-left: 0px;
+                font-size: 1.5rem;
+                word-break: break-all;
+                white-space: inherit;
+                span {
+                  word-break: break-all;
+                  white-space: inherit;
+                }
+              }
+            }
+            .token-address {
+              word-break: break-all;
+              max-width: 100%;
+              // padding: 0.5rem 0px;
+            }
+          }
+        }
+      }
+    }
     .second-section {
       width: 90vw;
       margin-bottom: 50px;
       .all-nominees-list {
-        max-width: calc(100vw - 5%);
+        max-width: calc(100vw - 2%);
         padding: 10px;
 
         .table-title {

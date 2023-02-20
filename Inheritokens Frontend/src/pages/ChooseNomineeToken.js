@@ -4,12 +4,20 @@ import { chainId, useNetwork } from "wagmi";
 import Navbar from "../components/Navbar";
 import image from "../assets/images/defaultprofileimage.png";
 import "../styles/ChooseNomineeToken.scss";
+import TokenNomineeDetails from "../components/TokenNomineeDetails";
 
 function ChooseNomineeToken() {
   const location = useLocation();
   const { chain } = useNetwork();
   const [allNomiees, setAllNomiees] = useState(true);
   const [allCharities, setAllCharities] = useState(false);
+  const [showTokenNomineeDetails, setTokenNomineeDetails] = useState(false);
+  const [nomineeDetail, setNomineeDetail] = useState({
+    img: "",
+    name: "",
+    email: "",
+    w_add: "",
+  });
   const [arr, setArr] = useState([]);
   const [nominatedArr, setNominatedArr] = useState([]);
   const [arrChanged, setArrChanged] = useState(1);
@@ -144,7 +152,15 @@ function ChooseNomineeToken() {
         <td className="add-this">
           <span
             className="action-btn"
-            onClick={() => handleAddElement(filteredPersons[key])}
+            onClick={() => {
+              setNomineeDetail({
+                img: person.img,
+                name: person.name,
+                email: person.email,
+                w_add: person.w_add,
+              });
+              setTokenNomineeDetails(true);
+            }}
           >
             Add this
           </span>
@@ -200,10 +216,11 @@ function ChooseNomineeToken() {
                             Math.pow(10, parseInt(tokenDetails.token_decimals))
                           ).toFixed(10)
                         )}
+                    {/* 1200237234234920.039485734234673 */}
+                    <span className="token-name">
+                      {tokenDetails ? tokenDetails.token_name : ""}
+                    </span>
                   </p>{" "}
-                  <span className="token-name">
-                    {tokenDetails ? tokenDetails.token_name : ""}
-                  </span>
                 </div>
               </div>
               <div className="token-details">
@@ -453,6 +470,15 @@ function ChooseNomineeToken() {
             </div>
           </div>
         </div>
+        {showTokenNomineeDetails ? (
+          <TokenNomineeDetails
+            setTokenNomineeDetails={setTokenNomineeDetails}
+            nomineeDetail={nomineeDetail}
+            nominatedArr={nominatedArr}
+          />
+        ) : (
+          ""
+        )}
       </section>
     </>
   );

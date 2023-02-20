@@ -120,6 +120,11 @@ contract Inheritokens is Ownable {
         return addressToOwner[_owner];
     }
 
+    /// @return boolean showing whether the owner is alive or not
+    function getOwnerAlive(address _owner) public view returns (bool) {
+        return addressToOwner[_owner].isAlive;
+    }
+
     /// @param _owner is the address of the owner
     /// @return recovery address
     function getRecoveryAddress(address _owner) public view returns (address) {
@@ -335,11 +340,6 @@ contract Inheritokens is Ownable {
     /// @return bool of owner's response
     function getResponse(address _owner) public view returns (bool) {
         return ownerToResponse[_owner].isResponsed;
-    }
-
-    /// @return boolean showing whether the owner is alive or not
-    function getOwnerAlive(address _owner) public view returns (bool) {
-        return addressToOwner[_owner].isAlive;
     }
 
     /// @return bool of email is verified or not

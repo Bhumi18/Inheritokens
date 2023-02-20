@@ -1,6 +1,7 @@
 const hre = require("hardhat");
 
 async function main() {
+
   const Inheritokens = await hre.ethers.getContractFactory("Inheritokens");
   const inheritokens = Inheritokens.deploy();
   await (await inheritokens).deployed();
@@ -32,6 +33,6 @@ main().catch((error) => {
   process.exitCode = 1;
 });
 
-// Inheritokens contract address is 0xdc8eD7a3Eff040617D6b28e49c20f97BD3BE9C96
-// charityContract contract address is 0x9C7198dbCEa8e30857318bdc42d91DEDaF8b9bCF
-// multipleNominee contract address is 0x794751AfC6926991792B68F1E7FC3051f8C8E3a2
+// Inheritokens contract address is 0xce67B9F502de4D3161a3B58474194834728081C8
+// charityContract contract address is 0x9E70B5585A9b8b74C05741193679CDDb3C106D3D
+// multipleNominee contract address is 0xDDC14799923Cf033696876CfD312940d22a2019e

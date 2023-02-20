@@ -1,26 +1,30 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { chainId, useAccount } from "wagmi";
+import { chainId, useAccount, useNetwork } from "wagmi";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/token.scss";
 import { parse } from "@ethersproject/transactions";
 import SelectNomineeForToken from "./SelectNomineeForToken";
 import { ethers } from "ethers";
 
 function Tokens() {
+  const navigate = useNavigate();
   const { address } = useAccount();
+  const { chain } = useNetwork();
+  console.log(chain);
   const [showNativeTokenBalance, setNativeTokenBalance] = useState(0);
   const [allTokens, setAllTokens] = useState([]);
   const [showAllToken, setShowAllToken] = useState(false);
   const [showNomineesComponent, setNomineesComponent] = useState(false);
   const [checkChainId, setCheckChainId] = useState();
 
-  const [tokenDetails, setTokenDetails] = useState({
+  let tokenDetails = {
     token_address: "",
     token_name: "",
     token_symbol: "",
     token_balance: "",
-  });
+  };
 
   const fetchTokens = async () => {
     const { ethereum } = window;
@@ -46,7 +50,7 @@ function Tokens() {
         await axios
           .request(options)
           .then(function (response) {
-            // console.log(response.data.balance);
+            console.log(response);
             console.log(response.data);
             // if (!showNativeTokenBalance.length > 0) {
             //   showNativeTokenBalance.push(response.data.balance);
@@ -135,6 +139,10 @@ function Tokens() {
     fetchTokenAll();
   }, []);
 
+  const handleClick = () => {
+    navigate("/nominee/token", { state: tokenDetails });
+  };
+
   return (
     <>
       {showNomineesComponent && (
@@ -181,9 +189,8 @@ function Tokens() {
                       {checkChainId === 80001 ? (
                         <button
                           onClick={() => {
-                            setNomineesComponent(true);
-                            setTokenDetails({
-                              ...tokenDetails,
+                            // setNomineesComponent(true);
+                            tokenDetails = {
                               token_address:
                                 "0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889",
                               token_name: "MATIC",
@@ -191,7 +198,9 @@ function Tokens() {
                               token_balance: Number(
                                 String(showNativeTokenBalance).substring(0, 18)
                               ),
-                            });
+                              token_decimals: 18,
+                            };
+                            handleClick();
                           }}
                         >
                           Choose Nominee
@@ -200,14 +209,13 @@ function Tokens() {
                         <button
                           onClick={() => {
                             setNomineesComponent(true);
-                            setTokenDetails({
-                              ...tokenDetails,
+                            tokenDetails = {
                               token_address:
                                 "0x0000000000000000000000000000000000001010",
                               token_name: "BitTorrent Chain Donau",
                               token_symbol: "BTT",
                               token_balance: showNativeTokenBalance,
-                            });
+                            };
                           }}
                         >
                           Choose Nominee
@@ -231,16 +239,15 @@ function Tokens() {
                           <td>
                             <button
                               onClick={() => {
-                                setNomineesComponent(true);
-                                setTokenDetails({
-                                  ...tokenDetails,
+                                // setNomineesComponent(true);
+                                tokenDetails = {
                                   token_address: val.token_address,
                                   token_name: val.name,
                                   token_symbol: val.symbol,
-                                  token_balance: Number(
-                                    String(val.balance).substring(0, 16)
-                                  ),
-                                });
+                                  token_balance: val.balance,
+                                  token_decimals: val.decimals,
+                                };
+                                handleClick();
                               }}
                             >
                               Choose Nominee

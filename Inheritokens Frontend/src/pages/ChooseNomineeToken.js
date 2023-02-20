@@ -1,33 +1,22 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
-import "../styles/ChooseNominee.scss";
-import image from "../assets/images/defaultprofileimage.png";
 import { useLocation } from "react-router-dom";
+import { chainId, useNetwork } from "wagmi";
+import Navbar from "../components/Navbar";
+import image from "../assets/images/defaultprofileimage.png";
+import "../styles/ChooseNomineeToken.scss";
 
-function ChooseNominee({ nftsrc }) {
+function ChooseNomineeToken() {
   const location = useLocation();
-  console.log(location.state.item);
+  const { chain } = useNetwork();
   const [allNomiees, setAllNomiees] = useState(true);
   const [allCharities, setAllCharities] = useState(false);
-
   const [arr, setArr] = useState([]);
-  const [nftData, setNftData] = useState({
-    img: "",
-    name: "",
-    desc: "",
-    contract: "",
-    contract_add: "",
-    token_id: "",
-    symbol: "",
-  });
-
   const [nominatedArr, setNominatedArr] = useState([]);
   const [arrChanged, setArrChanged] = useState(1);
 
   const printArr = () => {
     console.log(arr);
   };
-
   const handleAddElement = (item) => {
     nominatedArr.push(item);
     arr.splice(arr.indexOf(item), 1);
@@ -116,7 +105,6 @@ function ChooseNominee({ nftsrc }) {
       w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
     },
   ];
-
   // search bar components
 
   const [searchField, setSearchField] = useState("");
@@ -130,24 +118,6 @@ function ChooseNominee({ nftsrc }) {
       person.w_add.toLowerCase().includes(searchField.toLowerCase())
     );
   });
-
-  useEffect(() => {
-    if (location.state.item) {
-      const nft = location.state.item;
-      const metadata = JSON.parse(nft.metadata);
-      setNftData({
-        ...nftData,
-        img: metadata["image"],
-        name: metadata["name"],
-        desc: metadata["description"],
-        contract: nft.contract_type,
-        contract_add: nft.token_address,
-        token_id: nft.token_id,
-        symbol: nft.symbol,
-      });
-    }
-    setArr(data);
-  }, []);
 
   function searchList() {
     const filtered = filteredPersons.map((person, key) => (
@@ -184,61 +154,73 @@ function ChooseNominee({ nftsrc }) {
     return filtered;
   }
 
+  const [tokenDetails, setTokenDetails] = useState({
+    token_address: "",
+    token_name: "",
+    token_symbol: "",
+    token_balance: "",
+  });
+  console.log(location.state);
+
+  useEffect(() => {
+    if (location.state) {
+      let td = location.state;
+      console.log(td);
+      setTokenDetails({
+        token_address: td.token_address,
+        token_name: td.token_name,
+        token_symbol: td.token_symbol,
+        token_balance: td.token_balance,
+        token_decimals: td.token_decimals,
+      });
+    }
+    setArr(data);
+  }, []);
+
   return (
     <>
       <Navbar />
-      <section className="choose-nominees-main">
-        <div className="cn-sub-hero-section">
-          <div className="sub-left">
-            <div className="img-background">
-              <img
-                src={nftData.img ? nftData.img : ""}
-                alt="nft"
-                className="nft-image"
-              />
+      <section className="token-nominee-main">
+        <div className="hero-section">
+          <div className="sub-hero">
+            <div className="sub-hero-left">
+              <span>{tokenDetails ? tokenDetails.token_symbol : ""}</span>
             </div>
-          </div>
-          <div className="sub-right">
-            <span className="contract-type">
-              {nftData.contract ? nftData.contract : ""}
-            </span>
-            <div className="nft-name">
-              <p>{nftData.name ? nftData.name : ""}</p>
-            </div>
-
-            <div className="sub-right-name">
-              <span>Description</span>
-            </div>
-            <div className="sub-right-inner">
-              <p>{nftData.desc ? nftData.desc : ""}</p>
-            </div>
-
-            <div className="sub-right-name">
-              <span>Details</span>
-            </div>
-            <div className="sub-right-inner details">
-              <div>
-                <span>Contract Address</span>
-                <span className="main-span">
-                  {nftData.contract_add ? nftData.contract_add : ""}
+            <div className="sub-hero-right">
+              <span className="chain-name">{chain.name}</span>
+              <div className="token-details">
+                <span className="token-sub">Balance</span>
+                <div className="token-balance">
+                  <p className="token-balance">
+                    {tokenDetails.token_balance === 0
+                      ? "0"
+                      : String(
+                          (
+                            tokenDetails.token_balance /
+                            Math.pow(10, parseInt(tokenDetails.token_decimals))
+                          ).toFixed(10)
+                        )}
+                  </p>{" "}
+                  <span className="token-name">
+                    {tokenDetails ? tokenDetails.token_name : ""}
+                  </span>
+                </div>
+              </div>
+              <div className="token-details">
+                <span className="token-sub">Token Address</span>
+                <span className="token-address">
+                  {tokenDetails ? tokenDetails.token_address : ""}
                 </span>
               </div>
-              <div>
-                <span>Token ID</span>
-                <span className="main-span">
-                  {nftData.token_id ? nftData.token_id : ""}
-                </span>
-              </div>
-              <div>
-                <span>Symbol</span>
-                <span className="main-span">
-                  {nftData.symbol ? nftData.symbol : ""}
+              <div className="token-details">
+                <span className="token-sub">Token Decimals</span>
+                <span className="token-decimals">
+                  {tokenDetails ? tokenDetails.token_decimals : ""}
                 </span>
               </div>
             </div>
           </div>
         </div>
-
         <div className="second-section">
           <div className="all-nominees-list">
             <div className="table-title">
@@ -476,4 +458,4 @@ function ChooseNominee({ nftsrc }) {
   );
 }
 
-export default ChooseNominee;
+export default ChooseNomineeToken;

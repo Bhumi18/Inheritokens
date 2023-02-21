@@ -15,7 +15,7 @@ load_dotenv()
 # Contract setup
 alchemy_url = "https://polygon-mumbai.g.alchemy.com/v2/ALbcNieoFrIRYYNDrcr4dAASXUCZbm-i"
 web3 = Web3(Web3.HTTPProvider(alchemy_url))
-nominee_factory = "0x86D1474B3FCe83d1837cd47C7e65C3aB520012D9"
+nominee_factory = "0x8FB51d12f6379a9066D4C9390d6fbfAB512FA033"
 file = open("D:/Lampros Projects/Inheritokens/Inheritokens Schedular/Inheritokens.json")
 abi = json.load(file)
 contract = web3.eth.contract(address=nominee_factory, abi=abi)
@@ -59,35 +59,39 @@ def getTransactionDetails():
             # get email of owner from contract
             owner_struct = contract.functions.getOwnerDetails(data[i]).call()
             print(owner_struct)
-            # owner_email = owner_struct[1]
+            owner_email = owner_struct[1]
             # print(owner_email)
 
             # get all nominees
+            all_nominees = owner_struct[6]
+            print(all_nominees)
 
             # get email of nominees
             # data2 = contract.functions.getNomineeDetails("0x2B30bC9F81f919B01a09d5A3De574B15eAF2C3BC").call()
             # print(data2)
-    #         # get response date and response from contract
-    #         response_date = contract.functions.getResponseDate(data[i]).call()
-    #         final_resposne = contract.functions.getResponse(data[i]).call()
-    #         if response_date == "":
-    #             print("no res date")
-    #             no_res_days = 0
-    #         else:
-    #             # checking for 1 month
-    #             res_month = response_date[5:7]
-    #             res_year = response_date[:4]
-    #             res_date = response_date[8:]
-    #             print((response_date))
-    #             temp_date = date(int(res_year), int(res_month), int(res_date))
-    #             today_date = date.today()
-    #             # print(today)
-    #             difference_date = str(today_date - temp_date)
-    #             no_res_days = difference_date.split(" ")[0]
-    #             # print(no_res_days)
-    #             if no_res_days == "0:00:00":
-    #                 no_res_days = 0
-    #             print(no_res_days)
+            # get response date and response from contract
+            response_date = contract.functions.getResponseDate(data[i]).call()
+            final_response = contract.functions.getResponse(data[i]).call()
+            print(response_date)
+            print(final_response)
+            if response_date == "":
+                print("no res date")
+                no_res_days = 0
+            else:
+                # checking for 1 month
+                res_month = response_date[5:7]
+                res_year = response_date[:4]
+                res_date = response_date[8:]
+                print((response_date))
+                temp_date = date(int(res_year), int(res_month), int(res_date))
+                today_date = date.today()
+                # print(today)
+                difference_date = str(today_date - temp_date)
+                no_res_days = difference_date.split(" ")[0]
+                # print(no_res_days)
+                if no_res_days == "0:00:00":
+                    no_res_days = 0
+            print(no_res_days)
 
     #         if int(no_days) < 180 and int(no_res_days) < 30 and final_resposne == False:
     #             if response_date == "":

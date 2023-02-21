@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
 import "../styles/TokenNomineeDetails.scss";
+import NomineesListPopupForToken from "./NomineesListPopupForToken";
 
 function TokenNomineeDetails({
   setTokenNomineeDetails,
   nomineeDetail,
   nominatedArr,
+  showNomineesListPopUp,
+  setNomineesListPopUp,
+  setNominatedArrChanged,
+  setTotalUsedRatio,
 }) {
   const [arr, setArr] = useState([
     {
@@ -25,12 +30,16 @@ function TokenNomineeDetails({
   const handleDeleteSvgButton = (item) => {
     arr.splice(item, 1);
     printArr();
+    setArr(arr);
     setArrChanged((prev) => prev + 1);
   };
 
   return (
     <div className="token-nominee-details">
-      <div class="overlay" onClick={() => setTokenNomineeDetails(false)}></div>
+      <div
+        className="overlay"
+        onClick={() => setTokenNomineeDetails(false)}
+      ></div>
       <div id="modal">
         <h1>Pop Up modal!</h1>
         <p>Click anywhere outside to close the modal</p>
@@ -80,7 +89,9 @@ function TokenNomineeDetails({
             })
           ) : (
             <div>
-              <button>Add Nominee</button>
+              <button onClick={() => setNomineesListPopUp(true)}>
+                Add Nominee
+              </button>
             </div>
           )}
           <div className="add-nominee">
@@ -90,6 +101,7 @@ function TokenNomineeDetails({
               viewBox="0 0 24 24"
               width="24px"
               fill="#000000"
+              onClick={() => setNomineesListPopUp(true)}
             >
               <path d="M0 0h24v24H0V0z" fill="none" />
               <path d="M12 7c-.55 0-1 .45-1 1v3H8c-.55 0-1 .45-1 1s.45 1 1 1h3v3c0 .55.45 1 1 1s1-.45 1-1v-3h3c.55 0 1-.45 1-1s-.45-1-1-1h-3V8c0-.55-.45-1-1-1zm0-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
@@ -102,26 +114,56 @@ function TokenNomineeDetails({
         </div>
         <div className="input-field">
           <input
-            type="text"
+            type="number"
             placeholder="ratio"
-            onChange={(e) => setRatio(e.target.value)}
+            minLength={0}
+            max={100}
+            onChange={(e) => {
+              if (e.target.value > 100) {
+                e.target.value = 0;
+              }
+              setRatio(e.target.value);
+            }}
           />
         </div>
         <div className="field-main">
           <p>Each Nominee will get</p>
           <span>info</span>
         </div>
-        <input type="text" placeholder="10%" disabled />
+        <input
+          type="text"
+          placeholder="10%"
+          disabled
+          value={
+            ratio
+              ? parseFloat(ratio / parseInt(arr.length)).toFixed(2) + " %"
+              : "0.00 %"
+          }
+        />
         <div className="next-btn">
           <button
             onClick={() => {
-              nominatedArr.push({ nominess: arr, ratio: ratio });
+              let temp = [];
+              for (let i = 0; i < arr.length; i++) {
+                temp.push([arr[i]]);
+              }
+              nominatedArr.push({ nominees: temp, ratio: ratio });
+              setTotalUsedRatio((prev) => parseFloat(prev) + parseFloat(ratio));
+              // setNominatedArrChanged((prev) => prev + 1);
             }}
           >
             Next
           </button>
         </div>
       </div>
+      {showNomineesListPopUp ? (
+        <NomineesListPopupForToken
+          setNomineesListPopUp={setNomineesListPopUp}
+          arr={arr}
+        />
+      ) : (
+        ""
+      )}
     </div>
   );
 }

@@ -27,6 +27,7 @@ contract Inheritokens is Ownable {
         address recoveryAddress;
         address[] nominees;
         uint[] charities;
+        uint months;
     }
     mapping(address => Owner) public addressToOwner;
 
@@ -77,7 +78,8 @@ contract Inheritokens is Ownable {
     function addOwnerDetails(
         string memory _name,
         string memory _email,
-        string memory _cid
+        string memory _cid,
+        uint _months
     ) public {
         require(!isOwnerAdded[msg.sender], "Already registered");
         owners.push(msg.sender);
@@ -86,6 +88,7 @@ contract Inheritokens is Ownable {
         addressToOwner[msg.sender].image_cid = _cid;
         addressToOwner[msg.sender].isEmailVerified = false;
         addressToOwner[msg.sender].isAlive = true;
+        addressToOwner[msg.sender].months = _months;
         isOwnerAdded[msg.sender] = true;
     }
 

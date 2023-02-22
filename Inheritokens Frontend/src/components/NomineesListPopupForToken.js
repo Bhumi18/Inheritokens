@@ -2,10 +2,19 @@ import React, { useEffect, useState } from "react";
 import image from "../assets/images/defaultprofileimage.png";
 import "../styles/NomineesListPopupForToken.scss";
 
-function NomineesListPopupForToken({ setNomineesListPopUp, arr }) {
+function NomineesListPopupForToken({
+  setNomineesListPopUp,
+  arr,
+  setNomineesListPopUp2,
+  nominatedArr,
+  indexNumber,
+}) {
   const [nomineesArr, setNomineesArr] = useState([]);
   const [allNomiees, setAllNomiees] = useState(true);
   const [allCharities, setAllCharities] = useState(false);
+  const [index, setIndex] = useState();
+  const [indexChild, setIndexChild] = useState();
+
   const data = [
     {
       img: image,
@@ -70,6 +79,11 @@ function NomineesListPopupForToken({ setNomineesListPopUp, arr }) {
   ];
 
   useEffect(() => {
+    if (indexNumber) {
+      setIndexChild(parseInt(indexNumber.child));
+      setIndex(parseInt(indexNumber.parent));
+    }
+
     setNomineesArr(data);
   }, []);
 
@@ -112,7 +126,11 @@ function NomineesListPopupForToken({ setNomineesListPopUp, arr }) {
           <span
             className="action-btn"
             onClick={() => {
-              arr.push(filteredPersons[key]);
+              if (arr) arr.push(filteredPersons[key]);
+              else
+                nominatedArr[index].nominees[indexChild].push(
+                  filteredPersons[key]
+                );
             }}
           >
             Add this
@@ -127,7 +145,11 @@ function NomineesListPopupForToken({ setNomineesListPopUp, arr }) {
     <>
       <div
         className="overlay"
-        onClick={() => setNomineesListPopUp(false)}
+        onClick={() => {
+          setNomineesListPopUp2
+            ? setNomineesListPopUp2(false)
+            : setNomineesListPopUp(false);
+        }}
       ></div>
       <div id="modal">
         <div className="all-nominees-list">

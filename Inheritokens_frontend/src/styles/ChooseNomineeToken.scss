@@ -255,6 +255,16 @@
           );
         }
       }
+
+      .nominated-ratio-main {
+        width: 100%;
+        border-bottom: 1px solid #000;
+        .ratio-and-modify {
+          width: 100%;
+          display: flex;
+          justify-content: space-between;
+        }
+      }
     }
 
     .nominees-not-found {

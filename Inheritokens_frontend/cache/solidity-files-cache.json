@@ -1,8 +1,8 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
-    "D:\\Lampros Projects\\Inheritokens\\Inheritokens Frontend\\contracts\\Charity.sol": {
-      "lastModificationDate": 1676023054568,
+    "D:\\Lampros Projects\\Inheritokens\\Inheritokens_frontend\\contracts\\Charity.sol": {
+      "lastModificationDate": 1677059294403,
       "contentHash": "26ab67ab002cceadfff1ae7bb95a94d8",
       "sourceName": "contracts/Charity.sol",
       "solcConfig": {
@@ -38,8 +38,8 @@
         "CharityContract"
       ]
     },
-    "D:\\Lampros Projects\\Inheritokens\\Inheritokens Frontend\\node_modules\\@openzeppelin\\contracts\\access\\Ownable.sol": {
-      "lastModificationDate": 1672922495863,
+    "D:\\Lampros Projects\\Inheritokens\\Inheritokens_frontend\\node_modules\\@openzeppelin\\contracts\\access\\Ownable.sol": {
+      "lastModificationDate": 1677060909539,
       "contentHash": "e436cea06129be2c73cda4b1acc848b5",
       "sourceName": "@openzeppelin/contracts/access/Ownable.sol",
       "solcConfig": {
@@ -75,8 +75,8 @@
         "Ownable"
       ]
     },
-    "D:\\Lampros Projects\\Inheritokens\\Inheritokens Frontend\\node_modules\\@openzeppelin\\contracts\\utils\\Context.sol": {
-      "lastModificationDate": 1672922495790,
+    "D:\\Lampros Projects\\Inheritokens\\Inheritokens_frontend\\node_modules\\@openzeppelin\\contracts\\utils\\Context.sol": {
+      "lastModificationDate": 1677060908348,
       "contentHash": "5f2c5c4b6af2dd4551027144797bc8be",
       "sourceName": "@openzeppelin/contracts/utils/Context.sol",
       "solcConfig": {
@@ -110,8 +110,8 @@
         "Context"
       ]
     },
-    "D:\\Lampros Projects\\Inheritokens\\Inheritokens Frontend\\contracts\\Inheritokens.sol": {
-      "lastModificationDate": 1676970593724,
+    "D:\\Lampros Projects\\Inheritokens\\Inheritokens_frontend\\contracts\\Inheritokens.sol": {
+      "lastModificationDate": 1677059294403,
       "contentHash": "6fde737db0c2eeaeb3b7ad95af952878",
       "sourceName": "contracts/Inheritokens.sol",
       "solcConfig": {
@@ -148,8 +148,8 @@
         "Inheritokens"
       ]
     },
-    "D:\\Lampros Projects\\Inheritokens\\Inheritokens Frontend\\node_modules\\hardhat\\console.sol": {
-      "lastModificationDate": 1673412112713,
+    "D:\\Lampros Projects\\Inheritokens\\Inheritokens_frontend\\node_modules\\hardhat\\console.sol": {
+      "lastModificationDate": 1677060910593,
       "contentHash": "4ff3cd2f6272c9a6516e9ee4f2b967d3",
       "sourceName": "hardhat/console.sol",
       "solcConfig": {
@@ -183,8 +183,8 @@
         "console"
       ]
     },
-    "D:\\Lampros Projects\\Inheritokens\\Inheritokens Frontend\\contracts\\MultipleNominee.sol": {
-      "lastModificationDate": 1676543132637,
+    "D:\\Lampros Projects\\Inheritokens\\Inheritokens_frontend\\contracts\\MultipleNominee.sol": {
+      "lastModificationDate": 1677059294403,
       "contentHash": "acb1c0897ad28e49a53df4dacbcbf40d",
       "sourceName": "contracts/MultipleNominee.sol",
       "solcConfig": {
@@ -221,8 +221,8 @@
         "MultipleNominee"
       ]
     },
-    "D:\\Lampros Projects\\Inheritokens\\Inheritokens Frontend\\contracts\\PriorityNominee.sol": {
-      "lastModificationDate": 1676530973030,
+    "D:\\Lampros Projects\\Inheritokens\\Inheritokens_frontend\\contracts\\PriorityNominee.sol": {
+      "lastModificationDate": 1677059294403,
       "contentHash": "fb679db8a6b9b133344a1c3102f17811",
       "sourceName": "contracts/PriorityNominee.sol",
       "solcConfig": {

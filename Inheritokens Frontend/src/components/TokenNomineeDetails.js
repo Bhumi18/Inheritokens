@@ -149,7 +149,7 @@ function TokenNomineeDetails({
               }
               nominatedArr.push({ nominees: temp, ratio: ratio });
               setTotalUsedRatio((prev) => parseFloat(prev) + parseFloat(ratio));
-              // setNominatedArrChanged((prev) => prev + 1);
+              setNominatedArrChanged((prev) => prev + 1);
             }}
           >
             Next

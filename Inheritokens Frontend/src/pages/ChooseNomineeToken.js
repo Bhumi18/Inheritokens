@@ -26,7 +26,7 @@ function ChooseNomineeToken() {
   const [arr, setArr] = useState([]);
   const [nominatedArr, setNominatedArr] = useState([]);
   const [arrChanged, setArrChanged] = useState(1);
-  const [showNominatedArrChanged, setNominatedArrChanged] = useState(1);
+  // const [showNominatedArrChanged, setNominatedArrChanged] = useState(1);
 
   const printArr = () => {
     console.log(arr);
@@ -43,6 +43,7 @@ function ChooseNomineeToken() {
     setArrChanged((prev) => prev + 1);
   };
   const handleParentDelete = (key, k) => {
+    console.log("key", key, "k", k);
     if (nominatedArr[key].nominees.length === 1) {
       nominatedArr.splice(nominatedArr[key], 1);
     } else nominatedArr[key].nominees.splice(k, 1);
@@ -322,17 +323,7 @@ function ChooseNomineeToken() {
                   </tr>
                 </thead>
                 <tbody>
-                  {/* {nominatedArr.map((item, key) => {
-                    return (
-                      <div key={key}>
-                        {item.ratio}
-                        {item.nominees.map((i, k) => {
-                          return <td key={k}>{i.name}</td>;
-                        })}
-                      </div>
-                    );
-                  })} */}
-                  {showNominatedArrChanged && nominatedArr.length > 0
+                  {arrChanged && nominatedArr.length > 0
                     ? nominatedArr.map((item, key) => {
                         return (
                           item.nominees &&
@@ -462,7 +453,7 @@ function ChooseNomineeToken() {
             nominatedArr={nominatedArr}
             showNomineesListPopUp={showNomineesListPopUp}
             setNomineesListPopUp={setNomineesListPopUp}
-            setNominatedArrChanged={setNominatedArrChanged}
+            setNominatedArrChanged={setArrChanged}
             setTotalUsedRatio={setTotalUsedRatio}
           />
         ) : (

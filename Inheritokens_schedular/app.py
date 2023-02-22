@@ -17,7 +17,7 @@ load_dotenv()
 alchemy_url = "https://polygon-mumbai.g.alchemy.com/v2/ALbcNieoFrIRYYNDrcr4dAASXUCZbm-i"
 web3 = Web3(Web3.HTTPProvider(alchemy_url))
 inheritokens_factory = "0xD38d3e6221847E979775109e8072ed0886D93529"
-file = open("D:/Lampros Projects/Inheritokens/Inheritokens Schedular/Inheritokens.json")
+file = open("D:/Lampros Projects/Inheritokens/Inheritokens_schedular/Inheritokens.json")
 abi = json.load(file)
 contract = web3.eth.contract(address=inheritokens_factory, abi=abi)
 chain_id = 80001

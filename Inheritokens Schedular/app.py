@@ -9,21 +9,24 @@ import time
 import schedule
 from web3 import Web3
 import json
+from moralis import evm_api
 
 load_dotenv()
 
 # Contract setup
 alchemy_url = "https://polygon-mumbai.g.alchemy.com/v2/ALbcNieoFrIRYYNDrcr4dAASXUCZbm-i"
 web3 = Web3(Web3.HTTPProvider(alchemy_url))
-nominee_factory = "0x8FB51d12f6379a9066D4C9390d6fbfAB512FA033"
+inheritokens_factory = "0xD38d3e6221847E979775109e8072ed0886D93529"
 file = open("D:/Lampros Projects/Inheritokens/Inheritokens Schedular/Inheritokens.json")
 abi = json.load(file)
-contract = web3.eth.contract(address=nominee_factory, abi=abi)
+contract = web3.eth.contract(address=inheritokens_factory, abi=abi)
 chain_id = 80001
 my_address = os.environ.get("ADDRESS")
 private_key = os.environ.get("KEY")
 moralis_api_key = os.environ.get("MORALIS_API_KEY")
 nonce = web3.eth.get_transaction_count(my_address)
+tokens20 = []
+tokens721 = []
 
 
 # Function to get transaction details from api, get contract details
@@ -37,8 +40,7 @@ def getTransactionDetails():
         isAlive = contract.functions.getOwnerAlive(data[i]).call()
         print(isAlive)
         if isAlive:
-            # print("owner number : " + str(i))
-            #       # check for inactivity of an account using moralis api
+            # check for inactivity of an account using moralis api
             url = "https://deep-index.moralis.io/api/v2/" + data[i] + "?chain=mumbai"
             headers = {"accept": "application/json", "X-API-Key": moralis_api_key}
             response = requests.get(url, headers=headers)
@@ -56,10 +58,12 @@ def getTransactionDetails():
             if no_days == "0:00:00":
                 no_days = 0
             print(no_days)
+
             # get email of owner from contract
             owner_struct = contract.functions.getOwnerDetails(data[i]).call()
             print(owner_struct)
             owner_email = owner_struct[1]
+            no_of_months = owner_struct[8]
             # print(owner_email)
 
             # get all nominees
@@ -69,11 +73,12 @@ def getTransactionDetails():
             # get email of nominees
             # data2 = contract.functions.getNomineeDetails("0x2B30bC9F81f919B01a09d5A3De574B15eAF2C3BC").call()
             # print(data2)
+
             # get response date and response from contract
             response_date = contract.functions.getResponseDate(data[i]).call()
-            final_response = contract.functions.getResponse(data[i]).call()
+            isResponded = contract.functions.getResponse(data[i]).call()
             print(response_date)
-            print(final_response)
+            print(isResponded)
             if response_date == "":
                 print("no res date")
                 no_res_days = 0
@@ -93,31 +98,80 @@ def getTransactionDetails():
                     no_res_days = 0
             print(no_res_days)
 
-    #         if int(no_days) < 180 and int(no_res_days) < 30 and final_resposne == False:
-    #             if response_date == "":
-    #                 print("call contract function")
-    #                 setDate(data[i])
-    #                 print("called")
-    #             message = "Please tell me you are doing fine"
-    #             sendMail(message, email)
-    #         elif (
-    #             int(no_days) < 180 and int(no_res_days) > 30 and final_resposne == False
-    #         ):
-    #             print("more than 1 month")
-    #             nominee_email = []
-    #             for i in range(len(data2)):
-    #                 data3 = contract.functions.getNomineeDetails(data2[i]).call()
-    #                 nominee_email.append(data3[2])
-    #                 message = "Hi, Congratulations you are nominated for cryptos!"
-    #                 sendMail(message, data3[2])
-    #             setNotAlive(data[i])
-    #             print(nominee_email)
-    #         elif int(no_days) > 180:
-    #             print("Active Account!")
-    #         else:
-    #             print("responded!")
-    #     else:
-    #         print("not alive")
+            no_days=40
+            no_res_days=10
+
+            if (
+                int(no_days) > (no_of_months * 30)
+                and int(no_res_days) < 30
+                and isResponded == False
+            ):
+                if response_date == "":
+                    print("call contract function")
+                    setDate(data[i])
+                    print("called")
+                # message = "Please tell me you are doing fine"
+                # sendMail(message, email)
+                print("Please tell me you are doing fine")
+            elif (
+                int(no_days) > ((no_of_months * 30))
+                and int(no_res_days) > 30
+                and isResponded == False
+            ):
+                getTokenAddresses("0xeB88DDaEdA2261298F1b740137B2ae35aA42A975")
+                print("more than 1 month")
+                nominee_email = []
+                # for i in range(len(data2)):
+                #     data3 = contract.functions.getNomineeDetails(data2[i]).call()
+                #     nominee_email.append(data3[2])
+                #     message = "Hi, Congratulations you are nominated for cryptos!"
+                #     sendMail(message, data3[2])
+                setNotAlive(data[i])
+                print(nominee_email)
+            elif int(no_days) < 180:
+                print("Active Account!")
+            else:
+                print("responded!")
+        else:
+            print("not alive")
+
+
+# Function to get all the token address
+def getTokenAddresses(owner):
+    owner = "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975"
+    tokens20 = []
+    tokens721 = []
+    # get ERC20 token's token addresses
+    params = {
+        "address": owner,
+        "chain": "mumbai",
+    }
+    result = evm_api.token.get_wallet_token_balances(
+        api_key=moralis_api_key,
+        params=params,
+    )
+    for i in range(0, len(result)):
+        tokens20.append((result[i]["token_address"]))
+
+    # get ERC721 token's token addresses and tokenId
+    paramsNFT = {
+        "address": owner,
+        "chain": "mumbai",
+        "format": "decimal",
+        "cursor": "",
+        "normalizeMetadata": True,
+    }
+    response = evm_api.nft.get_wallet_nfts(
+        api_key=moralis_api_key,
+        params=paramsNFT,
+    )
+    nftData = response["result"]
+    for i in range(0, len(nftData)):
+        dictionary = {
+            "token_address": nftData[i]["token_address"],
+            "token_id": nftData[i]["token_id"],
+        }
+        tokens721.append(dictionary)
 
 
 # Function to set response date in contract
@@ -125,7 +179,7 @@ def setDate(owner):
     today_date = str(date.today())
     store_transaction = contract.functions.setResponseDate(
         owner, today_date
-    ).buildTransaction(
+    ).build_transaction(
         {
             "chainId": chain_id,
             "from": my_address,
@@ -190,6 +244,7 @@ def sayHello():
 # schedule.every(2).minutes.do(getTransactionDetails)
 # schedule.every(1).minutes.do(sayHello)
 getTransactionDetails()
+# getTokenAddresses()
 
 # while True:
 #     schedule.run_pending()

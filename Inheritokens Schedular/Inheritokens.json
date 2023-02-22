@@ -62,6 +62,11 @@
         "internalType": "string",
         "name": "_cid",
         "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_months",
+        "type": "uint256"
       }
     ],
     "name": "addOwnerDetails",
@@ -160,6 +165,11 @@
         "internalType": "address",
         "name": "recoveryAddress",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "months",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -441,6 +451,11 @@
             "internalType": "uint256[]",
             "name": "charities",
             "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256",
+            "name": "months",
+            "type": "uint256"
           }
         ],
         "internalType": "struct Inheritokens.Owner",

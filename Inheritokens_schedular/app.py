@@ -16,10 +16,16 @@ load_dotenv()
 # Contract setup
 alchemy_url = "https://polygon-mumbai.g.alchemy.com/v2/ALbcNieoFrIRYYNDrcr4dAASXUCZbm-i"
 web3 = Web3(Web3.HTTPProvider(alchemy_url))
-inheritokens_factory = "0xD38d3e6221847E979775109e8072ed0886D93529"
-file = open("D:/Lampros Projects/Inheritokens/Inheritokens Schedular/Inheritokens.json")
+inheritokens_factory = "0x3D79C81fa0EdE22A05Cd5D5AF089BCf214F39AcB"
+multiple_nominee = "0x20D9BB5339F93cd29b425E57A228E88ddf06eFE4"
+file = open("D:/Lampros Projects/Inheritokens/Inheritokens_schedular/Inheritokens.json")
 abi = json.load(file)
 contract = web3.eth.contract(address=inheritokens_factory, abi=abi)
+file1 = open(
+    "D:/Lampros Projects/Inheritokens/Inheritokens_schedular/MultipleNominee.json"
+)
+abi1 = json.load(file1)
+contract1 = web3.eth.contract(address=multiple_nominee, abi=abi1)
 chain_id = 80001
 my_address = os.environ.get("ADDRESS")
 private_key = os.environ.get("KEY")
@@ -98,8 +104,8 @@ def getTransactionDetails():
                     no_res_days = 0
             print(no_res_days)
 
-            no_days=40
-            no_res_days=10
+            no_days = 40
+            no_res_days = 71
 
             if (
                 int(no_days) > (no_of_months * 30)
@@ -108,7 +114,7 @@ def getTransactionDetails():
             ):
                 if response_date == "":
                     print("call contract function")
-                    setDate(data[i])
+                    # setDate(data[i])
                     print("called")
                 # message = "Please tell me you are doing fine"
                 # sendMail(message, email)
@@ -118,16 +124,36 @@ def getTransactionDetails():
                 and int(no_res_days) > 30
                 and isResponded == False
             ):
-                getTokenAddresses("0xeB88DDaEdA2261298F1b740137B2ae35aA42A975")
+                (t20, t721) = getTokenAddresses(data[i])
                 print("more than 1 month")
+                print(t20)
+                print(t721)
                 nominee_email = []
                 # for i in range(len(data2)):
                 #     data3 = contract.functions.getNomineeDetails(data2[i]).call()
                 #     nominee_email.append(data3[2])
                 #     message = "Hi, Congratulations you are nominated for cryptos!"
                 #     sendMail(message, data3[2])
-                setNotAlive(data[i])
-                print(nominee_email)
+                # setNotAlive(data[i])
+                assigned_tokens = contract1.functions.getAllStructs(
+                    data[i], Web3.to_checksum_address(t20[0]), 0
+                ).call()
+                print(assigned_tokens)
+                for i in range(0, len(assigned_tokens)):
+                    for j in range(0, len(assigned_tokens[i][1])):
+                        if assigned_tokens[i][2][j] == True:
+                            continue
+                        else:
+                            if no_res_days < ((assigned_tokens[i][3][j] * 30) + 30):
+                                print("nominee number")
+                                print(j+1)
+                                break
+                            else:
+                                if assigned_tokens[i][2][j] == True:
+                                    continue
+                                else:
+                                    print("set not available in contract")
+                    print(assigned_tokens[i][1])
             elif int(no_days) < 180:
                 print("Active Account!")
             else:
@@ -138,7 +164,7 @@ def getTransactionDetails():
 
 # Function to get all the token address
 def getTokenAddresses(owner):
-    owner = "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975"
+    # owner = "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975"
     tokens20 = []
     tokens721 = []
     # get ERC20 token's token addresses
@@ -172,6 +198,7 @@ def getTokenAddresses(owner):
             "token_id": nftData[i]["token_id"],
         }
         tokens721.append(dictionary)
+    return (tokens20, tokens721)
 
 
 # Function to set response date in contract

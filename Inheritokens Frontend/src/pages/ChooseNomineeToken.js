@@ -5,6 +5,7 @@ import Navbar from "../components/Navbar";
 import image from "../assets/images/defaultprofileimage.png";
 import "../styles/ChooseNomineeToken.scss";
 import TokenNomineeDetails from "../components/TokenNomineeDetails";
+import NomineesListPopupForToken from "../components/NomineesListPopupForToken";
 
 function ChooseNomineeToken() {
   const location = useLocation();
@@ -12,6 +13,10 @@ function ChooseNomineeToken() {
   const [allNomiees, setAllNomiees] = useState(true);
   const [allCharities, setAllCharities] = useState(false);
   const [showTokenNomineeDetails, setTokenNomineeDetails] = useState(false);
+  const [showNomineesListPopUp, setNomineesListPopUp] = useState(false);
+  const [showNomineesListPopUp2, setNomineesListPopUp2] = useState(false);
+  const [totalUsedRatio, setTotalUsedRatio] = useState(0);
+  const [indexNumber, setIndexNumber] = useState({ parent: "", child: "" });
   const [nomineeDetail, setNomineeDetail] = useState({
     img: "",
     name: "",
@@ -21,6 +26,7 @@ function ChooseNomineeToken() {
   const [arr, setArr] = useState([]);
   const [nominatedArr, setNominatedArr] = useState([]);
   const [arrChanged, setArrChanged] = useState(1);
+  const [showNominatedArrChanged, setNominatedArrChanged] = useState(1);
 
   const printArr = () => {
     console.log(arr);
@@ -36,7 +42,12 @@ function ChooseNomineeToken() {
     nominatedArr.splice(key, 1);
     setArrChanged((prev) => prev + 1);
   };
-
+  const handleParentDelete = (key, k) => {
+    if (nominatedArr[key].nominees.length === 1) {
+      nominatedArr.splice(nominatedArr[key], 1);
+    } else nominatedArr[key].nominees.splice(k, 1);
+    setArrChanged((prev) => prev + 1);
+  };
   const handleMoveUpElement = (key) => {
     var element = nominatedArr[key];
     nominatedArr.splice(key, 1);
@@ -176,7 +187,7 @@ function ChooseNomineeToken() {
     token_symbol: "",
     token_balance: "",
   });
-  console.log(location.state);
+  // console.log(location.state);
 
   useEffect(() => {
     if (location.state) {
@@ -192,6 +203,10 @@ function ChooseNomineeToken() {
     }
     setArr(data);
   }, []);
+  useEffect(() => {
+    console.log(nominatedArr);
+    console.log(indexNumber);
+  });
 
   return (
     <>
@@ -278,47 +293,7 @@ function ChooseNomineeToken() {
                       <th></th>
                     </tr>
                   </thead>
-                  <tbody>
-                    {searchList()}
-                    {/* {arrChanged && arr.length > 0 ? (
-                    arr.map((item, key) => {
-                      return (
-                        <tr key={key}>
-                          <td>
-                            <img
-                              src={item.img}
-                              alt="nfts"
-                              className="nominee-profile"
-                            />
-                          </td>
-                          <td>
-                            <div className="inside-choose-nominee">
-                              <h2>{item.name}</h2>
-                              <p>{item.email}</p>
-                              <p>
-                                {item.w_add.substring(0, 5) +
-                                  "..." +
-                                  item.w_add.substring(
-                                    item.w_add.length - 4,
-                                    item.w_add.length
-                                  )}
-                              </p>
-                            </div>
-                          </td>
-                          <td>
-                            <button onClick={() => handleAddElement(key)}>
-                              Add this
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    })
-                  ) : (
-                    <tr>
-                      <td colSpan={4}>Select nominees from the left panel</td>
-                    </tr>
-                  )} */}
-                  </tbody>
+                  <tbody>{searchList()}</tbody>
                 </table>
               ) : (
                 <div className="nominees-not-found">
@@ -341,115 +316,119 @@ function ChooseNomineeToken() {
                 <caption>Selected Nominees list</caption>
                 <thead>
                   <tr>
-                    <th>Priority</th>
-                    <th>Move</th>
-                    <th></th>
+                    <th>Ratio</th>
+                    <th>Nominees</th>
                     <th></th>
                   </tr>
                 </thead>
                 <tbody>
-                  {arrChanged
+                  {/* {nominatedArr.map((item, key) => {
+                    return (
+                      <div key={key}>
+                        {item.ratio}
+                        {item.nominees.map((i, k) => {
+                          return <td key={k}>{i.name}</td>;
+                        })}
+                      </div>
+                    );
+                  })} */}
+                  {showNominatedArrChanged && nominatedArr.length > 0
                     ? nominatedArr.map((item, key) => {
                         return (
-                          <tr key={key}>
-                            <td className="priority">{key + 1}</td>
-                            <td className="arrows">
-                              {key === 0 ? (
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  height="24px"
-                                  viewBox="0 0 24 24"
-                                  width="24px"
-                                  fill="#000000"
-                                  className="disabled"
-                                >
-                                  <path d="M0 0h24v24H0V0z" fill="none" />
-                                  <path d="M11.29 8.71L6.7 13.3c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L12 10.83l3.88 3.88c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L12.7 8.71c-.38-.39-1.02-.39-1.41 0z" />
-                                </svg>
-                              ) : (
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  height="24px"
-                                  viewBox="0 0 24 24"
-                                  width="24px"
-                                  fill="#000000"
-                                  onClick={() => handleMoveUpElement(key)}
-                                >
-                                  <path d="M0 0h24v24H0V0z" fill="none" />
-                                  <path d="M11.29 8.71L6.7 13.3c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L12 10.83l3.88 3.88c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L12.7 8.71c-.38-.39-1.02-.39-1.41 0z" />
-                                </svg>
-                              )}
-                              {key === nominatedArr.length - 1 ? (
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  height="24px"
-                                  viewBox="0 0 24 24"
-                                  width="24px"
-                                  fill="#000000"
-                                  className="disabled"
-                                >
-                                  <path
-                                    d="M24 24H0V0h24v24z"
-                                    fill="none"
-                                    opacity=".87"
-                                  />
-                                  <path d="M15.88 9.29L12 13.17 8.12 9.29c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l4.59 4.59c.39.39 1.02.39 1.41 0l4.59-4.59c.39-.39.39-1.02 0-1.41-.39-.38-1.03-.39-1.42 0z" />
-                                </svg>
-                              ) : (
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  height="24px"
-                                  viewBox="0 0 24 24"
-                                  width="24px"
-                                  fill="#000000"
-                                  onClick={() => handleMoveDownElement(key)}
-                                >
-                                  <path
-                                    d="M24 24H0V0h24v24z"
-                                    fill="none"
-                                    opacity=".87"
-                                  />
-                                  <path d="M15.88 9.29L12 13.17 8.12 9.29c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l4.59 4.59c.39.39 1.02.39 1.41 0l4.59-4.59c.39-.39.39-1.02 0-1.41-.39-.38-1.03-.39-1.42 0z" />
-                                </svg>
-                              )}
-                            </td>
+                          item.nominees &&
+                          item.nominees.map((i, k) => {
+                            return (
+                              <tr key={k} className="selected-nominees">
+                                <td className="ratio">
+                                  {parseFloat(
+                                    parseFloat(item.ratio) /
+                                      item.nominees.length
+                                  ).toFixed(2) + " %"}
+                                </td>
 
-                            <td className="nominee-details">
-                              <div className="nominee-details">
-                                <img
-                                  src={item.img}
-                                  alt="nfts"
-                                  className="nominee-profile"
-                                />
+                                <td className="nominee-details">
+                                  {i.map((j, l) => {
+                                    return (
+                                      <div
+                                        className="nominee-details nominated-nominee-details"
+                                        key={l}
+                                      >
+                                        <span className="nominated-priority">
+                                          {l + 1}
+                                        </span>
+                                        <img
+                                          src={j.img}
+                                          alt="nfts"
+                                          className="nominee-profile"
+                                        />
 
-                                <div className="inside-choose-nominee">
-                                  <h2>{item.name}</h2>
-                                  <p>{item.email}</p>
-                                  <p>
-                                    {item.w_add.substring(0, 5) +
-                                      "..." +
-                                      item.w_add.substring(
-                                        item.w_add.length - 4,
-                                        item.w_add.length
-                                      )}
-                                  </p>
-                                </div>
-                              </div>
-                            </td>
-                            <td>
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                height="24px"
-                                viewBox="0 0 24 24"
-                                width="24px"
-                                fill="#000000"
-                                onClick={() => handleRestoreElement(key)}
-                              >
-                                <path d="M0 0h24v24H0V0z" fill="none" />
-                                <path d="M18.3 5.71c-.39-.39-1.02-.39-1.41 0L12 10.59 7.11 5.7c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41L10.59 12 5.7 16.89c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L12 13.41l4.89 4.89c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z" />
-                              </svg>
-                            </td>
-                          </tr>
+                                        <div className="inside-choose-nominee">
+                                          <h2>{j.name}</h2>
+                                          <p>{j.email}</p>
+                                          <p>
+                                            {j.w_add.substring(0, 5) +
+                                              "..." +
+                                              j.w_add.substring(
+                                                j.w_add.length - 4,
+                                                j.w_add.length
+                                              )}
+                                          </p>
+                                        </div>
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          height="24px"
+                                          viewBox="0 0 24 24"
+                                          width="24px"
+                                          fill="#000000"
+                                          onClick={() =>
+                                            handleRestoreElement(key)
+                                          }
+                                        >
+                                          <path
+                                            d="M0 0h24v24H0V0z"
+                                            fill="none"
+                                          />
+                                          <path d="M18.3 5.71c-.39-.39-1.02-.39-1.41 0L12 10.59 7.11 5.7c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41L10.59 12 5.7 16.89c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L12 13.41l4.89 4.89c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z" />
+                                        </svg>
+                                      </div>
+                                    );
+                                  })}
+
+                                  <button
+                                    onClick={() => {
+                                      setIndexNumber({ parent: key, child: k });
+                                      setNomineesListPopUp2(true);
+                                    }}
+                                  >
+                                    Add priority
+                                  </button>
+                                </td>
+                                <td>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    height="24px"
+                                    viewBox="0 0 24 24"
+                                    width="24px"
+                                    fill="#000000"
+                                  >
+                                    <path d="M0 0h24v24H0V0z" fill="none" />
+                                    <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                                  </svg>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    height="24px"
+                                    viewBox="0 0 24 24"
+                                    width="24px"
+                                    fill="#000000"
+                                    onClick={() => handleParentDelete(key, k)}
+                                  >
+                                    <path d="M0 0h24v24H0V0z" fill="none" />
+                                    <path d="M18.3 5.71c-.39-.39-1.02-.39-1.41 0L12 10.59 7.11 5.7c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41L10.59 12 5.7 16.89c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L12 13.41l4.89 4.89c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z" />
+                                  </svg>
+                                </td>
+                              </tr>
+                            );
+                          })
                         );
                       })
                     : ""}
@@ -465,6 +444,12 @@ function ChooseNomineeToken() {
                 </p>
               </div>
             )}
+            <div>
+              <span className="available-ratio">
+                Available Ratio :{" "}
+                {parseFloat(100 - parseFloat(totalUsedRatio)).toFixed(2)} %
+              </span>
+            </div>
             <div className="save-btn-div">
               <button>Save Nominees</button>
             </div>
@@ -475,6 +460,19 @@ function ChooseNomineeToken() {
             setTokenNomineeDetails={setTokenNomineeDetails}
             nomineeDetail={nomineeDetail}
             nominatedArr={nominatedArr}
+            showNomineesListPopUp={showNomineesListPopUp}
+            setNomineesListPopUp={setNomineesListPopUp}
+            setNominatedArrChanged={setNominatedArrChanged}
+            setTotalUsedRatio={setTotalUsedRatio}
+          />
+        ) : (
+          ""
+        )}
+        {showNomineesListPopUp2 ? (
+          <NomineesListPopupForToken
+            setNomineesListPopUp2={setNomineesListPopUp2}
+            nominatedArr={nominatedArr}
+            indexNumber={indexNumber}
           />
         ) : (
           ""

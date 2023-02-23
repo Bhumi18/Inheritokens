@@ -42,9 +42,14 @@ function ChooseNomineeToken() {
     nominatedArr.splice(key, 1);
     setArrChanged((prev) => prev + 1);
   };
-  const handleParentDelete = (key, k) => {
+  const handleParentDelete = (key, k, ratio) => {
     console.log("key", key, "k", k);
+    nominatedArr[key].ratio = nominatedArr[key].ratio - ratio;
+    setTotalUsedRatio((prev) => prev - ratio);
     nominatedArr[key].nominees.splice(k, 1);
+    if (nominatedArr[key].nominees.length === 0) {
+      nominatedArr.splice(key, 1);
+    }
     setArrChanged((prev) => prev + 1);
   };
   const handleMoveUpElement = (key) => {
@@ -207,6 +212,20 @@ function ChooseNomineeToken() {
     console.log(indexNumber);
   });
 
+  function getOrdinal(n) {
+    let ord = "th";
+
+    if (n % 10 === 1 && n % 100 !== 11) {
+      ord = "st";
+    } else if (n % 10 === 2 && n % 100 !== 12) {
+      ord = "nd";
+    } else if (n % 10 === 3 && n % 100 !== 13) {
+      ord = "rd";
+    }
+
+    return ord;
+  }
+
   return (
     <>
       <Navbar />
@@ -310,7 +329,7 @@ function ChooseNomineeToken() {
             <div className="table-title">
               <span className="active">Nominated</span>
             </div>
-            {nominatedArr.length > 0 ? (
+            {/* {nominatedArr.length > 0 ? (
               <table>
                 <caption>Selected Nominees list</caption>
                 <thead>
@@ -467,48 +486,84 @@ function ChooseNomineeToken() {
                   details with priority
                 </p>
               </div>
-            )}
+            )} */}
 
             {/* testing here ***************************************************************** */}
-            {arrChanged && nominatedArr.length > 0
-              ? nominatedArr.map((item, key) => {
-                  return (
-                    item.nominees &&
-                    item.nominees.map((i, k) => {
-                      return (
-                        <div key={k} className="nominated-ratio-main">
-                          <div className="ratio-and-modify">
-                            <span>
-                              Ratio :
+            {arrChanged && nominatedArr.length > 0 ? (
+              nominatedArr.map((item, key) => {
+                return (
+                  item.nominees &&
+                  item.nominees.map((i, k) => {
+                    return (
+                      <div key={k} className="nominated-ratio-main">
+                        <div className="ratio-and-modify">
+                          <span>
+                            Nominated -
+                            <span className="ratio">
                               {" " +
                                 parseFloat(
                                   parseFloat(item.ratio) / item.nominees.length
                                 ).toFixed(2) +
                                 " %"}
                             </span>
-                            <div className="modify-delete">
-                              <button>Modify</button>
-                              <button>Delete</button>
-                            </div>
+                          </span>
+                          <div className="modify-delete">
+                            <button className="modify">Modify</button>
+                            <button
+                              className="delete"
+                              onClick={() =>
+                                handleParentDelete(
+                                  key,
+                                  k,
+                                  parseFloat(
+                                    parseFloat(item.ratio) /
+                                      item.nominees.length
+                                  ).toFixed(2)
+                                )
+                              }
+                            >
+                              Delete
+                            </button>
                           </div>
-                          <span>Amount for Nominee :</span>
-                          <span>Nominees :</span>
+                        </div>
+                        {/* <p className="nominee-will-get">
+                          Amount for Nominee:
+                          <span>
+                            {" " +
+                              ((tokenDetails.token_balance /
+                                Math.pow(
+                                  10,
+                                  parseInt(tokenDetails.token_decimals)
+                                )) *
+                                parseFloat(
+                                  parseFloat(item.ratio) / item.nominees.length
+                                ).toFixed(2)) /
+                                100 +
+                              " MATIC"}
+                          </span>
+                        </p> */}
+                        <div className="table-div">
                           {i.length > 0 ? (
                             <table>
                               <thead>
                                 <tr>
                                   <th>Priority</th>
-                                  <th>Move</th>
-                                  <th></th>
-                                  <th></th>
+                                  {/* <th>Move</th> */}
+                                  <th>Nominee Details</th>
+                                  {/* <th></th> */}
                                 </tr>
                               </thead>
                               {i.map((j, l) => {
                                 return (
                                   <tbody key={l}>
                                     <tr>
-                                      <td className="priority">{l + 1}</td>
-                                      <td className="arrows">
+                                      <td className="priority">
+                                        {l + 1}
+                                        <sup className="sup-of-priority">
+                                          {getOrdinal(l + 1)}
+                                        </sup>
+                                      </td>
+                                      {/* <td className="arrows">
                                         {l === 0 ? (
                                           <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -577,7 +632,7 @@ function ChooseNomineeToken() {
                                             <path d="M15.88 9.29L12 13.17 8.12 9.29c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l4.59 4.59c.39.39 1.02.39 1.41 0l4.59-4.59c.39-.39.39-1.02 0-1.41-.39-.38-1.03-.39-1.42 0z" />
                                           </svg>
                                         )}
-                                      </td>
+                                      </td> */}
 
                                       <td className="nominee-details">
                                         <div className="nominee-details">
@@ -601,7 +656,7 @@ function ChooseNomineeToken() {
                                           </div>
                                         </div>
                                       </td>
-                                      <td>
+                                      {/* <td>
                                         <svg
                                           xmlns="http://www.w3.org/2000/svg"
                                           height="24px"
@@ -618,7 +673,7 @@ function ChooseNomineeToken() {
                                           />
                                           <path d="M18.3 5.71c-.39-.39-1.02-.39-1.41 0L12 10.59 7.11 5.7c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41L10.59 12 5.7 16.89c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L12 13.41l4.89 4.89c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z" />
                                         </svg>
-                                      </td>
+                                      </td> */}
                                     </tr>
                                   </tbody>
                                 );
@@ -627,12 +682,47 @@ function ChooseNomineeToken() {
                           ) : (
                             ""
                           )}
+                          {i.length > 2 ? (
+                            <div className="show-more-nominees">
+                              <button>Show More</button>
+                            </div>
+                          ) : (
+                            ""
+                          )}
                         </div>
-                      );
-                    })
-                  );
-                })
-              : "no data found"}
+                        {/* <button
+                            onClick={() => {
+                              setIndexNumber({ parent: key, child: k });
+                              setNomineesListPopUp2(true);
+                            }}
+                          >
+                            Add priority
+                          </button> */}
+                      </div>
+                    );
+                  })
+                );
+              })
+            ) : (
+              <div className="nominated-ratio-main">
+                <div className="ratio-and-modify">
+                  <span>
+                    Nominated -<span className="ratio">{" 00.00 %"}</span>
+                  </span>
+                  <div className="modify-delete">
+                    <button className="modify disabled">Modify</button>
+                    <button className="delete disabled">Delete</button>
+                  </div>
+                </div>
+                <div className="table-div">
+                  <div className="add-nominee">
+                    <button onClick={() => setTokenNomineeDetails(true)}>
+                      Add Nominee
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Available ratio */}
             <div>
@@ -642,7 +732,9 @@ function ChooseNomineeToken() {
               </span>
             </div>
             <div className="save-btn-div">
-              <button>Save Nominees</button>
+              <button onClick={() => setTokenNomineeDetails(true)}>
+                Add Nominees
+              </button>
             </div>
           </div>
         </div>

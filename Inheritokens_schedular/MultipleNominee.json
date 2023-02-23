@@ -58,11 +58,6 @@
             "internalType": "bool[]",
             "name": "isNotAvailable",
             "type": "bool[]"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "months",
-            "type": "uint256[]"
           }
         ],
         "internalType": "struct MultipleNominee.Multiple[]",
@@ -111,11 +106,6 @@
             "internalType": "bool[]",
             "name": "isNotAvailable",
             "type": "bool[]"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "months",
-            "type": "uint256[]"
           }
         ],
         "internalType": "struct MultipleNominee.Multiple[]",
@@ -167,11 +157,6 @@
             "internalType": "bool[]",
             "name": "isNotAvailable",
             "type": "bool[]"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "months",
-            "type": "uint256[]"
           }
         ],
         "internalType": "struct MultipleNominee.Multiple",

@@ -168,7 +168,17 @@
       },
       {
         "internalType": "uint256",
-        "name": "months",
+        "name": "monthsOfInactivity",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "monthsOfSendingMailToOwner",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "monthsForNominee",
         "type": "uint256"
       }
     ],
@@ -209,6 +219,29 @@
       }
     ],
     "name": "assignTokenStruct",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_inactivity",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_mail",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_nominee",
+        "type": "uint256"
+      }
+    ],
+    "name": "changeTimePeriods",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -454,7 +487,17 @@
           },
           {
             "internalType": "uint256",
-            "name": "months",
+            "name": "monthsOfInactivity",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "monthsOfSendingMailToOwner",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "monthsForNominee",
             "type": "uint256"
           }
         ],

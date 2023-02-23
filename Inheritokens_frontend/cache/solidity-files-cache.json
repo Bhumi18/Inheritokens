@@ -111,8 +111,8 @@
       ]
     },
     "D:\\Lampros Projects\\Inheritokens\\Inheritokens_frontend\\contracts\\Inheritokens.sol": {
-      "lastModificationDate": 1677142155911,
-      "contentHash": "50b114f3fb4343a5cb62a1691472b7bc",
+      "lastModificationDate": 1677148487346,
+      "contentHash": "bd2f48e92a50e7ef09381e1a5b55615c",
       "sourceName": "contracts/Inheritokens.sol",
       "solcConfig": {
         "version": "0.8.17",
@@ -184,8 +184,8 @@
       ]
     },
     "D:\\Lampros Projects\\Inheritokens\\Inheritokens_frontend\\contracts\\MultipleNominee.sol": {
-      "lastModificationDate": 1677142228678,
-      "contentHash": "6ec721197b74fdd056af5cfac3301cac",
+      "lastModificationDate": 1677149382462,
+      "contentHash": "49c0af1830e595b7b696cde4ea814403",
       "sourceName": "contracts/MultipleNominee.sol",
       "solcConfig": {
         "version": "0.8.17",

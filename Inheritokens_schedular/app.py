@@ -20,14 +20,14 @@ web3 = Web3(Web3.HTTPProvider(alchemy_url))
 
 # inheritokens contract set up
 
-inheritokens_factory = "0xFD1aBc6527d4e12aD6845de502F6Da1134f6BAF5"
+inheritokens_factory = "0x2dec54540c6688d81c78D42F1092D237D9a89716"
 file = open("D:/Lampros Projects/Inheritokens/Inheritokens_schedular/Inheritokens.json")
 abi = json.load(file)
 contract = web3.eth.contract(address=inheritokens_factory, abi=abi)
 
 # multiple nominee contract set up
 
-multiple_nominee = "0xfDbD937a5CaB7eF3520D063c7742E0A387336708"
+multiple_nominee = "0x6a66B56E1183e35141d14B3aCD0e21284Ca9FD13"
 file1 = open(
     "D:/Lampros Projects/Inheritokens/Inheritokens_schedular/MultipleNominee.json"
 )
@@ -81,7 +81,7 @@ def getTransactionDetails():
 
             # get email of owner from contract, and no of months owner wants to wait
             owner_struct = contract.functions.getOwnerDetails(data[i]).call()
-            # print(owner_struct)
+            print(owner_struct)
             owner_email = owner_struct[1]
             no_of_inactive_months = owner_struct[8]
             no_of_months_mail = owner_struct[9]
@@ -117,8 +117,8 @@ def getTransactionDetails():
                     no_res_days = 0
             # print(no_res_days)
 
-            no_days = 190
-            no_res_days = 61
+            no_days = 181
+            no_res_days = 70
 
             # owner's account is not active, owner's time period is not complete, owner has not responded yet, send mail to the owner
             if (
@@ -171,19 +171,22 @@ def getTransactionDetails():
                                 ((no_of_months_nominee * 30) * (j + 1))
                                 + (no_of_months_mail * 30)
                             ):
-                                nominee_mail = contract.functions.getNomineeDetails(
-                                    assigned_tokens[i][1][j]
-                                ).call()[1]
-                                print("nominee number")
-                                print(j + 1)
-                                print(nominee_mail)
-                                break
+                                if assigned_tokens[i][3][j] == False:
+                                    nominee_mail = contract.functions.getNomineeDetails(
+                                        assigned_tokens[i][1][j]
+                                    ).call()[1]
+                                    print("nominee number")
+                                    print(j + 1)
+                                    print(nominee_mail)
+                                    # send mail to the nominee
+                                    break
                             else:
-                                if assigned_tokens[i][2][j] == True:
-                                    continue
-                                else:
+                                if (
+                                    assigned_tokens[i][2][j] == False
+                                    and assigned_tokens[i][3][j] == False
+                                ):
                                     print("set not available in contract")
-                    # print(assigned_tokens[i][1])
+                                    # call contract function here
             elif int(no_days) < (no_of_inactive_months * 30):
                 print("Active Account!")
             else:

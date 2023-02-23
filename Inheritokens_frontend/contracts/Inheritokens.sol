@@ -41,6 +41,7 @@ contract Inheritokens is Ownable {
         bool hasClaimed;
     }
     mapping(address => Nominee) public addressToNominee;
+    mapping(address => bool) public isNomineeAdded;
 
     // Token Structure
     struct Token {
@@ -159,6 +160,7 @@ contract Inheritokens is Ownable {
             isOwnerAdded[msg.sender],
             "First register and verify your email"
         );
+        require(!isNomineeAdded[_nominee], "Nominee is already added");
         addressToNominee[_nominee] = Nominee(_name, _email, _nominee, false);
         addressToOwner[msg.sender].nominees.push(_nominee);
     }

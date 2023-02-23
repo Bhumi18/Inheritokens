@@ -58,6 +58,11 @@
             "internalType": "bool[]",
             "name": "isNotAvailable",
             "type": "bool[]"
+          },
+          {
+            "internalType": "bool[]",
+            "name": "isClaimed",
+            "type": "bool[]"
           }
         ],
         "internalType": "struct MultipleNominee.Multiple[]",
@@ -105,6 +110,11 @@
           {
             "internalType": "bool[]",
             "name": "isNotAvailable",
+            "type": "bool[]"
+          },
+          {
+            "internalType": "bool[]",
+            "name": "isClaimed",
             "type": "bool[]"
           }
         ],
@@ -156,6 +166,11 @@
           {
             "internalType": "bool[]",
             "name": "isNotAvailable",
+            "type": "bool[]"
+          },
+          {
+            "internalType": "bool[]",
+            "name": "isClaimed",
             "type": "bool[]"
           }
         ],

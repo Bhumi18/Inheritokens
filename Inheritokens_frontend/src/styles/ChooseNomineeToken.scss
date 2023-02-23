@@ -257,12 +257,105 @@
       }
 
       .nominated-ratio-main {
+        border: 1px solid #f3f4f6;
         width: 100%;
-        border-bottom: 1px solid #000;
+        border-radius: 10px;
+        margin: 20px 0px;
+        padding-bottom: 20px;
+
+        // border-bottom: 1px solid #000;
         .ratio-and-modify {
+          padding: 10px;
+          background-color: #f3f4f6;
+          border-radius: 10px 10px 0px 0px;
           width: 100%;
           display: flex;
           justify-content: space-between;
+          span.ratio {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #5a88e1;
+          }
+          span {
+            color: #12141e99;
+          }
+          .modify-delete {
+            button {
+              padding: 5px 10px;
+              border-radius: 99999px;
+            }
+            button.disabled {
+              pointer-events: none;
+              opacity: 0.5;
+            }
+            button.modify {
+              background-color: #ffffff;
+              border: 1px solid black;
+              color: black;
+              margin-right: 10px;
+            }
+            button.delete {
+              background-color: black;
+              border: 1px solid black;
+              color: #ffffff;
+            }
+          }
+        }
+
+        p.nominee-will-get {
+          font-size: 15px;
+          padding: 0px 10px;
+          span {
+            font-weight: 600;
+          }
+        }
+        sup.sup-of-priority {
+          font-size: 12px;
+        }
+        .table-div {
+          // padding: 10px;
+          // margin: 20px;
+          // border-radius: 10px;
+          // border: 1px solid #f3f4f6;
+          table {
+            // border: 1px solid #f3f4f6;
+            width: 100%;
+            margin: 20px 0px;
+            thead {
+              th {
+                text-align: center;
+                font-weight: 500;
+                padding: 5px;
+                font-size: 14px;
+                color: #12141e99;
+              }
+              th:last-child {
+                text-align: left;
+              }
+            }
+            tbody {
+              td.nominee-details {
+                padding: 0px;
+              }
+              td:first-child {
+                width: auto;
+              }
+              td:last-child {
+                text-align: left;
+              }
+            }
+            tr {
+              border: 1px solid #f3f4f6;
+            }
+          }
+          .show-more-nominees {
+            margin: 0px auto;
+            width: max-content;
+          }
+          .add-nominee {
+            margin: 20px auto;
+            width: max-content;
+          }
         }
       }
     }
@@ -318,27 +411,21 @@
         }
       }
       tbody {
-        span.action-btn {
-          cursor: pointer;
-          color: #ffffff;
-          font-weight: 600;
-          font-size: 0.75rem;
-          letter-spacing: 2px;
-          line-height: 1rem;
-          padding: 0.5rem 1.625rem;
-          border-radius: 9999px;
-          background: #dcd6fc;
-          background-image: linear-gradient(to right, #9f8ff7 0%, #5a88e1 100%);
-          background-image: -moz-linear-gradient(
-            left,
-            #9f8ff7 0%,
-            #5a88e1 100%
-          );
-          background-image: -webkit-linear-gradient(
-            left,
-            #9f8ff7 0%,
-            #5a88e1 100%
-          );
+        td.add-this {
+          span.action-btn {
+            cursor: pointer;
+            color: #000;
+            font-weight: 600;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            line-height: 1rem;
+            padding: 0.5rem 1.625rem;
+            border-radius: 9999px;
+
+            border: 1px solid #000;
+            background: #ffffff;
+            background-image: none;
+          }
         }
         .nominee-details {
           display: flex;

@@ -184,6 +184,20 @@ function ChooseNomineeNFT({ nftsrc }) {
     return filtered;
   }
 
+  function getOrdinal(n) {
+    let ord = "th";
+
+    if (n % 10 === 1 && n % 100 !== 11) {
+      ord = "st";
+    } else if (n % 10 === 2 && n % 100 !== 12) {
+      ord = "nd";
+    } else if (n % 10 === 3 && n % 100 !== 13) {
+      ord = "rd";
+    }
+
+    return ord;
+  }
+
   return (
     <>
       <Navbar />
@@ -279,47 +293,7 @@ function ChooseNomineeNFT({ nftsrc }) {
                       <th></th>
                     </tr>
                   </thead>
-                  <tbody>
-                    {searchList()}
-                    {/* {arrChanged && arr.length > 0 ? (
-                    arr.map((item, key) => {
-                      return (
-                        <tr key={key}>
-                          <td>
-                            <img
-                              src={item.img}
-                              alt="nfts"
-                              className="nominee-profile"
-                            />
-                          </td>
-                          <td>
-                            <div className="inside-choose-nominee">
-                              <h2>{item.name}</h2>
-                              <p>{item.email}</p>
-                              <p>
-                                {item.w_add.substring(0, 5) +
-                                  "..." +
-                                  item.w_add.substring(
-                                    item.w_add.length - 4,
-                                    item.w_add.length
-                                  )}
-                              </p>
-                            </div>
-                          </td>
-                          <td>
-                            <button onClick={() => handleAddElement(key)}>
-                              Add this
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    })
-                  ) : (
-                    <tr>
-                      <td colSpan={4}>Select nominees from the left panel</td>
-                    </tr>
-                  )} */}
-                  </tbody>
+                  <tbody>{searchList()}</tbody>
                 </table>
               ) : (
                 <div className="nominees-not-found">
@@ -353,7 +327,12 @@ function ChooseNomineeNFT({ nftsrc }) {
                     ? nominatedArr.map((item, key) => {
                         return (
                           <tr key={key}>
-                            <td className="priority">{key + 1}</td>
+                            <td className="priority">
+                              {key + 1}
+                              <sup className="sup-of-priority">
+                                {getOrdinal(key + 1)}
+                              </sup>
+                            </td>
                             <td className="arrows">
                               {key === 0 ? (
                                 <svg

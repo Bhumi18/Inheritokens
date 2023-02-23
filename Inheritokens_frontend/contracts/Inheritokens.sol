@@ -27,7 +27,9 @@ contract Inheritokens is Ownable {
         address recoveryAddress;
         address[] nominees;
         uint[] charities;
-        uint months;
+        uint monthsOfInactivity;
+        uint monthsOfSendingMailToOwner;
+        uint monthsForNominee;
     }
     mapping(address => Owner) public addressToOwner;
 
@@ -88,7 +90,9 @@ contract Inheritokens is Ownable {
         addressToOwner[msg.sender].image_cid = _cid;
         addressToOwner[msg.sender].isEmailVerified = false;
         addressToOwner[msg.sender].isAlive = true;
-        addressToOwner[msg.sender].months = _months;
+        addressToOwner[msg.sender].monthsOfInactivity = 6;
+        addressToOwner[msg.sender].monthsOfSendingMailToOwner = 2;
+        addressToOwner[msg.sender].monthsForNominee = 2;
         isOwnerAdded[msg.sender] = true;
     }
 
@@ -108,6 +112,16 @@ contract Inheritokens is Ownable {
         address _recoveryAddress
     ) public {
         addressToOwner[_owner].recoveryAddress = _recoveryAddress;
+    }
+
+    function changeTimePeriods(
+        uint _inactivity,
+        uint _mail,
+        uint _nominee
+    ) public {
+        addressToOwner[msg.sender].monthsOfInactivity = _inactivity;
+        addressToOwner[msg.sender].monthsOfSendingMailToOwner = _mail;
+        addressToOwner[msg.sender].monthsForNominee = _nominee;
     }
 
     /// @return uint indicating the total number of owners on our platform

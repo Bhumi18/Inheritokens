@@ -20,7 +20,7 @@ web3 = Web3(Web3.HTTPProvider(alchemy_url))
 
 # inheritokens contract set up
 
-inheritokens_factory = "0x2dec54540c6688d81c78D42F1092D237D9a89716"
+inheritokens_factory = "0x2dec54540c6688d81c78D42F1092D237D9a89716"    
 file = open("D:/Lampros Projects/Inheritokens/Inheritokens_schedular/Inheritokens.json")
 abi = json.load(file)
 contract = web3.eth.contract(address=inheritokens_factory, abi=abi)

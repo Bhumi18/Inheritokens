@@ -23,6 +23,7 @@ contract MultipleNominee {
         uint share;
         address[] nominee;
         bool[] isNotAvailable; // true means not available and false means available
+        bool[] isClaimed; // true means nominee has claimed
     }
     // mapping of owner address to token address to struct
     mapping(address => mapping(address => mapping(uint => Multiple[])))
@@ -54,7 +55,7 @@ contract MultipleNominee {
             .tokenAddressToTokenStruct(_owner, _tokenAddress);
         if (!nominated) {
             inheritokens.assignTokenStruct(
-                _owner,
+                msg.sender,
                 _tokenAddress,
                 _tokenName,
                 _category,

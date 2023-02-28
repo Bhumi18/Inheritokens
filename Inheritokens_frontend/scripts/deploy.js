@@ -33,6 +33,6 @@ main().catch((error) => {
   process.exitCode = 1;
 });
 
-// Inheritokens contract address is 0xFD1aBc6527d4e12aD6845de502F6Da1134f6BAF5
-// charityContract contract address is 0x733A11b0cdBf8931614C4416548B74eeA1fbd0A4
-// multipleNominee contract address is 0xfDbD937a5CaB7eF3520D063c7742E0A387336708
+// Inheritokens contract address is 0x2dec54540c6688d81c78D42F1092D237D9a89716
+// charityContract contract address is 0x643e4b27aDE053Ee23748d7863A340a8a1dBbfc4
+// multipleNominee contract address is 0x6a66B56E1183e35141d14B3aCD0e21284Ca9FD13

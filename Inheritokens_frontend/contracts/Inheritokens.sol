@@ -6,6 +6,8 @@ pragma solidity ^0.8.0;
 /// @author Bhumi Sadariya
 
 import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
+import "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "../node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "hardhat/console.sol";
 
 contract Inheritokens is Ownable {
@@ -63,18 +65,66 @@ contract Inheritokens is Ownable {
     // mapping of owner address to the Response struct
     mapping(address => Response) public ownerToResponse;
 
+    // modifiers
     modifier ownerAdded() {
-        require(isOwnerAdded[_owner], "First do registration");
+        require(isOwnerAdded[msg.sender], "First do registration");
         _;
     }
 
     modifier emailVerified() {
         require(
-            addressToOwner[_owner].isEmailVerified,
+            addressToOwner[msg.sender].isEmailVerified,
             "email is not verified"
         );
         _;
     }
+
+    // events
+
+    event OwnerRegistered(address indexed _owner, string _name);
+    event EmailVerified(address indexed _owner);
+    event RecoveryAddressAdded(
+        address indexed _owner,
+        address _recoveryAddress
+    );
+    event TimePeriodsUpdated(
+        address indexed _owner,
+        uint _inactivity,
+        uint _mail,
+        uint _nominee
+    );
+    event NomineeAdded(
+        address indexed _owner,
+        address _nominee,
+        string _name,
+        string _mail
+    );
+    event NomineeDetailsUpdated(
+        address indexed _owner,
+        address indexed _oldAddress,
+        address indexed _newAddress,
+        string _name,
+        string _mail
+    );
+    event CharityWhitelisted(address indexed _owner, uint _charityId);
+    event TokenStructureAssigned(
+        address indexed _owner,
+        address indexed _tokenAddress,
+        uint indexed _tokenId
+    );
+    event AllocatedShareUpdated(
+        address indexed _owner,
+        address indexed _tokenAddress,
+        uint _amount
+    );
+    event ResponsedDateSet(address indexed _owner, string _date);
+    event OwnerResponded(address indexed _owner);
+    event Claimed(
+        address indexed _owner,
+        address indexed _nominee,
+        address indexed _tokenAddress,
+        uint _tokenId
+    );
 
     // owner-----------------------------------------------------------------------
 
@@ -96,23 +146,24 @@ contract Inheritokens is Ownable {
         addressToOwner[msg.sender].monthsOfSendingMailToOwner = 2;
         addressToOwner[msg.sender].monthsForNominee = 2;
         isOwnerAdded[msg.sender] = true;
+        emit OwnerRegistered(msg.sender, _name);
     }
 
-    /// @param _owner is the owner's address.
-    function verifyOwnerEmail(address _owner) public onlyOwner ownerAdded {
+    function verifyOwnerEmail() public onlyOwner ownerAdded {
         require(
-            !addressToOwner[_owner].isEmailVerified,
+            !addressToOwner[msg.sender].isEmailVerified,
             "Already your email is verified"
         );
-        addressToOwner[_owner].isEmailVerified = true;
+        addressToOwner[msg.sender].isEmailVerified = true;
+        emit EmailVerified(msg.sender);
     }
 
-    /// @param _owner is the address of the owner, _recoveryAddress is the address which owner wants to add as a backup address
+    /// @param _recoveryAddress is the address which owner wants to add as a backup address
     function addWalletRecovery(
-        address _owner,
         address _recoveryAddress
     ) public ownerAdded emailVerified {
-        addressToOwner[_owner].recoveryAddress = _recoveryAddress;
+        addressToOwner[msg.sender].recoveryAddress = _recoveryAddress;
+        emit RecoveryAddressAdded(msg.sender, _recoveryAddress);
     }
 
     function changeTimePeriods(
@@ -123,6 +174,7 @@ contract Inheritokens is Ownable {
         addressToOwner[msg.sender].monthsOfInactivity = _inactivity;
         addressToOwner[msg.sender].monthsOfSendingMailToOwner = _mail;
         addressToOwner[msg.sender].monthsForNominee = _nominee;
+        emit TimePeriodsUpdated(msg.sender, _inactivity, _mail, _nominee);
     }
 
     /// @return uint indicating the total number of owners on our platform
@@ -160,12 +212,12 @@ contract Inheritokens is Ownable {
         require(!isNomineeAdded[_nominee], "Nominee is already added");
         addressToNominee[_nominee] = Nominee(_name, _email, _nominee, false);
         addressToOwner[msg.sender].nominees.push(_nominee);
+        emit NomineeAdded(msg.sender, _nominee, _name, _email);
     }
 
-    /// @param _owner is the address of the owner, _oldNomineeAddress is the old account address of the nominee,
+    /// @param _oldNomineeAddress is the old account address of the nominee,
     // _name is the nominee's name, _email is the nominee's email, and _newNomineeAddress is the nominee's address
     function editNomineeDetails(
-        address _owner,
         address _oldNomineeAddress,
         string memory _name,
         string memory _email,
@@ -182,14 +234,23 @@ contract Inheritokens is Ownable {
                 .nominee_address = _newNomineeAddress;
             for (
                 uint256 i = 0;
-                i < addressToOwner[_owner].nominees.length;
+                i < addressToOwner[msg.sender].nominees.length;
                 i++
             ) {
-                if (addressToOwner[_owner].nominees[i] == _oldNomineeAddress) {
-                    addressToOwner[_owner].nominees[i] = _newNomineeAddress;
+                if (
+                    addressToOwner[msg.sender].nominees[i] == _oldNomineeAddress
+                ) {
+                    addressToOwner[msg.sender].nominees[i] = _newNomineeAddress;
                 }
             }
         }
+        emit NomineeDetailsUpdated(
+            msg.sender,
+            _oldNomineeAddress,
+            _newNomineeAddress,
+            _name,
+            _email
+        );
     }
 
     /// @param _owner is the owner address
@@ -210,13 +271,13 @@ contract Inheritokens is Ownable {
 
     // charity-------------------------------------------------------------------
 
-    /// @param _owner is the address of the owner, _charityId is the id of the chairty owner wants to keep in white
+    /// @param _charityId is the id of the chairty owner wants to keep in white
     // listed array
     function setWhiteListedCharities(
-        address _owner,
         uint _charityId
     ) public ownerAdded emailVerified {
-        addressToOwner[_owner].charities.push(_charityId);
+        addressToOwner[msg.sender].charities.push(_charityId);
+        emit CharityWhitelisted(msg.sender, _charityId);
     }
 
     /// @param _owner is the address of the owner
@@ -229,7 +290,7 @@ contract Inheritokens is Ownable {
 
     // multiple nominee--------------------------------------------------------
 
-    /// @param _owner is the owner address, _tokenAddress is the address of the token, _tokenName is the name of the token,
+    /// @param _tokenAddress is the address of the token, _tokenName is the name of the token,
     // _category is the ERC20 or ERC721, _tokenId is the id of the ERC721, and amount is the allocated share of the ERC20
     function assignTokenStruct(
         address _owner,
@@ -247,16 +308,18 @@ contract Inheritokens is Ownable {
             amount,
             true
         );
+        emit TokenStructureAssigned(_owner, _tokenAddress, _tokenId);
     }
 
     /// @param _owner is the address of the owner, _tokenAddress is the token address, and amount is the allocated share of ERC20
     function updateAllocatedShare(
         address _owner,
         address _tokenAddress,
-        uint amount
-    ) public ownerAdded emailVerified {
+        uint _amount
+    ) external ownerAdded emailVerified {
         tokenAddressToTokenStruct[_owner][_tokenAddress]
-            .allocated_share = amount;
+            .allocated_share = _amount;
+        emit AllocatedShareUpdated(_owner, _tokenAddress, _amount);
     }
 
     /// @return bool indicating whether token has nominee or not
@@ -280,11 +343,12 @@ contract Inheritokens is Ownable {
         string memory _date
     ) public onlyOwner {
         ownerToResponse[_owner].date = _date;
+        emit ResponsedDateSet(_owner, _date);
     }
 
-    /// @param _owner is the owner's address, _response is whether the owner has replied to the email or not.
-    function setResponse(address _owner, bool _response) public {
-        ownerToResponse[_owner].isResponsed = _response;
+    function setResponse() public {
+        ownerToResponse[msg.sender].isResponsed = true;
+        emit OwnerResponded(msg.sender);
     }
 
     /// @param _owner is the owner's address
@@ -309,8 +373,27 @@ contract Inheritokens is Ownable {
         return addressToOwner[_owner].isEmailVerified;
     }
 
-    /// @param _nominee is the nominee's address
-    function claim(address _nominee) public {
-        addressToNominee[_nominee].hasClaimed = true;
+    /// @param _owner is the owner's address, _tokenAddress is the address of the token, _amount is the amount of the ERC20,
+    // _tokenId is the token Id of the asset
+    function claim(
+        address _owner,
+        address _tokenAddress,
+        uint _amount,
+        uint _tokenId
+    ) public {
+        for (uint i = 0; i < addressToOwner[_owner].nominees.length; i++) {
+            if (addressToOwner[_owner].nominees[i] == msg.sender) {
+                addressToNominee[msg.sender].hasClaimed = true;
+                // transfer logic
+                if (_tokenId == 0) {
+                    IERC20 _token = IERC20(_tokenAddress);
+                    _token.transferFrom(_owner, msg.sender, _amount);
+                } else if (_tokenId > 0) {
+                    IERC721 _token = IERC721(_tokenAddress);
+                    _token.transferFrom(_owner, msg.sender, _tokenId);
+                }
+            }
+        }
+        emit Claimed(_owner, msg.sender, _tokenAddress, _tokenId);
     }
 }

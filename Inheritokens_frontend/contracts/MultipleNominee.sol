@@ -55,7 +55,7 @@ contract MultipleNominee {
             .tokenAddressToTokenStruct(_owner, _tokenAddress);
         if (!nominated) {
             inheritokens.assignTokenStruct(
-                _owner,
+                msg.sender,
                 _tokenAddress,
                 _tokenName,
                 _category,

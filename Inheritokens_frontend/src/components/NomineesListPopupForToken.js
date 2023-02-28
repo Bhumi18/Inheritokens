@@ -128,9 +128,11 @@ function NomineesListPopupForToken({
             onClick={() => {
               if (arr) arr.push(filteredPersons[key]);
               else
-                nominatedArr[index].nominees[indexChild].push(
+                nominatedArr[index].nominees[indexChild].priority_nominees.push(
                   filteredPersons[key]
                 );
+              setNomineesListPopUp(false);
+              setNomineesListPopUp2(false);
             }}
           >
             Add this

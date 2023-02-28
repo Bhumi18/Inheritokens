@@ -6,6 +6,8 @@ import image from "../assets/images/defaultprofileimage.png";
 import "../styles/ChooseNomineeToken.scss";
 import TokenNomineeDetails from "../components/TokenNomineeDetails";
 import NomineesListPopupForToken from "../components/NomineesListPopupForToken";
+import UpdateOrViewNominees from "../components/UpdateOrViewNominees";
+import GetOrdinal from "../components/GetOrdinal";
 
 function ChooseNomineeToken() {
   const location = useLocation();
@@ -15,6 +17,8 @@ function ChooseNomineeToken() {
   const [showTokenNomineeDetails, setTokenNomineeDetails] = useState(false);
   const [showNomineesListPopUp, setNomineesListPopUp] = useState(false);
   const [showNomineesListPopUp2, setNomineesListPopUp2] = useState(false);
+  const [showNomineesListPopUp3, setNomineesListPopUp3] = useState(false);
+  const [showNomineesUpdate, setNomineesUpdate] = useState(false);
   const [totalUsedRatio, setTotalUsedRatio] = useState(0);
   const [indexNumber, setIndexNumber] = useState({ parent: "", child: "" });
   const [nomineeDetail, setNomineeDetail] = useState({
@@ -165,7 +169,7 @@ function ChooseNomineeToken() {
           </div>
         </td>
         <td className="add-this">
-          <span
+          {/* <span
             className="action-btn"
             onClick={() => {
               setNomineeDetail({
@@ -178,7 +182,7 @@ function ChooseNomineeToken() {
             }}
           >
             Add this
-          </span>
+          </span> */}
         </td>
       </tr>
     ));
@@ -211,20 +215,6 @@ function ChooseNomineeToken() {
     console.log(nominatedArr);
     console.log(indexNumber);
   });
-
-  function getOrdinal(n) {
-    let ord = "th";
-
-    if (n % 10 === 1 && n % 100 !== 11) {
-      ord = "st";
-    } else if (n % 10 === 2 && n % 100 !== 12) {
-      ord = "nd";
-    } else if (n % 10 === 3 && n % 100 !== 13) {
-      ord = "rd";
-    }
-
-    return ord;
-  }
 
   return (
     <>
@@ -501,14 +491,20 @@ function ChooseNomineeToken() {
                             Nominated -
                             <span className="ratio">
                               {" " +
-                                parseFloat(
-                                  parseFloat(item.ratio) / item.nominees.length
-                                ).toFixed(2) +
+                                parseFloat(i.single_nominee_ratio).toFixed(2) +
                                 " %"}
                             </span>
                           </span>
                           <div className="modify-delete">
-                            <button className="modify">Modify</button>
+                            <button
+                              className="modify"
+                              onClick={() => {
+                                setIndexNumber({ parent: key, child: k });
+                                setNomineesUpdate(true);
+                              }}
+                            >
+                              Edit
+                            </button>
                             <button
                               className="delete"
                               onClick={() =>
@@ -526,7 +522,7 @@ function ChooseNomineeToken() {
                             </button>
                           </div>
                         </div>
-                        {/* <p className="nominee-will-get">
+                        <p className="nominee-will-get">
                           Amount for Nominee:
                           <span>
                             {" " +
@@ -541,9 +537,9 @@ function ChooseNomineeToken() {
                                 100 +
                               " MATIC"}
                           </span>
-                        </p> */}
+                        </p>
                         <div className="table-div">
-                          {i.length > 0 ? (
+                          {i.priority_nominees.length > 0 ? (
                             <table>
                               <thead>
                                 <tr>
@@ -553,14 +549,14 @@ function ChooseNomineeToken() {
                                   {/* <th></th> */}
                                 </tr>
                               </thead>
-                              {i.map((j, l) => {
+                              {i.priority_nominees.map((j, l) => {
                                 return (
                                   <tbody key={l}>
                                     <tr>
                                       <td className="priority">
                                         {l + 1}
                                         <sup className="sup-of-priority">
-                                          {getOrdinal(l + 1)}
+                                          {GetOrdinal(l + 1)}
                                         </sup>
                                       </td>
                                       {/* <td className="arrows">
@@ -690,14 +686,14 @@ function ChooseNomineeToken() {
                             ""
                           )}
                         </div>
-                        {/* <button
-                            onClick={() => {
-                              setIndexNumber({ parent: key, child: k });
-                              setNomineesListPopUp2(true);
-                            }}
-                          >
-                            Add priority
-                          </button> */}
+                        <button
+                          onClick={() => {
+                            setIndexNumber({ parent: key, child: k });
+                            setNomineesListPopUp2(true);
+                          }}
+                        >
+                          Add priority
+                        </button>
                       </div>
                     );
                   })
@@ -710,7 +706,7 @@ function ChooseNomineeToken() {
                     Nominated -<span className="ratio">{" 00.00 %"}</span>
                   </span>
                   <div className="modify-delete">
-                    <button className="modify disabled">Modify</button>
+                    <button className="modify disabled">Edit</button>
                     <button className="delete disabled">Delete</button>
                   </div>
                 </div>
@@ -732,8 +728,17 @@ function ChooseNomineeToken() {
               </span>
             </div>
             <div className="save-btn-div">
-              <button onClick={() => setTokenNomineeDetails(true)}>
+              <button
+                className="add-nominee"
+                onClick={() => setTokenNomineeDetails(true)}
+              >
                 Add Nominees
+              </button>
+              <button
+                className="save-nominee"
+                onClick={() => setTokenNomineeDetails(true)}
+              >
+                Save Nominees
               </button>
             </div>
           </div>
@@ -756,6 +761,17 @@ function ChooseNomineeToken() {
             setNomineesListPopUp2={setNomineesListPopUp2}
             nominatedArr={nominatedArr}
             indexNumber={indexNumber}
+          />
+        ) : (
+          ""
+        )}
+        {showNomineesUpdate ? (
+          <UpdateOrViewNominees
+            setNomineesUpdate={setNomineesUpdate}
+            nominatedArr={nominatedArr}
+            indexNumber={indexNumber}
+            showNomineesListPopUp3={showNomineesListPopUp3}
+            setNomineesListPopUp3={setNomineesListPopUp3}
           />
         ) : (
           ""

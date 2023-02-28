@@ -239,8 +239,10 @@
           font-size: 1rem;
           letter-spacing: 2px;
           line-height: 1rem;
-          padding: 0.5rem 1rem;
+          padding: 2.5% 5%;
           border-radius: 9999px;
+        }
+        button.add-nominee {
           background: #dcd6fc;
           background-image: linear-gradient(to right, #9f8ff7 0%, #5a88e1 100%);
           background-image: -moz-linear-gradient(
@@ -253,6 +255,17 @@
             #9f8ff7 0%,
             #5a88e1 100%
           );
+        }
+        button.save-nominee {
+          margin-left: 20px;
+          color: #0ba360;
+          background-color: #fff;
+          border: 1px solid #0ba360;
+          // background: linear-gradient(to top, #0ba360 0%, #3cba92 100%);
+          &:hover {
+            color: white;
+            background: linear-gradient(to top, #0ba360 0%, #3cba92 100%);
+          }
         }
       }
 

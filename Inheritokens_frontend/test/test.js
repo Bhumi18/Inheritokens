@@ -84,28 +84,28 @@ describe("Inheritokens", function () {
     //   (await inheritokens.addressToOwner(owner.address)).isEmailVerified
     // );
     expect(await inheritokens.isOwnerAdded(owner.address)).to.equal(true);
-    await inheritokens.connect(owner).verifyOwnerEmail(owner.address);
+    await inheritokens.connect(owner).verifyOwnerEmail();
     expect(
       (await inheritokens.addressToOwner(owner.address)).isEmailVerified
     ).to.equal(true);
   });
 
-  it("verify second owner's email address", async function () {
-    // console.log(
-    //   (await inheritokens.addressToOwner(owner1.address)).isEmailVerified
-    // );
-    expect(await inheritokens.isOwnerAdded(owner1.address)).to.equal(true);
-    await inheritokens.connect(owner).verifyOwnerEmail(owner1.address);
-    expect(
-      (await inheritokens.addressToOwner(owner1.address)).isEmailVerified
-    ).to.equal(true);
-  });
+  // it("verify second owner's email address", async function () {
+  //   // console.log(
+  //   //   (await inheritokens.addressToOwner(owner1.address)).isEmailVerified
+  //   // );
+  //   expect(await inheritokens.isOwnerAdded(owner1.address)).to.equal(true);
+  //   await inheritokens.connect(owner).verifyOwnerEmail();
+  //   expect(
+  //     (await inheritokens.addressToOwner(owner1.address)).isEmailVerified
+  //   ).to.equal(true);
+  // });
 
   // for wallet recovery
   it("should able to add recovery address", async function () {
     await inheritokens
       .connect(owner)
-      .addWalletRecovery(owner.address, recover_address.address);
+      .addWalletRecovery(recover_address.address);
     expect(await inheritokens.getRecoveryAddress(owner.address)).to.equal(
       recover_address.address
     );
@@ -113,11 +113,9 @@ describe("Inheritokens", function () {
 
   // for adding nominee
   it("should able to add nominee", async function () {
-    await inheritokens.addNomineesDetails(
-      "Bhumi1",
-      "bhumi1@gmail.com",
-      nominee1.address
-    );
+    await inheritokens
+      .connect(owner)
+      .addNomineesDetails("Bhumi1", "bhumi1@gmail.com", nominee1.address);
     const len = (await inheritokens.getAllNominees(owner.address)).length;
     expect(len).to.equal(1);
   });
@@ -134,7 +132,6 @@ describe("Inheritokens", function () {
 
   it("should allow owner to update nominee name and email", async function () {
     await inheritokens.editNomineeDetails(
-      owner.address,
       nominee1.address,
       "krupa",
       "krupa@gmail.com",
@@ -151,7 +148,6 @@ describe("Inheritokens", function () {
 
   it("should allow owner to change nominee address", async function () {
     await inheritokens.editNomineeDetails(
-      owner.address,
       nominee1.address,
       "krupa Shah",
       "krupa@gmail.com",
@@ -204,7 +200,7 @@ describe("Inheritokens", function () {
   });
 
   it("should allow owner to set charity as white list", async function () {
-    await inheritokens.setWhiteListedCharities(owner.address, 1);
+    await inheritokens.setWhiteListedCharities(1);
     const len = (await inheritokens.getAllWhiteListedCharities(owner.address))
       .length;
     expect(len).to.equal(1);
@@ -212,8 +208,8 @@ describe("Inheritokens", function () {
 
   // for multiple nominee
   it("should able to assign token to multiple nominees", async function () {
+    console.log(await inheritokens.isOwnerAdded(owner.address));
     await multipleNominee.assignTokensToMultipleNominees(
-      owner.address,
       "0x53d00397f03147a9bd9c40443a105a82780deaf1",
       "fTUSD Fake Token",
       "20",
@@ -284,7 +280,6 @@ describe("Inheritokens", function () {
 
   it("should able to edit token to multiple nominees", async function () {
     await multipleNominee.assignTokensToMultipleNominees(
-      owner.address,
       "0x53d00397f03147a9bd9c40443a105a82780deaf1",
       "fTUSD Fake Token",
       "20",

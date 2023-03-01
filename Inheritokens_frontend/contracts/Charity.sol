@@ -7,7 +7,7 @@ import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
 /// @title Charity Functionality
 /// @author Bhumi Sadariya
 
-contract CharityContract is Ownable{
+contract CharityContract is Ownable {
     constructor() Ownable() {}
 
     // Charity structure, mapping of charity id to Charity struct, and mapping of owner's address to array of whitelisted charity id
@@ -20,6 +20,18 @@ contract CharityContract is Ownable{
     }
     uint public charity_id;
     mapping(uint => Charity) public idToCharity;
+
+    // events
+    event CharityAdded(
+        uint indexed _charityId,
+        address indexed _charityAddress,
+        string _charityName
+    );
+    event CharityUpdated(
+        uint indexed _charityId,
+        address indexed _charityAddress,
+        string _charityName
+    );
 
     // charity----------------------------------------------------------------------------------
 
@@ -39,6 +51,7 @@ contract CharityContract is Ownable{
             _charityDescription,
             _charityImage
         );
+        emit CharityAdded(charity_id, _charityAddress, _charityName);
     }
 
     /// @param _charityId is the id of the charity, _charityAddress is the address of the charity, _charityName is the name of the charity,
@@ -49,11 +62,12 @@ contract CharityContract is Ownable{
         string memory _charityName,
         string memory _charityDescription,
         string memory _charityImage
-    ) public onlyOwner{
+    ) public onlyOwner {
         idToCharity[_charityId].charity_address = _charityAddress;
         idToCharity[_charityId].charity_name = _charityName;
         idToCharity[_charityId].charity_description = _charityDescription;
         idToCharity[_charityId].charity_image = _charityImage;
+        emit CharityUpdated(_charityId, _charityAddress, _charityName);
     }
 
     /// @param _charityId is the id of the charity

@@ -32,6 +32,13 @@ contract MultipleNominee {
     // address[] private temp_nominee;
     // bool[] private temp_availability;
 
+    // event
+    event TokensAssigned(
+        address indexed _owner,
+        address _tokenAddress,
+        uint _tokenId
+    );
+
     /// @param _owner is the address of the owner; _nominee is the address of the nominee; _tokenAddress is
     // the address of the token contract, _tokenName is the name of the token, _share is the amount the owner
     // wants to allocate to the nominee, _isMultipleNominee is the boolean value indicating whether this
@@ -41,7 +48,6 @@ contract MultipleNominee {
     /// @notice If the share is allocated to 100%, then the owner will not be able to add more nominees for
     // this token. Either he has to remove or edit any of those nominees.
     function assignTokensToMultipleNominees(
-        address _owner,
         address _tokenAddress,
         string memory _tokenName,
         string memory _category,
@@ -49,10 +55,12 @@ contract MultipleNominee {
         uint _totalShare,
         Multiple[] memory data
     ) public {
+        // modifier remaining
         bool nominated;
         uint _allocateShare;
         (, , , , _allocateShare, nominated) = inheritokens
-            .tokenAddressToTokenStruct(_owner, _tokenAddress);
+            .tokenAddressToTokenStruct(msg.sender, _tokenAddress);
+            console.log(msg.sender);
         if (!nominated) {
             inheritokens.assignTokenStruct(
                 msg.sender,
@@ -63,21 +71,22 @@ contract MultipleNominee {
                 _tokenId
             );
         }
-        uint len = ownerToTokenToMultipleStruct[_owner][_tokenAddress][_tokenId]
+        uint len = ownerToTokenToMultipleStruct[msg.sender][_tokenAddress][_tokenId]
             .length;
         if (len > 0) {
-            delete ownerToTokenToMultipleStruct[_owner][_tokenAddress][
+            delete ownerToTokenToMultipleStruct[msg.sender][_tokenAddress][
                 _tokenId
             ];
-            inheritokens.updateAllocatedShare(_owner, _tokenAddress, 0);
+            inheritokens.updateAllocatedShare(msg.sender, _tokenAddress, 0);
         }
         require(_totalShare <= 100, "Reduce the share amount...");
-        inheritokens.updateAllocatedShare(_owner, _tokenAddress, _totalShare);
+        inheritokens.updateAllocatedShare(msg.sender, _tokenAddress, _totalShare);
         for (uint i = 0; i < data.length; i++) {
-            ownerToTokenToMultipleStruct[_owner][_tokenAddress][_tokenId].push(
+            ownerToTokenToMultipleStruct[msg.sender][_tokenAddress][_tokenId].push(
                 data[i]
             );
         }
+        emit TokensAssigned(msg.sender, _tokenAddress, _tokenId);
     }
 
     function getAllStructs(

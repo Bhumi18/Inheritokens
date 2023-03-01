@@ -212,6 +212,7 @@ contract Inheritokens is Ownable {
         require(!isNomineeAdded[_nominee], "Nominee is already added");
         addressToNominee[_nominee] = Nominee(_name, _email, _nominee, false);
         addressToOwner[msg.sender].nominees.push(_nominee);
+        isNomineeAdded[_nominee] = true;
         emit NomineeAdded(msg.sender, _nominee, _name, _email);
     }
 
@@ -299,7 +300,12 @@ contract Inheritokens is Ownable {
         string memory _category,
         uint _tokenId,
         uint amount
-    ) public ownerAdded emailVerified {
+    ) public {
+        require(isOwnerAdded[_owner], "First do registration");
+        require(
+            addressToOwner[_owner].isEmailVerified,
+            "email is not verified"
+        );
         tokenAddressToTokenStruct[_owner][_tokenAddress] = Token(
             _tokenAddress,
             _tokenName,
@@ -316,7 +322,12 @@ contract Inheritokens is Ownable {
         address _owner,
         address _tokenAddress,
         uint _amount
-    ) external ownerAdded emailVerified {
+    ) external {
+        require(isOwnerAdded[_owner], "First do registration");
+        require(
+            addressToOwner[_owner].isEmailVerified,
+            "email is not verified"
+        );
         tokenAddressToTokenStruct[_owner][_tokenAddress]
             .allocated_share = _amount;
         emit AllocatedShareUpdated(_owner, _tokenAddress, _amount);

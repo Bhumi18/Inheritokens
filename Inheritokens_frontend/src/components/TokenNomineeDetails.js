@@ -153,7 +153,12 @@ function TokenNomineeDetails({
             onClick={() => {
               let temp = [];
               for (let i = 0; i < arr.length; i++) {
-                temp.push([arr[i]]);
+                temp.push({
+                  priority_nominees: [arr[i]],
+                  single_nominee_ratio: parseFloat(
+                    ratio / parseInt(arr.length)
+                  ).toFixed(2),
+                });
               }
               nominatedArr.push({ nominees: temp, ratio: ratio });
               setTotalUsedRatio((prev) => parseFloat(prev) + parseFloat(ratio));

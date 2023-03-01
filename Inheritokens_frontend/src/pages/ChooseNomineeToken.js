@@ -262,7 +262,7 @@ function ChooseNomineeToken() {
           </div>
         </div>
         <div className="second-section">
-          <div className="all-nominees-list">
+          {/* <div className="all-nominees-list">
             <div className="table-title">
               <span
                 className={allNomiees ? "active" : ""}
@@ -314,10 +314,16 @@ function ChooseNomineeToken() {
                 </div>
               )}
             </div>
-          </div>
+          </div> */}
           <div className="selected-nominees-list">
             <div className="table-title">
               <span className="active">Nominated</span>
+              <button
+                className="add-nominee"
+                onClick={() => setTokenNomineeDetails(true)}
+              >
+                Add Nominee
+              </button>
             </div>
             {/* {nominatedArr.length > 0 ? (
               <table>
@@ -549,151 +555,71 @@ function ChooseNomineeToken() {
                                   {/* <th></th> */}
                                 </tr>
                               </thead>
-                              {i.priority_nominees.map((j, l) => {
-                                return (
-                                  <tbody key={l}>
-                                    <tr>
-                                      <td className="priority">
-                                        {l + 1}
-                                        <sup className="sup-of-priority">
-                                          {GetOrdinal(l + 1)}
-                                        </sup>
-                                      </td>
-                                      {/* <td className="arrows">
-                                        {l === 0 ? (
-                                          <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            height="24px"
-                                            viewBox="0 0 24 24"
-                                            width="24px"
-                                            fill="#000000"
-                                            className="disabled"
-                                          >
-                                            <path
-                                              d="M0 0h24v24H0V0z"
-                                              fill="none"
+                              <tbody>
+                                {i.priority_nominees.map((j, l) => {
+                                  if (l < 3)
+                                    return (
+                                      <tr key={l}>
+                                        <td className="priority">
+                                          {l + 1}
+                                          <sup className="sup-of-priority">
+                                            {GetOrdinal(l + 1)}
+                                          </sup>
+                                        </td>
+                                        <td className="nominee-details">
+                                          <div className="nominee-details">
+                                            <img
+                                              src={j.img}
+                                              alt="nfts"
+                                              className="nominee-profile"
                                             />
-                                            <path d="M11.29 8.71L6.7 13.3c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L12 10.83l3.88 3.88c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L12.7 8.71c-.38-.39-1.02-.39-1.41 0z" />
-                                          </svg>
-                                        ) : (
-                                          <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            height="24px"
-                                            viewBox="0 0 24 24"
-                                            width="24px"
-                                            fill="#000000"
-                                            onClick={() =>
-                                              handleMoveUpElement(key)
-                                            }
-                                          >
-                                            <path
-                                              d="M0 0h24v24H0V0z"
-                                              fill="none"
-                                            />
-                                            <path d="M11.29 8.71L6.7 13.3c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L12 10.83l3.88 3.88c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L12.7 8.71c-.38-.39-1.02-.39-1.41 0z" />
-                                          </svg>
-                                        )}
-                                        {l === i.length - 1 ? (
-                                          <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            height="24px"
-                                            viewBox="0 0 24 24"
-                                            width="24px"
-                                            fill="#000000"
-                                            className="disabled"
-                                          >
-                                            <path
-                                              d="M24 24H0V0h24v24z"
-                                              fill="none"
-                                              opacity=".87"
-                                            />
-                                            <path d="M15.88 9.29L12 13.17 8.12 9.29c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l4.59 4.59c.39.39 1.02.39 1.41 0l4.59-4.59c.39-.39.39-1.02 0-1.41-.39-.38-1.03-.39-1.42 0z" />
-                                          </svg>
-                                        ) : (
-                                          <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            height="24px"
-                                            viewBox="0 0 24 24"
-                                            width="24px"
-                                            fill="#000000"
-                                            onClick={() =>
-                                              handleMoveDownElement(key)
-                                            }
-                                          >
-                                            <path
-                                              d="M24 24H0V0h24v24z"
-                                              fill="none"
-                                              opacity=".87"
-                                            />
-                                            <path d="M15.88 9.29L12 13.17 8.12 9.29c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l4.59 4.59c.39.39 1.02.39 1.41 0l4.59-4.59c.39-.39.39-1.02 0-1.41-.39-.38-1.03-.39-1.42 0z" />
-                                          </svg>
-                                        )}
-                                      </td> */}
 
-                                      <td className="nominee-details">
-                                        <div className="nominee-details">
-                                          <img
-                                            src={j.img}
-                                            alt="nfts"
-                                            className="nominee-profile"
-                                          />
-
-                                          <div className="inside-choose-nominee">
-                                            <h2>{j.name}</h2>
-                                            <p>{j.email}</p>
-                                            <p>
-                                              {j.w_add.substring(0, 5) +
-                                                "..." +
-                                                j.w_add.substring(
-                                                  j.w_add.length - 4,
-                                                  j.w_add.length
-                                                )}
-                                            </p>
+                                            <div className="inside-choose-nominee">
+                                              <h2>{j.name}</h2>
+                                              <p>{j.email}</p>
+                                              <p>
+                                                {j.w_add.substring(0, 5) +
+                                                  "..." +
+                                                  j.w_add.substring(
+                                                    j.w_add.length - 4,
+                                                    j.w_add.length
+                                                  )}
+                                              </p>
+                                            </div>
                                           </div>
-                                        </div>
-                                      </td>
-                                      {/* <td>
-                                        <svg
-                                          xmlns="http://www.w3.org/2000/svg"
-                                          height="24px"
-                                          viewBox="0 0 24 24"
-                                          width="24px"
-                                          fill="#000000"
-                                          onClick={() =>
-                                            handleRestoreElement(key)
-                                          }
-                                        >
-                                          <path
-                                            d="M0 0h24v24H0V0z"
-                                            fill="none"
-                                          />
-                                          <path d="M18.3 5.71c-.39-.39-1.02-.39-1.41 0L12 10.59 7.11 5.7c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41L10.59 12 5.7 16.89c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L12 13.41l4.89 4.89c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z" />
-                                        </svg>
-                                      </td> */}
-                                    </tr>
-                                  </tbody>
-                                );
-                              })}
+                                        </td>
+                                      </tr>
+                                    );
+                                })}{" "}
+                              </tbody>
                             </table>
                           ) : (
                             ""
                           )}
-                          {i.length > 2 ? (
+                          {i.priority_nominees.length > 2 ? (
                             <div className="show-more-nominees">
-                              <button>Show More</button>
+                              <button
+                                className="show-more"
+                                onClick={() => {
+                                  setIndexNumber({ parent: key, child: k });
+                                  setNomineesUpdate(true);
+                                }}
+                              >
+                                Show More
+                              </button>
                             </div>
                           ) : (
                             ""
                           )}
                         </div>
-                        <button
+                        {/* <button
                           onClick={() => {
                             setIndexNumber({ parent: key, child: k });
                             setNomineesListPopUp2(true);
                           }}
                         >
                           Add priority
-                        </button>
+                        </button> */}
                       </div>
                     );
                   })
@@ -710,13 +636,11 @@ function ChooseNomineeToken() {
                     <button className="delete disabled">Delete</button>
                   </div>
                 </div>
-                <div className="table-div">
-                  <div className="add-nominee">
-                    <button onClick={() => setTokenNomineeDetails(true)}>
-                      Add Nominee
-                    </button>
-                  </div>
-                </div>
+
+                <p className="not-find-nominee">
+                  We can't find any nominee for this token. Please add nominees
+                  using "Add Nominee" button.
+                </p>
               </div>
             )}
 
@@ -732,7 +656,7 @@ function ChooseNomineeToken() {
                 className="add-nominee"
                 onClick={() => setTokenNomineeDetails(true)}
               >
-                Add Nominees
+                Add Nominee
               </button>
               <button
                 className="save-nominee"

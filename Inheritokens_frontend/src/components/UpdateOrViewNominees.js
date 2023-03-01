@@ -63,7 +63,14 @@ function UpdateOrViewNominees({
       ></div>
       <div id="modal">
         <div className="update-view-main">
-          <span>Nominated - {ratio} %</span>
+          <div className="title">
+            <span className="main-title">Add / Edit Nominee</span>
+          </div>
+          <div className="details">
+            <span className="title">
+              Nominated - <span className="content">{ratio} %</span>
+            </span>
+          </div>
 
           <div className="table-div">
             {arrChanged && arr.length > 0 ? (

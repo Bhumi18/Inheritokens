@@ -203,6 +203,8 @@
 
     .selected-nominees-list {
       // width: 55%;
+      width: 90%;
+      margin: 0 auto;
       padding: 1.5rem;
       border-radius: 20px;
       background-color: #fff;
@@ -213,7 +215,7 @@
       .table-title {
         display: flex;
         align-items: center;
-        justify-content: flex-start;
+        justify-content: space-between;
         gap: 2rem;
         margin: 1rem 0px;
         span.active {
@@ -223,6 +225,28 @@
           color: #ffffff;
           padding: 0.5rem 1rem;
         }
+        button.add-nominee {
+          box-shadow: none;
+          border: none;
+          color: #ffffff;
+          font-weight: 500;
+          font-size: 1rem;
+          letter-spacing: 2px;
+          padding: 0.5rem 1rem;
+          border-radius: 9999px;
+          background: #dcd6fc;
+          background-image: linear-gradient(to right, #9f8ff7 0%, #5a88e1 100%);
+          background-image: -moz-linear-gradient(
+            left,
+            #9f8ff7 0%,
+            #5a88e1 100%
+          );
+          background-image: -webkit-linear-gradient(
+            left,
+            #9f8ff7 0%,
+            #5a88e1 100%
+          );
+        }
       }
 
       .save-btn-div {
@@ -231,7 +255,6 @@
         justify-content: center;
 
         button {
-          margin-top: 20px;
           box-shadow: none;
           border: none;
           color: #ffffff;
@@ -239,7 +262,7 @@
           font-size: 1rem;
           letter-spacing: 2px;
           line-height: 1rem;
-          padding: 2.5% 5%;
+          padding: 0.5rem 1rem;
           border-radius: 9999px;
         }
         button.add-nominee {
@@ -270,7 +293,7 @@
       }
 
       .nominated-ratio-main {
-        border: 1px solid #f3f4f6;
+        border: 1px solid black;
         width: 100%;
         border-radius: 10px;
         margin: 20px 0px;
@@ -314,7 +337,11 @@
             }
           }
         }
-
+        p.not-find-nominee {
+          margin: 30px auto;
+          width: 70%;
+          text-align: center;
+        }
         p.nominee-will-get {
           font-size: 15px;
           padding: 0px 10px;
@@ -364,6 +391,22 @@
           .show-more-nominees {
             margin: 0px auto;
             width: max-content;
+            button {
+              box-shadow: none;
+              border: none;
+              color: #000;
+              font-weight: 500;
+              font-size: 0.865rem;
+              padding: 5px;
+              border-radius: 5px;
+              background-color: #fff;
+              border: 1px solid #000;
+              // background: linear-gradient(to top, #0ba360 0%, #3cba92 100%);
+              &:hover {
+                color: white;
+                background-color: #000;
+              }
+            }
           }
           .add-nominee {
             margin: 20px auto;

@@ -1,9 +1,3 @@
-.field-main {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-}
 .overlay {
   height: 100vh;
   width: 100vw;
@@ -19,52 +13,138 @@
 #modal {
   margin: 0 auto;
   position: fixed;
-  top: 10%;
+  top: 5%;
   left: 0;
   right: 0;
-  width: 90%;
-  max-width: 70vh;
+  width: 50vw;
+  max-width: 900px;
   border-radius: 20px;
   //   transform: translate(-50%, -50%);
-  text-align: center;
+  // text-align: center;
   padding: 30px;
   z-index: 200;
   background-color: white;
 }
 
-.nominees-list {
-  display: flex;
-  flex-direction: column;
-  margin: 0 auto;
-  .nominee-details {
+.token-nominee-details {
+  .add-nominee {
+    text-align: center;
+    svg {
+      cursor: pointer;
+    }
+  }
+  span.main-title {
+    border: 1px solid black;
+    padding: 0.5rem 1rem;
+    border-radius: 999999px;
+    color: white;
+    background-color: black;
+    margin-bottom: 10px 0px;
+  }
+  p.details {
+    text-align: center;
+  }
+  .field-main {
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
     align-items: center;
-    margin: 0 auto;
-    width: 80%;
-    background-color: #f3f4f6;
+    margin-top: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
+    span {
+      margin-bottom: 6px;
+    }
+  }
+  .input-field {
+    border: 1px solid rgb(224, 224, 224);
     border-radius: 10px;
+    height: 50px;
     padding: 10px;
 
-    img.nominee-profile {
-      margin-right: 1rem;
-      width: 40px;
-      height: 40px;
-      border-radius: 20px;
+    input {
+      font-size: 1rem;
+      font-weight: 500;
+      box-shadow: none;
+      border: none;
+      height: 100%;
+      width: 100%;
+      &:focus {
+        outline: none;
+      }
     }
+  }
 
-    .inside-choose-nominee {
-      text-align: left;
-      h2 {
-        font-size: 15px;
-        margin: 0px;
+  .nominees-list {
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    border: 1px solid rgb(224, 224, 224);
+    border-radius: 10px;
+    max-height: 30vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 10px;
+
+    .nominee-details {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      margin: 5px auto;
+      width: 80%;
+      background-color: #f3f4f6;
+      border-radius: 10px;
+      padding: 10px;
+
+      img.nominee-profile {
+        margin-right: 1rem;
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
       }
-      p {
-        margin: 0;
+
+      .inside-choose-nominee {
+        text-align: left;
+        h2 {
+          font-size: 1rem;
+          margin: 0px;
+        }
+        p {
+          font-size: 0.865rem;
+          margin: 0;
+        }
+      }
+      .delete-svg {
+        margin-left: auto;
+        cursor: pointer;
       }
     }
-    .delete-svg {
-      margin-left: auto;
+  }
+  .next-btn {
+    width: 100%;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    button {
+      font-weight: 500;
+      font-size: 1rem;
+      letter-spacing: 2px;
+      line-height: 1rem;
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+
+      color: #0ba360;
+      background-color: #fff;
+      border: 1px solid #0ba360;
+      // background: linear-gradient(to top, #0ba360 0%, #3cba92 100%);
+      &:hover {
+        color: white;
+        background: linear-gradient(to top, #0ba360 0%, #3cba92 100%);
+      }
+    }
+    button.disabled {
+      opacity: 0.5;
+      pointer-events: none;
     }
   }
 }

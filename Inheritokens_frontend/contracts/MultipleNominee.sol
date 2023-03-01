@@ -60,6 +60,7 @@ contract MultipleNominee {
         uint _allocateShare;
         (, , , , _allocateShare, nominated) = inheritokens
             .tokenAddressToTokenStruct(msg.sender, _tokenAddress);
+            console.log(msg.sender);
         if (!nominated) {
             inheritokens.assignTokenStruct(
                 msg.sender,

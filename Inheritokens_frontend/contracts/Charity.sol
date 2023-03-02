@@ -10,7 +10,7 @@ import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
 contract CharityContract is Ownable {
     constructor() Ownable() {}
 
-    // Charity structure, mapping of charity id to Charity struct, and mapping of owner's address to array of whitelisted charity id
+    // Charity structure, mapping of charity id to Charity struct
     struct Charity {
         uint id;
         address charity_address;
@@ -63,10 +63,13 @@ contract CharityContract is Ownable {
         string memory _charityDescription,
         string memory _charityImage
     ) public onlyOwner {
-        idToCharity[_charityId].charity_address = _charityAddress;
-        idToCharity[_charityId].charity_name = _charityName;
-        idToCharity[_charityId].charity_description = _charityDescription;
-        idToCharity[_charityId].charity_image = _charityImage;
+        idToCharity[charity_id] = Charity(
+            _charityId,
+            _charityAddress,
+            _charityName,
+            _charityDescription,
+            _charityImage
+        );
         emit CharityUpdated(_charityId, _charityAddress, _charityName);
     }
 

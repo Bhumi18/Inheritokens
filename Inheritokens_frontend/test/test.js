@@ -212,12 +212,11 @@ describe("Inheritokens", function () {
     await multipleNominee.assignTokensToMultipleNominees(
       "0x53d00397f03147a9bd9c40443a105a82780deaf1",
       "fTUSD Fake Token",
-      "20",
       0,
-      90,
+      0,
       [
         [40, [nominee1.address, nominee2.address], [false, false], [1, 2]],
-        [50, [nominee3.address, nominee4.address], [false, false], [3, 4]],
+        [40, [nominee3.address, nominee4.address], [false, false], [3, 4]],
       ]
     );
     // console.log(

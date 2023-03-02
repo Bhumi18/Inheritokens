@@ -253,6 +253,7 @@
         width: 100%;
         display: flex;
         justify-content: center;
+        margin: 20px 0px;
 
         button {
           box-shadow: none;
@@ -639,7 +640,8 @@
       }
     }
     .second-section {
-      width: 90vw;
+      display: block;
+      width: 100%;
       margin-bottom: 50px;
       .all-nominees-list {
         max-width: calc(100vw - 2%);
@@ -657,6 +659,15 @@
       .selected-nominees-list {
         max-width: calc(100vw - 5%);
         padding: 10px;
+        .save-btn-div {
+          button {
+            font-size: 0.865rem;
+            padding: 10px 20px;
+          }
+          button.save-nominee {
+            margin-left: 10px;
+          }
+        }
       }
       img.nominee-profile {
         margin-right: 10px;

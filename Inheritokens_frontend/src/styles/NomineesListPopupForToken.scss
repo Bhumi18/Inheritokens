@@ -147,3 +147,25 @@
     }
   }
 }
+
+@media only screen and (max-width: 768px) {
+  .all-nominees-list {
+    padding: 5px;
+    .table-div {
+      padding: 0px;
+      max-height: 60vh;
+    }
+    .table-title {
+      span {
+        padding: 5px 10px;
+      }
+    }
+    table {
+      tbody {
+        span.action-btn {
+          padding: 0.5rem 0.865rem;
+        }
+      }
+    }
+  }
+}

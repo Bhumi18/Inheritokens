@@ -13,17 +13,19 @@ import "hardhat/console.sol";
 contract Inheritokens is Ownable {
     constructor() Ownable() {}
 
-    // all owner's addresses array and mapping to check if the owner is already added or not.
+    // all owner's addresses into an array and mapping to check if the owner is already added or not.
     address[] public owners;
     mapping(address => bool) public isOwnerAdded;
 
-    // Owner structure and mapping of owner's address with Owner struct
+    // Owner structure and mapping of the owner's address with Owner structure
     struct Owner {
         string owner_name;
         string owner_email;
         string image_cid;
+        string date;
         bool isEmailVerified;
         bool isAlive;
+        bool isResponsed;
         address recoveryAddress;
         address[] nominees;
         uint[] charities;
@@ -33,7 +35,7 @@ contract Inheritokens is Ownable {
     }
     mapping(address => Owner) public addressToOwner;
 
-    // Nominee structure, and mapping of nominee's address to nominee struct
+    // Nominee structure and mapping of the nominee's address to the nominee structure
     struct Nominee {
         string nominee_name;
         string nominee_email;
@@ -48,24 +50,24 @@ contract Inheritokens is Ownable {
     struct Token {
         address token_address;
         string token_name;
-        string category;
+        uint category;
         uint token_id;
         uint allocated_share;
         bool isNominated;
     }
-    // mapping of owner address to token address to Token struct
+    // mapping of owner address to token address to token structure
     mapping(address => mapping(address => Token))
         public tokenAddressToTokenStruct;
-
-    // struct to store owner's response after inactivity period
-    struct Response {
-        string date;
-        bool isResponsed;
-    }
-    // mapping of owner address to the Response struct
-    mapping(address => Response) public ownerToResponse;
+    // mapping of owner address to nft address to token id to token struct
+    mapping(address => mapping(address => mapping(uint => Token)))
+        public nftAddressToTokenStruct;
 
     // modifiers
+    modifier ownerNotAdded() {
+        require(!isOwnerAdded[msg.sender], "Already registered");
+        _;
+    }
+
     modifier ownerAdded() {
         require(isOwnerAdded[msg.sender], "First do registration");
         _;
@@ -80,7 +82,6 @@ contract Inheritokens is Ownable {
     }
 
     // events
-
     event OwnerRegistered(address indexed _owner, string _name);
     event EmailVerified(address indexed _owner);
     event RecoveryAddressAdded(
@@ -133,9 +134,7 @@ contract Inheritokens is Ownable {
         string memory _name,
         string memory _email,
         string memory _cid
-    ) public {
-        // revert back if the owner is alread added or else proceed
-        require(!isOwnerAdded[msg.sender], "Already registered");
+    ) public ownerNotAdded {
         owners.push(msg.sender);
         addressToOwner[msg.sender].owner_name = _name;
         addressToOwner[msg.sender].owner_email = _email;
@@ -149,6 +148,7 @@ contract Inheritokens is Ownable {
         emit OwnerRegistered(msg.sender, _name);
     }
 
+    // verify owner's email
     function verifyOwnerEmail() public onlyOwner ownerAdded {
         require(
             !addressToOwner[msg.sender].isEmailVerified,
@@ -182,23 +182,17 @@ contract Inheritokens is Ownable {
         return owners.length;
     }
 
+    /// @return an array of owner's address
+    function getOwners() public view returns (address[] memory) {
+        return owners;
+    }
+
     /// @param _owner is the owner's address
     /// @return owner structure
     function getOwnerDetails(
         address _owner
     ) public view returns (Owner memory) {
         return addressToOwner[_owner];
-    }
-
-    /// @return boolean showing whether the owner is alive or not
-    function getOwnerAlive(address _owner) public view returns (bool) {
-        return addressToOwner[_owner].isAlive;
-    }
-
-    /// @param _owner is the address of the owner
-    /// @return recovery address
-    function getRecoveryAddress(address _owner) public view returns (address) {
-        return addressToOwner[_owner].recoveryAddress;
     }
 
     // nominee---------------------------------------------------------------------
@@ -272,21 +266,12 @@ contract Inheritokens is Ownable {
 
     // charity-------------------------------------------------------------------
 
-    /// @param _charityId is the id of the chairty owner wants to keep in white
-    // listed array
+    /// @param _charityId is the ID of the charity that the owner wants to keep in the whitelisted array.
     function setWhiteListedCharities(
         uint _charityId
     ) public ownerAdded emailVerified {
         addressToOwner[msg.sender].charities.push(_charityId);
         emit CharityWhitelisted(msg.sender, _charityId);
-    }
-
-    /// @param _owner is the address of the owner
-    /// @return an array of the white listed charities for a given owner
-    function getAllWhiteListedCharities(
-        address _owner
-    ) public view returns (uint[] memory) {
-        return addressToOwner[_owner].charities;
     }
 
     // multiple nominee--------------------------------------------------------
@@ -297,7 +282,7 @@ contract Inheritokens is Ownable {
         address _owner,
         address _tokenAddress,
         string memory _tokenName,
-        string memory _category,
+        uint _category,
         uint _tokenId,
         uint amount
     ) public {
@@ -306,14 +291,29 @@ contract Inheritokens is Ownable {
             addressToOwner[_owner].isEmailVerified,
             "email is not verified"
         );
-        tokenAddressToTokenStruct[_owner][_tokenAddress] = Token(
-            _tokenAddress,
-            _tokenName,
-            _category,
-            _tokenId,
-            amount,
-            true
-        );
+        // for token
+        if (_category == 0) {
+            tokenAddressToTokenStruct[_owner][_tokenAddress] = Token(
+                _tokenAddress,
+                _tokenName,
+                _category,
+                _tokenId,
+                amount,
+                true
+            );
+        }
+        // for NFT
+        else {
+            nftAddressToTokenStruct[_owner][_tokenAddress][_tokenId] = Token(
+                _tokenAddress,
+                _tokenName,
+                _category,
+                _tokenId,
+                amount,
+                true
+            );
+        }
+
         emit TokenStructureAssigned(_owner, _tokenAddress, _tokenId);
     }
 
@@ -321,68 +321,68 @@ contract Inheritokens is Ownable {
     function updateAllocatedShare(
         address _owner,
         address _tokenAddress,
-        uint _amount
+        uint _tokenId,
+        uint _amount,
+        uint _category
     ) external {
         require(isOwnerAdded[_owner], "First do registration");
         require(
             addressToOwner[_owner].isEmailVerified,
             "email is not verified"
         );
-        tokenAddressToTokenStruct[_owner][_tokenAddress]
-            .allocated_share = _amount;
+        // for token
+        if (_category == 0) {
+            tokenAddressToTokenStruct[_owner][_tokenAddress]
+                .allocated_share = _amount;
+        }
+        // for NFT
+        else {
+            nftAddressToTokenStruct[_owner][_tokenAddress][_tokenId]
+                .allocated_share = _amount;
+        }
         emit AllocatedShareUpdated(_owner, _tokenAddress, _amount);
     }
 
-    /// @return bool indicating whether token has nominee or not
-    function getIsNominated(
+    /// @param _owner is the address of the owner, _tokenAddress is the address of the token, _tokenId is the id of the NFT,
+    // _category is the ERC20 or ERC721
+    /// @return Token structure
+    function getTokenStruct(
         address _owner,
-        address _tokenAddress
-    ) public view returns (bool) {
-        return tokenAddressToTokenStruct[_owner][_tokenAddress].isNominated;
+        address _tokenAddress,
+        uint _tokenId,
+        uint _category
+    ) public view returns (Token memory) {
+        if (_category == 0) {
+            return tokenAddressToTokenStruct[_owner][_tokenAddress];
+        } else {
+            return nftAddressToTokenStruct[_owner][_tokenAddress][_tokenId];
+        }
     }
 
-    // general------------------------------------------------------
-
-    /// @return an array of owner's address
-    function getOwners() public view returns (address[] memory) {
-        return owners;
-    }
+    // response-----------------------------------------------------
 
     /// @param _owner is the owner's address, _date is the date on which we sent the first mail to the nominee.
     function setResponseDate(
         address _owner,
         string memory _date
     ) public onlyOwner {
-        ownerToResponse[_owner].date = _date;
+        addressToOwner[_owner].date = _date;
         emit ResponsedDateSet(_owner, _date);
     }
 
+    // Function to call when user respond to our email
     function setResponse() public {
-        ownerToResponse[msg.sender].isResponsed = true;
+        addressToOwner[msg.sender].isResponsed = true;
         emit OwnerResponded(msg.sender);
     }
 
     /// @param _owner is the owner's address
     function setOwnerNotAlive(address _owner) public onlyOwner {
+        require(!addressToOwner[_owner].isResponsed, "Owner responded");
         addressToOwner[_owner].isAlive = false;
     }
 
-    /// @return string of the owner's date when we first send mail to the owner
-    function getResponseDate(
-        address _owner
-    ) public view returns (string memory) {
-        return ownerToResponse[_owner].date;
-    }
-
-    /// @return bool of owner's response
-    function getResponse(address _owner) public view returns (bool) {
-        return ownerToResponse[_owner].isResponsed;
-    }
-
-    /// @return bool of email is verified or not
-    function checkVerification(address _owner) public view returns (bool) {
-        return addressToOwner[_owner].isEmailVerified;
-    }
+    // claim--------------------------------------------------------
 
     /// @param _owner is the owner's address, _tokenAddress is the address of the token, _amount is the amount of the ERC20,
     // _tokenId is the token Id of the asset
@@ -390,19 +390,20 @@ contract Inheritokens is Ownable {
         address _owner,
         address _tokenAddress,
         uint _amount,
-        uint _tokenId
+        uint _tokenId,
+        uint _category
     ) public {
         for (uint i = 0; i < addressToOwner[_owner].nominees.length; i++) {
             if (addressToOwner[_owner].nominees[i] == msg.sender) {
-                addressToNominee[msg.sender].hasClaimed = true;
                 // transfer logic
-                if (_tokenId == 0) {
+                if (_category == 0) {
                     IERC20 _token = IERC20(_tokenAddress);
                     _token.transferFrom(_owner, msg.sender, _amount);
                 } else if (_tokenId > 0) {
                     IERC721 _token = IERC721(_tokenAddress);
                     _token.transferFrom(_owner, msg.sender, _tokenId);
                 }
+                // addressToNominee[msg.sender].hasClaimed = true;
             }
         }
         emit Claimed(_owner, msg.sender, _tokenAddress, _tokenId);

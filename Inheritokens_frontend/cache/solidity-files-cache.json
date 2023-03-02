@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "D:\\Lampros Projects\\Inheritokens\\Inheritokens_frontend\\contracts\\Charity.sol": {
-      "lastModificationDate": 1677662351743,
-      "contentHash": "5412a3efa7f1baaaac77f5508008bc08",
+      "lastModificationDate": 1677759725783,
+      "contentHash": "9b3244392bf2001bfe76081b02c4ced0",
       "sourceName": "contracts/Charity.sol",
       "solcConfig": {
         "version": "0.8.17",
@@ -111,8 +111,8 @@
       ]
     },
     "D:\\Lampros Projects\\Inheritokens\\Inheritokens_frontend\\contracts\\Inheritokens.sol": {
-      "lastModificationDate": 1677669700773,
-      "contentHash": "cefcc3aca460918803068dc490defc36",
+      "lastModificationDate": 1677759045898,
+      "contentHash": "bf3dd984d2050706a51963c7b416e489",
       "sourceName": "contracts/Inheritokens.sol",
       "solcConfig": {
         "version": "0.8.17",
@@ -184,75 +184,6 @@
       "artifacts": [
         "console"
       ]
-    },
-    "D:\\Lampros Projects\\Inheritokens\\Inheritokens_frontend\\contracts\\MultipleNominee.sol": {
-      "lastModificationDate": 1677669489180,
-      "contentHash": "093d800f2f8d1118ddebf83e6b1177f9",
-      "sourceName": "contracts/MultipleNominee.sol",
-      "solcConfig": {
-        "version": "0.8.17",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "hardhat/console.sol",
-        "./Inheritokens.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "MultipleNominee"
-      ]
-    },
-    "D:\\Lampros Projects\\Inheritokens\\Inheritokens_frontend\\contracts\\PriorityNominee.sol": {
-      "lastModificationDate": 1677059294403,
-      "contentHash": "fb679db8a6b9b133344a1c3102f17811",
-      "sourceName": "contracts/PriorityNominee.sol",
-      "solcConfig": {
-        "version": "0.8.17",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [],
-      "artifacts": []
     },
     "D:\\Lampros Projects\\Inheritokens\\Inheritokens_frontend\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\IERC20.sol": {
       "lastModificationDate": 1677060909325,
@@ -359,6 +290,44 @@
       ],
       "artifacts": [
         "IERC165"
+      ]
+    },
+    "D:\\Lampros Projects\\Inheritokens\\Inheritokens_frontend\\contracts\\MultiplePriorityNominee.sol": {
+      "lastModificationDate": 1677759915973,
+      "contentHash": "5a4fc76254ad3b016df65fbe94c2dc6a",
+      "sourceName": "contracts/MultiplePriorityNominee.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "hardhat/console.sol",
+        "./Inheritokens.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "MultiplePriorityNominee"
       ]
     }
   }

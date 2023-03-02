@@ -59,8 +59,8 @@ contract MultipleNominee {
         bool nominated;
         uint _allocateShare;
         (, , , , _allocateShare, nominated) = inheritokens
-            .tokenAddressToTokenStruct(msg.sender, _tokenAddress);
-            console.log(msg.sender);
+            .tokenAddressToTokenStruct(msg.sender, _tokenAddress, _tokenId);
+        console.log(msg.sender);
         if (!nominated) {
             inheritokens.assignTokenStruct(
                 msg.sender,
@@ -71,20 +71,30 @@ contract MultipleNominee {
                 _tokenId
             );
         }
-        uint len = ownerToTokenToMultipleStruct[msg.sender][_tokenAddress][_tokenId]
-            .length;
+        uint len = ownerToTokenToMultipleStruct[msg.sender][_tokenAddress][
+            _tokenId
+        ].length;
         if (len > 0) {
             delete ownerToTokenToMultipleStruct[msg.sender][_tokenAddress][
                 _tokenId
             ];
-            inheritokens.updateAllocatedShare(msg.sender, _tokenAddress, 0);
+            inheritokens.updateAllocatedShare(
+                msg.sender,
+                _tokenAddress,
+                _tokenId,
+                0
+            );
         }
         require(_totalShare <= 100, "Reduce the share amount...");
-        inheritokens.updateAllocatedShare(msg.sender, _tokenAddress, _totalShare);
+        inheritokens.updateAllocatedShare(
+            msg.sender,
+            _tokenAddress,
+            _tokenId,
+            _totalShare
+        );
         for (uint i = 0; i < data.length; i++) {
-            ownerToTokenToMultipleStruct[msg.sender][_tokenAddress][_tokenId].push(
-                data[i]
-            );
+            ownerToTokenToMultipleStruct[msg.sender][_tokenAddress][_tokenId]
+                .push(data[i]);
         }
         emit TokensAssigned(msg.sender, _tokenAddress, _tokenId);
     }

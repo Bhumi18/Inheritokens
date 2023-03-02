@@ -22,8 +22,10 @@ contract Inheritokens is Ownable {
         string owner_name;
         string owner_email;
         string image_cid;
+        string date;
         bool isEmailVerified;
         bool isAlive;
+        bool isResponsed;
         address recoveryAddress;
         address[] nominees;
         uint[] charities;
@@ -54,16 +56,8 @@ contract Inheritokens is Ownable {
         bool isNominated;
     }
     // mapping of owner address to token address to Token struct
-    mapping(address => mapping(address => Token))
+    mapping(address => mapping(address => mapping(uint => Token)))
         public tokenAddressToTokenStruct;
-
-    // struct to store owner's response after inactivity period
-    struct Response {
-        string date;
-        bool isResponsed;
-    }
-    // mapping of owner address to the Response struct
-    mapping(address => Response) public ownerToResponse;
 
     // modifiers
     modifier ownerAdded() {
@@ -182,6 +176,11 @@ contract Inheritokens is Ownable {
         return owners.length;
     }
 
+    /// @return an array of owner's address
+    function getOwners() public view returns (address[] memory) {
+        return owners;
+    }
+
     /// @param _owner is the owner's address
     /// @return owner structure
     function getOwnerDetails(
@@ -191,15 +190,15 @@ contract Inheritokens is Ownable {
     }
 
     /// @return boolean showing whether the owner is alive or not
-    function getOwnerAlive(address _owner) public view returns (bool) {
-        return addressToOwner[_owner].isAlive;
-    }
+    // function getOwnerAlive(address _owner) public view returns (bool) {
+    //     return addressToOwner[_owner].isAlive;
+    // }
 
     /// @param _owner is the address of the owner
     /// @return recovery address
-    function getRecoveryAddress(address _owner) public view returns (address) {
-        return addressToOwner[_owner].recoveryAddress;
-    }
+    // function getRecoveryAddress(address _owner) public view returns (address) {
+    //     return addressToOwner[_owner].recoveryAddress;
+    // }
 
     // nominee---------------------------------------------------------------------
 
@@ -283,11 +282,11 @@ contract Inheritokens is Ownable {
 
     /// @param _owner is the address of the owner
     /// @return an array of the white listed charities for a given owner
-    function getAllWhiteListedCharities(
-        address _owner
-    ) public view returns (uint[] memory) {
-        return addressToOwner[_owner].charities;
-    }
+    // function getAllWhiteListedCharities(
+    //     address _owner
+    // ) public view returns (uint[] memory) {
+    //     return addressToOwner[_owner].charities;
+    // }
 
     // multiple nominee--------------------------------------------------------
 
@@ -306,7 +305,7 @@ contract Inheritokens is Ownable {
             addressToOwner[_owner].isEmailVerified,
             "email is not verified"
         );
-        tokenAddressToTokenStruct[_owner][_tokenAddress] = Token(
+        tokenAddressToTokenStruct[_owner][_tokenAddress][_tokenId] = Token(
             _tokenAddress,
             _tokenName,
             _category,
@@ -321,6 +320,7 @@ contract Inheritokens is Ownable {
     function updateAllocatedShare(
         address _owner,
         address _tokenAddress,
+        uint _tokenId,
         uint _amount
     ) external {
         require(isOwnerAdded[_owner], "First do registration");
@@ -328,37 +328,41 @@ contract Inheritokens is Ownable {
             addressToOwner[_owner].isEmailVerified,
             "email is not verified"
         );
-        tokenAddressToTokenStruct[_owner][_tokenAddress]
+        tokenAddressToTokenStruct[_owner][_tokenAddress][_tokenId]
             .allocated_share = _amount;
         emit AllocatedShareUpdated(_owner, _tokenAddress, _amount);
     }
 
     /// @return bool indicating whether token has nominee or not
-    function getIsNominated(
+    // function getIsNominated(
+    //     address _owner,
+    //     address _tokenAddress,
+    //     uint _tokenId
+    // ) public view returns (bool) {
+    //     return tokenAddressToTokenStruct[_owner][_tokenAddress][_tokenId].isNominated;
+    // }
+
+    function getTokenStruct(
         address _owner,
-        address _tokenAddress
-    ) public view returns (bool) {
-        return tokenAddressToTokenStruct[_owner][_tokenAddress].isNominated;
+        address _tokenAddress,
+        uint _tokenId
+    ) public view returns (Token memory) {
+        return tokenAddressToTokenStruct[_owner][_tokenAddress][_tokenId];
     }
 
-    // general------------------------------------------------------
-
-    /// @return an array of owner's address
-    function getOwners() public view returns (address[] memory) {
-        return owners;
-    }
+    // response-----------------------------------------------------
 
     /// @param _owner is the owner's address, _date is the date on which we sent the first mail to the nominee.
     function setResponseDate(
         address _owner,
         string memory _date
     ) public onlyOwner {
-        ownerToResponse[_owner].date = _date;
+        addressToOwner[_owner].date = _date;
         emit ResponsedDateSet(_owner, _date);
     }
 
     function setResponse() public {
-        ownerToResponse[msg.sender].isResponsed = true;
+        addressToOwner[msg.sender].isResponsed = true;
         emit OwnerResponded(msg.sender);
     }
 
@@ -367,22 +371,7 @@ contract Inheritokens is Ownable {
         addressToOwner[_owner].isAlive = false;
     }
 
-    /// @return string of the owner's date when we first send mail to the owner
-    function getResponseDate(
-        address _owner
-    ) public view returns (string memory) {
-        return ownerToResponse[_owner].date;
-    }
-
-    /// @return bool of owner's response
-    function getResponse(address _owner) public view returns (bool) {
-        return ownerToResponse[_owner].isResponsed;
-    }
-
-    /// @return bool of email is verified or not
-    function checkVerification(address _owner) public view returns (bool) {
-        return addressToOwner[_owner].isEmailVerified;
-    }
+    // claim--------------------------------------------------------
 
     /// @param _owner is the owner's address, _tokenAddress is the address of the token, _amount is the amount of the ERC20,
     // _tokenId is the token Id of the asset
@@ -407,4 +396,21 @@ contract Inheritokens is Ownable {
         }
         emit Claimed(_owner, msg.sender, _tokenAddress, _tokenId);
     }
+
+    /// @return string of the owner's date when we first send mail to the owner
+    // function getResponseDate(
+    //     address _owner
+    // ) public view returns (string memory) {
+    //     return ownerToResponse[_owner].date;
+    // }
+
+    // /// @return bool of owner's response
+    // function getResponse(address _owner) public view returns (bool) {
+    //     return ownerToResponse[_owner].isResponsed;
+    // }
+
+    /// @return bool of email is verified or not
+    // function checkVerification(address _owner) public view returns (bool) {
+    //     return addressToOwner[_owner].isEmailVerified;
+    // }
 }

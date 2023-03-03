@@ -16,7 +16,7 @@
   top: 5%;
   left: 0;
   right: 0;
-  width: 50vw;
+  width: 90%;
   max-width: 900px;
   border-radius: 20px;
   //   transform: translate(-50%, -50%);
@@ -60,9 +60,16 @@
     border: 1px solid rgb(224, 224, 224);
     border-radius: 10px;
     height: 50px;
-    padding: 10px;
+    // padding: 10px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: center;
 
     input {
+      margin: 5px;
+      padding-left: 10px;
       font-size: 1rem;
       font-weight: 500;
       box-shadow: none;
@@ -73,6 +80,24 @@
         outline: none;
       }
     }
+    input.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .percentage-symbol {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+      font-weight: 600;
+      width: 20%;
+      height: 100%;
+      color: rgb(224, 224, 224);
+      border-left: 1px solid rgb(224, 224, 224);
+    }
+  }
+  .input-field.disabled {
+    cursor: not-allowed;
   }
 
   .nominees-list {
@@ -146,5 +171,12 @@
       opacity: 0.5;
       pointer-events: none;
     }
+  }
+}
+@media only screen and (max-width: 768px) {
+  #modal {
+    width: 90%;
+    padding: 15px;
+    padding-top: 30px;
   }
 }

@@ -202,3 +202,19 @@
     }
   }
 }
+
+@media only screen and (max-width: 768px) {
+  .update-view-main {
+    .table-div {
+      padding: 0;
+      table {
+        width: 100%;
+        thead {
+          th {
+            padding: 5px;
+          }
+        }
+      }
+    }
+  }
+}

@@ -596,7 +596,7 @@ function ChooseNomineeToken() {
                           ) : (
                             ""
                           )}
-                          {i.priority_nominees.length > 2 ? (
+                          {i.priority_nominees.length > 3 ? (
                             <div className="show-more-nominees">
                               <button
                                 className="show-more"

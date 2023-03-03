@@ -42,15 +42,12 @@ describe("Inheritokens", function () {
     charityContract = CharityContract.deploy();
     charityContract = await (await charityContract).deployed();
 
-    // deploy multiple nominee contract
-    const MultipleNominee = await ethers.getContractFactory("MultipleNominee");
+    // deploy multiple and priority nominee contract
+    const MultipleNominee = await ethers.getContractFactory(
+      "MultiplePriorityNominee"
+    );
     multipleNominee = await MultipleNominee.deploy(inheritokens.address);
     multipleNominee = await (await multipleNominee).deployed();
-
-    // deploy priority nominee contract
-    // const PriorityNominee = await ethers.getContractFactory("PriorityNominee");
-    // priorityNominee = await PriorityNominee.deploy(inheritokens.address);
-    // priorityNominee = await (await priorityNominee).deployed();
   });
 
   // it("check", async function () {
@@ -66,11 +63,11 @@ describe("Inheritokens", function () {
     expect(await inheritokens.isOwnerAdded(owner.address)).to.equal(true);
   });
 
-  //   it("should not register again", async function () {
-  //     const len = await inheritokens.getTotalOwners();
-  //     await inheritokens.addOwnerDetails("Bhumi", "bhumi@gmail.com", "abc");
-  //     expect(await inheritokens.getTotalOwners()).to.equal(len);
-  //   });
+  // it("should not register again", async function () {
+  //   const len = await inheritokens.getTotalOwners();
+  //   await inheritokens.addOwnerDetails("Bhumi", "bhumi@gmail.com", "abc");
+  //   expect(await inheritokens.getTotalOwners()).to.equal(len);
+  // });
 
   it("should allow new owner to register", async function () {
     await inheritokens
@@ -80,9 +77,6 @@ describe("Inheritokens", function () {
   });
 
   it("verify first owner's email address", async function () {
-    // console.log(
-    //   (await inheritokens.addressToOwner(owner.address)).isEmailVerified
-    // );
     expect(await inheritokens.isOwnerAdded(owner.address)).to.equal(true);
     await inheritokens.connect(owner).verifyOwnerEmail();
     expect(
@@ -90,25 +84,22 @@ describe("Inheritokens", function () {
     ).to.equal(true);
   });
 
-  // it("verify second owner's email address", async function () {
-  //   // console.log(
-  //   //   (await inheritokens.addressToOwner(owner1.address)).isEmailVerified
-  //   // );
-  //   expect(await inheritokens.isOwnerAdded(owner1.address)).to.equal(true);
-  //   await inheritokens.connect(owner).verifyOwnerEmail();
-  //   expect(
-  //     (await inheritokens.addressToOwner(owner1.address)).isEmailVerified
-  //   ).to.equal(true);
-  // });
+  it("verify second owner's email address", async function () {
+    expect(await inheritokens.isOwnerAdded(owner1.address)).to.equal(true);
+    await inheritokens.connect(owner1).verifyOwnerEmail();
+    expect(
+      (await inheritokens.addressToOwner(owner1.address)).isEmailVerified
+    ).to.equal(true);
+  });
 
   // for wallet recovery
   it("should able to add recovery address", async function () {
     await inheritokens
       .connect(owner)
       .addWalletRecovery(recover_address.address);
-    expect(await inheritokens.getRecoveryAddress(owner.address)).to.equal(
-      recover_address.address
-    );
+    expect(
+      (await inheritokens.addressToOwner(owner.address)).recoveryAddress
+    ).to.equal(recover_address.address);
   });
 
   // for adding nominee
@@ -143,7 +134,6 @@ describe("Inheritokens", function () {
     expect(
       (await inheritokens.getNomineeDetails(nominee1.address)).nominee_email
     ).to.equal("krupa@gmail.com");
-    // console.log(await inheritokens.getAllNominees(owner.address));
   });
 
   it("should allow owner to change nominee address", async function () {
@@ -162,7 +152,6 @@ describe("Inheritokens", function () {
     expect(
       (await inheritokens.getNomineeDetails(nominee3.address)).nominee_address
     ).to.equal(nominee3.address);
-    // console.log(await inheritokens.getAllNominees(owner.address));
   });
 
   // for adding charity
@@ -201,22 +190,31 @@ describe("Inheritokens", function () {
 
   it("should allow owner to set charity as white list", async function () {
     await inheritokens.setWhiteListedCharities(1);
-    const len = (await inheritokens.getAllWhiteListedCharities(owner.address))
+    const len = (await inheritokens.getWhiteListedCharities(owner.address))
       .length;
     expect(len).to.equal(1);
   });
 
   // for multiple nominee
   it("should able to assign token to multiple nominees", async function () {
-    console.log(await inheritokens.isOwnerAdded(owner.address));
     await multipleNominee.assignTokensToMultipleNominees(
       "0x53d00397f03147a9bd9c40443a105a82780deaf1",
       "fTUSD Fake Token",
       0,
       0,
       [
-        [40, [nominee1.address, nominee2.address], [false, false], [1, 2]],
-        [40, [nominee3.address, nominee4.address], [false, false], [3, 4]],
+        [
+          40,
+          [nominee1.address, nominee2.address],
+          [false, false],
+          [false, false],
+        ],
+        [
+          50,
+          [nominee3.address, nominee4.address],
+          [false, false],
+          [false, false],
+        ],
       ]
     );
     // console.log(
@@ -232,61 +230,75 @@ describe("Inheritokens", function () {
       )
     )[4];
     expect(parseInt(amount)).to.equal(90);
-    console.log(
-      await multipleNominee.getAllStructs(
-        owner.address,
-        "0x53d00397f03147a9bd9c40443a105a82780deaf1",
-        0
-      )
-    );
-    // expect(
-    //   (
-    //     await multipleNominee.getMultipleStruct(
-    //       owner.address,
-    //       "0x53d00397f03147a9bd9c40443a105a82780deaf1",
-    //       0
-    //     )
-    //   )[0]
-    // ).to.equal(40);
-    // expect(
-    //   (
-    //     await multipleNominee.getMultipleStruct(
-    //       owner.address,
-    //       "0x53d00397f03147a9bd9c40443a105a82780deaf1",
-    //       1
-    //     )
-    //   )[0]
-    // ).to.equal(50);
-    // expect(
-    //   (
-    //     await multipleNominee.getMultipleStruct(
-    //       owner.address,
-    //       "0x53d00397f03147a9bd9c40443a105a82780deaf1",
-    //       0
-    //     )
-    //   )[1][0]
-    // ).to.equal(nominee1.address);
-    // expect(
-    //   (
-    //     await multipleNominee.getMultipleStruct(
-    //       owner.address,
-    //       "0x53d00397f03147a9bd9c40443a105a82780deaf1",
-    //       0
-    //     )
-    //   )[1][1]
-    // ).to.equal(nominee2.address);
+    // console.log(
+    //   await multipleNominee.getAllStructs(
+    //     owner.address,
+    //     "0x53d00397f03147a9bd9c40443a105a82780deaf1",
+    //     0,
+    //     0
+    //   )
+    // );
+    expect(
+      (
+        await multipleNominee.getAllStructs(
+          owner.address,
+          "0x53d00397f03147a9bd9c40443a105a82780deaf1",
+          0,
+          0
+        )
+      )[0].share
+    ).to.equal(40);
+    expect(
+      (
+        await multipleNominee.getAllStructs(
+          owner.address,
+          "0x53d00397f03147a9bd9c40443a105a82780deaf1",
+          0,
+          0
+        )
+      )[1].share
+    ).to.equal(50);
+    expect(
+      (
+        await multipleNominee.getAllStructs(
+          owner.address,
+          "0x53d00397f03147a9bd9c40443a105a82780deaf1",
+          0,
+          0
+        )
+      )[0].nominee[0]
+    ).to.equal(nominee1.address);
+    expect(
+      (
+        await multipleNominee.getAllStructs(
+          owner.address,
+          "0x53d00397f03147a9bd9c40443a105a82780deaf1",
+          0,
+          0
+        )
+      )[0].nominee[1]
+    ).to.equal(nominee2.address);
   });
 
   it("should able to edit token to multiple nominees", async function () {
     await multipleNominee.assignTokensToMultipleNominees(
       "0x53d00397f03147a9bd9c40443a105a82780deaf1",
       "fTUSD Fake Token",
-      "20",
       0,
-      20,
+      0,
       [
-        [10, [nominee1.address, nominee2.address], [false, false], [1, 2]],
-        [10, [nominee3.address, nominee4.address], [false, false], [3, 4]],
+        [
+          10,
+          [nominee1.address, nominee2.address],
+          [false, false],
+          [false, false],
+        ],
+        [
+          10,
+          [nominee3.address, nominee4.address],
+          [false, false],
+          [false, false],
+        ],
       ]
     );
     // console.log(
@@ -295,13 +307,13 @@ describe("Inheritokens", function () {
     //     "0x53d00397f03147a9bd9c40443a105a82780deaf1"
     //   )
     // );
-    // const amount = (
-    //   await inheritokens.tokenAddressToTokenStruct(
-    //     owner.address,
-    //     "0x53d00397f03147a9bd9c40443a105a82780deaf1"
-    //   )
-    // )[4];
-    // expect(parseInt(amount)).to.equal(20);
+    const amount = (
+      await inheritokens.tokenAddressToTokenStruct(
+        owner.address,
+        "0x53d00397f03147a9bd9c40443a105a82780deaf1"
+      )
+    )[4];
+    expect(parseInt(amount)).to.equal(20);
     // console.log(
     //   await multipleNominee.getAllStructs(
     //     owner.address,
@@ -309,41 +321,45 @@ describe("Inheritokens", function () {
     //     0
     //   )
     // );
-    // expect(
-    //   (
-    //     await multipleNominee.getMultipleStruct(
-    //       owner.address,
-    //       "0x53d00397f03147a9bd9c40443a105a82780deaf1",
-    //       0
-    //     )
-    //   )[0]
-    // ).to.equal(40);
-    // expect(
-    //   (
-    //     await multipleNominee.getMultipleStruct(
-    //       owner.address,
-    //       "0x53d00397f03147a9bd9c40443a105a82780deaf1",
-    //       1
-    //     )
-    //   )[0]
-    // ).to.equal(50);
-    // expect(
-    //   (
-    //     await multipleNominee.getMultipleStruct(
-    //       owner.address,
-    //       "0x53d00397f03147a9bd9c40443a105a82780deaf1",
-    //       0
-    //     )
-    //   )[1][0]
-    // ).to.equal(nominee1.address);
-    // expect(
-    //   (
-    //     await multipleNominee.getMultipleStruct(
-    //       owner.address,
-    //       "0x53d00397f03147a9bd9c40443a105a82780deaf1",
-    //       0
-    //     )
-    //   )[1][1]
-    // ).to.equal(nominee2.address);
+    expect(
+      (
+        await multipleNominee.getAllStructs(
+          owner.address,
+          "0x53d00397f03147a9bd9c40443a105a82780deaf1",
+          0,
+          0
+        )
+      )[0].share
+    ).to.equal(10);
+    expect(
+      (
+        await multipleNominee.getAllStructs(
+          owner.address,
+          "0x53d00397f03147a9bd9c40443a105a82780deaf1",
+          0,
+          0
+        )
+      )[1].share
+    ).to.equal(10);
+    expect(
+      (
+        await multipleNominee.getAllStructs(
+          owner.address,
+          "0x53d00397f03147a9bd9c40443a105a82780deaf1",
+          0,
+          0
+        )
+      )[0].nominee[0]
+    ).to.equal(nominee1.address);
+    expect(
+      (
+        await multipleNominee.getAllStructs(
+          owner.address,
+          "0x53d00397f03147a9bd9c40443a105a82780deaf1",
+          0,
+          0
+        )
+      )[0].nominee[1]
+    ).to.equal(nominee2.address);
   });
 });

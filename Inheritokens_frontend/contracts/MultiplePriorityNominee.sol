@@ -3,6 +3,8 @@
 pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
+import "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "../node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 /// @title Multiple nominee and Priority nominee Functionality
 /// @author Bhumi Sadariya
@@ -39,6 +41,12 @@ contract MultiplePriorityNominee {
         address _tokenAddress,
         uint _tokenId
     );
+    event Claimed(
+        address indexed _owner,
+        address indexed _nominee,
+        address indexed _tokenAddress,
+        uint _tokenId
+    );
 
     /// @param _tokenAddress is the address of the token contract, _tokenName is the name of the token, _category is the integer
     // indecating 0 for token and 1 for nft, _tokenId is the id of the nft, data is the array of MultiplePriority sturucture
@@ -51,7 +59,27 @@ contract MultiplePriorityNominee {
         uint _tokenId,
         MultiplePriority[] memory data
     ) public {
-        // modifier remaining
+        // owner should be added, and email should be verified
+        bool isAdded = inheritokens.checkOwnerAdded(msg.sender);
+        bool isVerified = inheritokens.checkEmailVerified(msg.sender);
+        require(isAdded, "First register yourself!");
+        require(isVerified, "First verify your email");
+
+        // check passed nominees in data are added
+        address[] memory nominees = inheritokens.getAllNomineesOfOwner(
+            msg.sender
+        );
+        bool flag = false;
+        for (uint i = 0; i < data.length; i++) {
+            for (uint j = 0; j < nominees.length; j++) {
+                if (data[i].nominee[i] == nominees[j]) {
+                    flag = true;
+                }
+            }
+            if (flag != true) {
+                revert("check all the nominees you are entering are added.");
+            }
+        }
 
         // get data of whether token is nominated at least once
         bool nominated;
@@ -129,6 +157,83 @@ contract MultiplePriorityNominee {
             return ownerToTokenToStruct[_owner][_tokenAddress];
         } else {
             return ownerToNFTToStruct[_owner][_tokenAddress][_tokenId];
+        }
+    }
+
+    // claim
+    /// @param _owner is the owner's address, _tokenAddress is the address of the token, _amount is the amount of the ERC20,
+    // _tokenId is the token Id of the asset
+    function claim(
+        address _owner,
+        address _tokenAddress,
+        uint _amount,
+        uint _tokenId,
+        uint _category
+    ) public {
+        address[] memory nominees = inheritokens.getAllNomineesOfOwner(_owner);
+        for (uint i = 0; i < nominees.length; i++) {
+            if (nominees[i] == msg.sender) {
+                // transfer logic
+                if (_category == 0) {
+                    IERC20 _token = IERC20(_tokenAddress);
+                    _token.transferFrom(_owner, msg.sender, _amount);
+                    for (
+                        uint k = 0;
+                        k < ownerToTokenToStruct[_owner][_tokenAddress].length;
+                        k++
+                    ) {
+                        for (
+                            uint j = 0;
+                            j <
+                            (
+                                ownerToTokenToStruct[_owner][_tokenAddress][k]
+                                    .nominee
+                            ).length;
+                            j++
+                        ) {
+                            if (
+                                ownerToTokenToStruct[_owner][_tokenAddress][k]
+                                    .nominee[j] == nominees[i]
+                            ) {
+                                ownerToTokenToStruct[_owner][_tokenAddress][k]
+                                    .isClaimed[j] = true;
+                                break;
+                            }
+                        }
+                    }
+                } else if (_tokenId > 0) {
+                    IERC721 _token = IERC721(_tokenAddress);
+                    _token.transferFrom(_owner, msg.sender, _tokenId);
+                    for (
+                        uint k = 0;
+                        k < ownerToTokenToStruct[_owner][_tokenAddress].length;
+                        k++
+                    ) {
+                        for (
+                            uint j = 0;
+                            j <
+                            (
+                                ownerToNFTToStruct[_owner][_tokenAddress][
+                                    _tokenId
+                                ][k].nominee
+                            ).length;
+                            j++
+                        ) {
+                            if (
+                                ownerToNFTToStruct[_owner][_tokenAddress][
+                                    _tokenId
+                                ][k].nominee[j] == nominees[i]
+                            ) {
+                                ownerToNFTToStruct[_owner][_tokenAddress][
+                                    _tokenId
+                                ][k].isClaimed[j] = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            emit Claimed(_owner, msg.sender, _tokenAddress, _tokenId);
         }
     }
 }

@@ -63,7 +63,7 @@ contract CharityContract is Ownable {
         string memory _charityDescription,
         string memory _charityImage
     ) public onlyOwner {
-        idToCharity[charity_id] = Charity(
+        idToCharity[_charityId] = Charity(
             _charityId,
             _charityAddress,
             _charityName,

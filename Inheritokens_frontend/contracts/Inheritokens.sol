@@ -6,8 +6,6 @@ pragma solidity ^0.8.0;
 /// @author Bhumi Sadariya
 
 import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
-import "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "../node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "hardhat/console.sol";
 
 contract Inheritokens is Ownable {
@@ -40,7 +38,6 @@ contract Inheritokens is Ownable {
         string nominee_name;
         string nominee_email;
         address nominee_address;
-        bool hasClaimed;
     }
     mapping(address => Nominee) public addressToNominee;
     // mapping of nominee address to bool to check whether nominee is added or not
@@ -120,12 +117,6 @@ contract Inheritokens is Ownable {
     );
     event ResponsedDateSet(address indexed _owner, string _date);
     event OwnerResponded(address indexed _owner);
-    event Claimed(
-        address indexed _owner,
-        address indexed _nominee,
-        address indexed _tokenAddress,
-        uint _tokenId
-    );
 
     // owner-----------------------------------------------------------------------
 
@@ -148,8 +139,20 @@ contract Inheritokens is Ownable {
         emit OwnerRegistered(msg.sender, _name);
     }
 
+    // edit owner's details
+    /// @param _name is the owner's name, _email is the owner's email, and _cid is the cid of profile image.
+    function editOwnerDetails(
+        string memory _name,
+        string memory _email,
+        string memory _cid
+    ) public ownerAdded {
+        addressToOwner[msg.sender].owner_name = _name;
+        addressToOwner[msg.sender].owner_email = _email;
+        addressToOwner[msg.sender].image_cid = _cid;
+    }
+
     // verify owner's email
-    function verifyOwnerEmail() public onlyOwner ownerAdded {
+    function verifyOwnerEmail() public ownerAdded {
         require(
             !addressToOwner[msg.sender].isEmailVerified,
             "Already your email is verified"
@@ -195,6 +198,20 @@ contract Inheritokens is Ownable {
         return addressToOwner[_owner];
     }
 
+    function checkOwnerAdded(address _owner) public view returns (bool) {
+        return isOwnerAdded[_owner];
+    }
+
+    function checkEmailVerified(address _owner) public view returns (bool) {
+        return addressToOwner[_owner].isEmailVerified;
+    }
+
+    function getAllNomineesOfOwner(
+        address _owner
+    ) public view returns (address[] memory) {
+        return addressToOwner[_owner].nominees;
+    }
+
     // nominee---------------------------------------------------------------------
 
     /// @param _name is the nominee's name, _email is the nominee's email, and _nominee is the nominee's address
@@ -204,7 +221,7 @@ contract Inheritokens is Ownable {
         address _nominee
     ) public ownerAdded emailVerified {
         require(!isNomineeAdded[_nominee], "Nominee is already added");
-        addressToNominee[_nominee] = Nominee(_name, _email, _nominee, false);
+        addressToNominee[_nominee] = Nominee(_name, _email, _nominee);
         addressToOwner[msg.sender].nominees.push(_nominee);
         isNomineeAdded[_nominee] = true;
         emit NomineeAdded(msg.sender, _nominee, _name, _email);
@@ -272,6 +289,12 @@ contract Inheritokens is Ownable {
     ) public ownerAdded emailVerified {
         addressToOwner[msg.sender].charities.push(_charityId);
         emit CharityWhitelisted(msg.sender, _charityId);
+    }
+
+    function getWhiteListedCharities(
+        address _owner
+    ) public view returns (uint[] memory) {
+        return addressToOwner[_owner].charities;
     }
 
     // multiple nominee--------------------------------------------------------
@@ -380,32 +403,5 @@ contract Inheritokens is Ownable {
     function setOwnerNotAlive(address _owner) public onlyOwner {
         require(!addressToOwner[_owner].isResponsed, "Owner responded");
         addressToOwner[_owner].isAlive = false;
-    }
-
-    // claim--------------------------------------------------------
-
-    /// @param _owner is the owner's address, _tokenAddress is the address of the token, _amount is the amount of the ERC20,
-    // _tokenId is the token Id of the asset
-    function claim(
-        address _owner,
-        address _tokenAddress,
-        uint _amount,
-        uint _tokenId,
-        uint _category
-    ) public {
-        for (uint i = 0; i < addressToOwner[_owner].nominees.length; i++) {
-            if (addressToOwner[_owner].nominees[i] == msg.sender) {
-                // transfer logic
-                if (_category == 0) {
-                    IERC20 _token = IERC20(_tokenAddress);
-                    _token.transferFrom(_owner, msg.sender, _amount);
-                } else if (_tokenId > 0) {
-                    IERC721 _token = IERC721(_tokenAddress);
-                    _token.transferFrom(_owner, msg.sender, _tokenId);
-                }
-                // addressToNominee[msg.sender].hasClaimed = true;
-            }
-        }
-        emit Claimed(_owner, msg.sender, _tokenAddress, _tokenId);
     }
 }

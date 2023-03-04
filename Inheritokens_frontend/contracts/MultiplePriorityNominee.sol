@@ -69,15 +69,22 @@ contract MultiplePriorityNominee {
         address[] memory nominees = inheritokens.getAllNomineesOfOwner(
             msg.sender
         );
-        bool flag = false;
+        bool flag;
         for (uint i = 0; i < data.length; i++) {
-            for (uint j = 0; j < nominees.length; j++) {
-                if (data[i].nominee[i] == nominees[j]) {
-                    flag = true;
+            for (uint k = 0; k < data[i].nominee.length; k++) {
+                flag = false;
+                for (uint j = 0; j < nominees.length; j++) {
+                    console.log(nominees[j]);
+                    if (data[i].nominee[k] == nominees[j]) {
+                        flag = true;
+                        break;
+                    }
                 }
-            }
-            if (flag != true) {
-                revert("check all the nominees you are entering are added.");
+                if (flag == false) {
+                    revert(
+                        "check all the nominees you are entering are added."
+                    );
+                }
             }
         }
 

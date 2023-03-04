@@ -32,6 +32,7 @@ import SendingEmailRequest from "./components/SendingEmailRequest";
 import EmailVerified from "./components/EmailVerified";
 import ChooseNomineeNFT from "./pages/ChooseNomineeNFT";
 import ChooseNomineeToken from "./pages/ChooseNomineeToken";
+import { useEffect, useState } from "react";
 
 const { provider, webSocketProvider } = configureChains(defaultChains, [
   alchemyProvider({ apiKey: "O5NYvtwLMNG0LjAXPQEk0YJT2l3UxTAY" }),

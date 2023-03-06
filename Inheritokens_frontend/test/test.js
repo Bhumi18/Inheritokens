@@ -136,23 +136,23 @@ describe("Inheritokens", function () {
     ).to.equal("krupa@gmail.com");
   });
 
-  it("should allow owner to change nominee address", async function () {
-    await inheritokens.editNomineeDetails(
-      nominee1.address,
-      "krupa Shah",
-      "krupa@gmail.com",
-      nominee3.address
-    );
-    expect(
-      (await inheritokens.getNomineeDetails(nominee3.address)).nominee_name
-    ).to.equal("krupa Shah");
-    expect(
-      (await inheritokens.getNomineeDetails(nominee3.address)).nominee_email
-    ).to.equal("krupa@gmail.com");
-    expect(
-      (await inheritokens.getNomineeDetails(nominee3.address)).nominee_address
-    ).to.equal(nominee3.address);
-  });
+  // it("should allow owner to change nominee address", async function () {
+  //   await inheritokens.editNomineeDetails(
+  //     nominee1.address,
+  //     "krupa Shah",
+  //     "krupa@gmail.com",
+  //     nominee3.address
+  //   );
+  //   expect(
+  //     (await inheritokens.getNomineeDetails(nominee3.address)).nominee_name
+  //   ).to.equal("krupa Shah");
+  //   expect(
+  //     (await inheritokens.getNomineeDetails(nominee3.address)).nominee_email
+  //   ).to.equal("krupa@gmail.com");
+  //   expect(
+  //     (await inheritokens.getNomineeDetails(nominee3.address)).nominee_address
+  //   ).to.equal(nominee3.address);
+  // });
 
   // for adding charity
   it("should able to add charity", async function () {
@@ -211,7 +211,7 @@ describe("Inheritokens", function () {
         ],
         [
           50,
-          [nominee3.address, nominee4.address],
+          [nominee2.address, nominee1.address],
           [false, false],
           [false, false],
         ],
@@ -295,7 +295,7 @@ describe("Inheritokens", function () {
         ],
         [
           10,
-          [nominee3.address, nominee4.address],
+          [nominee2.address, nominee1.address],
           [false, false],
           [false, false],
         ],

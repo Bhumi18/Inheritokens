@@ -291,8 +291,8 @@
       ]
     },
     "D:\\Lampros Projects\\Inheritokens\\Inheritokens_frontend\\contracts\\MultiplePriorityNominee.sol": {
-      "lastModificationDate": 1677827019754,
-      "contentHash": "a62bcf73cf48a1472c7a4be0333e8168",
+      "lastModificationDate": 1678101629064,
+      "contentHash": "379544cd22791df058605f90bddf0d57",
       "sourceName": "contracts/MultiplePriorityNominee.sol",
       "solcConfig": {
         "version": "0.8.17",
@@ -319,6 +319,7 @@
       },
       "imports": [
         "hardhat/console.sol",
+        "../node_modules/@openzeppelin/contracts/access/Ownable.sol",
         "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
         "../node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
         "./Inheritokens.sol"

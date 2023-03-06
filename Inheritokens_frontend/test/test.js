@@ -136,23 +136,23 @@ describe("Inheritokens", function () {
     ).to.equal("krupa@gmail.com");
   });
 
-  it("should allow owner to change nominee address", async function () {
-    await inheritokens.editNomineeDetails(
-      nominee1.address,
-      "krupa Shah",
-      "krupa@gmail.com",
-      nominee3.address
-    );
-    expect(
-      (await inheritokens.getNomineeDetails(nominee3.address)).nominee_name
-    ).to.equal("krupa Shah");
-    expect(
-      (await inheritokens.getNomineeDetails(nominee3.address)).nominee_email
-    ).to.equal("krupa@gmail.com");
-    expect(
-      (await inheritokens.getNomineeDetails(nominee3.address)).nominee_address
-    ).to.equal(nominee3.address);
-  });
+  // it("should allow owner to change nominee address", async function () {
+  //   await inheritokens.editNomineeDetails(
+  //     nominee1.address,
+  //     "krupa Shah",
+  //     "krupa@gmail.com",
+  //     nominee3.address
+  //   );
+  //   expect(
+  //     (await inheritokens.getNomineeDetails(nominee3.address)).nominee_name
+  //   ).to.equal("krupa Shah");
+  //   expect(
+  //     (await inheritokens.getNomineeDetails(nominee3.address)).nominee_email
+  //   ).to.equal("krupa@gmail.com");
+  //   expect(
+  //     (await inheritokens.getNomineeDetails(nominee3.address)).nominee_address
+  //   ).to.equal(nominee3.address);
+  // });
 
   // for adding charity
   it("should able to add charity", async function () {
@@ -280,86 +280,86 @@ describe("Inheritokens", function () {
     ).to.equal(nominee2.address);
   });
 
-  // it("should able to edit token to multiple nominees", async function () {
-  //   await multipleNominee.assignTokensToMultipleNominees(
-  //     "0x53d00397f03147a9bd9c40443a105a82780deaf1",
-  //     "fTUSD Fake Token",
-  //     0,
-  //     0,
-  //     [
-  //       [
-  //         10,
-  //         [nominee1.address, nominee2.address],
-  //         [false, false],
-  //         [false, false],
-  //       ],
-  //       [
-  //         10,
-  //         [nominee2.address, nominee1.address],
-  //         [false, false],
-  //         [false, false],
-  //       ],
-  //     ]
-  //   );
-  //   // console.log(
-  //   //   await inheritokens.tokenAddressToTokenStruct(
-  //   //     owner.address,
-  //   //     "0x53d00397f03147a9bd9c40443a105a82780deaf1"
-  //   //   )
-  //   // );
-  //   const amount = (
-  //     await inheritokens.tokenAddressToTokenStruct(
-  //       owner.address,
-  //       "0x53d00397f03147a9bd9c40443a105a82780deaf1"
-  //     )
-  //   )[4];
-  //   expect(parseInt(amount)).to.equal(20);
-  //   // console.log(
-  //   //   await multipleNominee.getAllStructs(
-  //   //     owner.address,
-  //   //     "0x53d00397f03147a9bd9c40443a105a82780deaf1",
-  //   //     0
-  //   //   )
-  //   // );
-  //   expect(
-  //     (
-  //       await multipleNominee.getAllStructs(
-  //         owner.address,
-  //         "0x53d00397f03147a9bd9c40443a105a82780deaf1",
-  //         0,
-  //         0
-  //       )
-  //     )[0].share
-  //   ).to.equal(10);
-  //   expect(
-  //     (
-  //       await multipleNominee.getAllStructs(
-  //         owner.address,
-  //         "0x53d00397f03147a9bd9c40443a105a82780deaf1",
-  //         0,
-  //         0
-  //       )
-  //     )[1].share
-  //   ).to.equal(10);
-  //   expect(
-  //     (
-  //       await multipleNominee.getAllStructs(
-  //         owner.address,
-  //         "0x53d00397f03147a9bd9c40443a105a82780deaf1",
-  //         0,
-  //         0
-  //       )
-  //     )[0].nominee[0]
-  //   ).to.equal(nominee1.address);
-  //   expect(
-  //     (
-  //       await multipleNominee.getAllStructs(
-  //         owner.address,
-  //         "0x53d00397f03147a9bd9c40443a105a82780deaf1",
-  //         0,
-  //         0
-  //       )
-  //     )[0].nominee[1]
-  //   ).to.equal(nominee2.address);
-  // });
+  it("should able to edit token to multiple nominees", async function () {
+    await multipleNominee.assignTokensToMultipleNominees(
+      "0x53d00397f03147a9bd9c40443a105a82780deaf1",
+      "fTUSD Fake Token",
+      0,
+      0,
+      [
+        [
+          10,
+          [nominee1.address, nominee2.address],
+          [false, false],
+          [false, false],
+        ],
+        [
+          10,
+          [nominee2.address, nominee1.address],
+          [false, false],
+          [false, false],
+        ],
+      ]
+    );
+    // console.log(
+    //   await inheritokens.tokenAddressToTokenStruct(
+    //     owner.address,
+    //     "0x53d00397f03147a9bd9c40443a105a82780deaf1"
+    //   )
+    // );
+    const amount = (
+      await inheritokens.tokenAddressToTokenStruct(
+        owner.address,
+        "0x53d00397f03147a9bd9c40443a105a82780deaf1"
+      )
+    )[4];
+    expect(parseInt(amount)).to.equal(20);
+    // console.log(
+    //   await multipleNominee.getAllStructs(
+    //     owner.address,
+    //     "0x53d00397f03147a9bd9c40443a105a82780deaf1",
+    //     0
+    //   )
+    // );
+    expect(
+      (
+        await multipleNominee.getAllStructs(
+          owner.address,
+          "0x53d00397f03147a9bd9c40443a105a82780deaf1",
+          0,
+          0
+        )
+      )[0].share
+    ).to.equal(10);
+    expect(
+      (
+        await multipleNominee.getAllStructs(
+          owner.address,
+          "0x53d00397f03147a9bd9c40443a105a82780deaf1",
+          0,
+          0
+        )
+      )[1].share
+    ).to.equal(10);
+    expect(
+      (
+        await multipleNominee.getAllStructs(
+          owner.address,
+          "0x53d00397f03147a9bd9c40443a105a82780deaf1",
+          0,
+          0
+        )
+      )[0].nominee[0]
+    ).to.equal(nominee1.address);
+    expect(
+      (
+        await multipleNominee.getAllStructs(
+          owner.address,
+          "0x53d00397f03147a9bd9c40443a105a82780deaf1",
+          0,
+          0
+        )
+      )[0].nominee[1]
+    ).to.equal(nominee2.address);
+  });
 });

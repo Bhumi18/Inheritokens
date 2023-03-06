@@ -3,6 +3,7 @@
 pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
+import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
 import "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
@@ -11,11 +12,16 @@ import "../node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 import "./Inheritokens.sol";
 
-contract MultiplePriorityNominee {
+contract MultiplePriorityNominee is Ownable {
     address public inheritokensAddress;
     Inheritokens public inheritokens;
+    uint private tokenCharge = 1 * 10 ** 6;
+    uint private nftCharge = 5 * 10 ** 6;
+    uint private percentage = uint(1) / uint(10000);
+    address private chargeTokenAddress =
+        0xe9DcE89B076BA6107Bb64EF30678efec11939234;
 
-    constructor(address _inheritokensAddress) {
+    constructor(address _inheritokensAddress) Ownable() {
         inheritokensAddress = _inheritokensAddress;
         inheritokens = Inheritokens(inheritokensAddress);
     }
@@ -74,7 +80,6 @@ contract MultiplePriorityNominee {
             for (uint k = 0; k < data[i].nominee.length; k++) {
                 flag = false;
                 for (uint j = 0; j < nominees.length; j++) {
-                    console.log(nominees[j]);
                     if (data[i].nominee[k] == nominees[j]) {
                         flag = true;
                         break;
@@ -114,7 +119,16 @@ contract MultiplePriorityNominee {
                 _tokenId
             );
         }
-
+        if (nominated) {
+            IERC20 _token = IERC20(chargeTokenAddress);
+            if (_category == 0) {
+                _token.transferFrom(msg.sender, address(this), tokenCharge);
+            } else if (_category == 1) {
+                _token.transferFrom(msg.sender, address(this), nftCharge);
+            } else {
+                revert("Category value is 0 for tokens and 1 for NFT");
+            }
+        }
         // if token is already assigned then delete the data
         uint len;
         if (_category == 0) {
@@ -181,9 +195,21 @@ contract MultiplePriorityNominee {
         for (uint i = 0; i < nominees.length; i++) {
             if (nominees[i] == msg.sender) {
                 // transfer logic
+                // fot tokens
                 if (_category == 0) {
+                    // contract charge
+                    uint transferToContract = _amount * percentage;
+                    // value nominee will get
+                    uint transferToNominee = _amount - transferToContract;
                     IERC20 _token = IERC20(_tokenAddress);
-                    _token.transferFrom(_owner, msg.sender, _amount);
+                    // to contract
+                    _token.transferFrom(
+                        _owner,
+                        address(this),
+                        transferToContract
+                    );
+                    // to nominee
+                    _token.transferFrom(_owner, msg.sender, transferToNominee);
                     for (
                         uint k = 0;
                         k < ownerToTokenToStruct[_owner][_tokenAddress].length;
@@ -242,5 +268,48 @@ contract MultiplePriorityNominee {
             }
             emit Claimed(_owner, msg.sender, _tokenAddress, _tokenId);
         }
+    }
+
+    // function transferIntoContract(
+    //     address _tokenAddress,
+    //     uint _amount
+    // ) public payable {
+    //     IERC20 _token = IERC20(_tokenAddress);
+    //     _token.transferFrom(msg.sender, address(this), _amount);
+    // }
+
+    /// @notice _amount should be multiple with the decimals according to the token
+    /// @param _amount is the value for a specific token admin wants to withdraw from the contract, _tokenAddress is the address
+    // of the token
+    function withdrawFromContract(
+        uint _amount,
+        address _tokenAddress
+    ) public payable onlyOwner {
+        IERC20 _token = IERC20(_tokenAddress);
+        _token.transfer(msg.sender, _amount);
+    }
+
+    /// @notice this function is to change the token we charge while nominating, for example by default the token we charge is USDC
+    /// @param _tokenAddress is the address of the token which platform wants to charge while owner nominate the nominee
+    function changeChargeTokenAddress(address _tokenAddress) public {
+        chargeTokenAddress = _tokenAddress;
+    }
+
+    /// @notice _charge value should be multiply with decimals and then passed to this function
+    function changeTokenCharge(uint _charge) public {
+        tokenCharge = _charge;
+    }
+
+    /// @notice _charge value should be multiply with decimals and then passed to this function
+    function changeNFTCharge(uint _charge) public {
+        nftCharge = _charge;
+    }
+
+    function changePercentage(uint _percentage) public {
+        percentage = uint(_percentage) / uint(100);
+    }
+
+    function getValues() public view returns (address, uint, uint, uint) {
+        return (chargeTokenAddress, tokenCharge, nftCharge, percentage);
     }
 }

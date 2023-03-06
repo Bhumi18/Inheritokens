@@ -26,7 +26,9 @@ const API_TOKEN =
 const client = new Web3Storage({ token: API_TOKEN });
 
 function EditNominee() {
-  const profile_picture = useRef();
+  const nameRef = useRef("");
+  const emailRef = useRef(null);
+  const waRef = useRef(null);
 
   const location = useLocation();
 
@@ -36,7 +38,11 @@ function EditNominee() {
   // console.log(location.state.profile_cid);
   const [fileName, setFileName] = useState("");
   // const [fileCid, setFileCid] = useState("");
+  const [emailFormatWarn, setEmailFormatWarn] = useState(false);
+  const [waFormatWarn, setwaFormatWarn] = useState(false);
   const [btnloading, setbtnLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const [submitNotClicked, setSubmitNotClicked] = useState(true);
   const [uploaded, setUploaded] = useState("Submit");
   const { address, isConnected } = useAccount();
@@ -55,25 +61,29 @@ function EditNominee() {
     setFile(URL.createObjectURL(e.target.files[0]));
   }
 
-  async function handleUpload() {
-    // var fileInput = document.getElementById("input");
-    // console.log(fileInput);
-    // const rootCid = await client.put(fileInput.files, {
-    //   name: "inheritokens profile images",
-    //   maxRetries: 3,
-    // });
-    // console.log(rootCid);
-    // const res = await client.get(rootCid);
-    // const files = await res.files();
-    // console.log(files);
-    // const url = URL.createObjectURL(files[0]);
-    // console.log(url);
-    // console.log(files[0].cid);
-    // setUserData({ ...userData, cid: files[0].cid });
-    // setFileCid(files[0].cid);
-    setUploaded("Redirecting...");
-    setbtnLoading(false);
-    onSuccess();
+  async function handleUpload(a, b) {
+    if (a && b) {
+      setSubmitNotClicked(false);
+      setbtnLoading(true);
+      // var fileInput = document.getElementById("input");
+      // console.log(fileInput);
+      // const rootCid = await client.put(fileInput.files, {
+      //   name: "inheritokens profile images",
+      //   maxRetries: 3,
+      // });
+      // console.log(rootCid);
+      // const res = await client.get(rootCid);
+      // const files = await res.files();
+      // console.log(files);
+      // const url = URL.createObjectURL(files[0]);
+      // console.log(url);
+      // console.log(files[0].cid);
+      // setUserData({ ...userData, cid: files[0].cid });
+      // setFileCid(files[0].cid);
+      setUploaded("Requesting...");
+      setbtnLoading(false);
+      onSuccess();
+    }
     // setFile(url);
   }
 
@@ -117,65 +127,174 @@ function EditNominee() {
         }
       }
     } catch (error) {
-      console.log(error);
+      setbtnLoading(false);
+      setUploaded("Submit");
+      let msg = error.message.split("(")[0];
+      setErrorMsg(msg);
+      setError(true);
+      console.log(error.message);
     }
     //contract code ends here.................................
-    setTimeout(() => {
-      navigate("/");
-      // console.log(userData);
-    }, 1000);
   };
+
+  //email validation function
+
+  const validateEmail = (email) => {
+    const emailFormat =
+      /^([A-Za-z0-9_\-.])+@([A-Za-z0-9_\-.])+\.([A-Za-z]{2,})$/.test(email);
+
+    if (emailFormat) {
+      setEmailFormatWarn(false);
+      return true;
+    } else {
+      setEmailFormatWarn(true);
+      console.log("Please enter email in proper format");
+      return false;
+    }
+  };
+
+  // wallet address validation
+
+  const validateWalletAddress = (wa) => {
+    console.log("inside wa validation");
+    const waFormat = /^0x[a-fA-F0-9]{40}$/g.test(wa);
+    console.log(waFormat);
+
+    if (waFormat) {
+      setwaFormatWarn(false);
+      return true;
+    } else {
+      setwaFormatWarn(true);
+      console.log("Please enter valid Wallet Address");
+      return false;
+    }
+  };
+
+  const handleSubmit = (email, wa) => {
+    let emailVerified = false;
+    let waVerified = false;
+    if (validateEmail(email)) {
+      emailVerified = true;
+    } else {
+      emailVerified = false;
+    }
+    if (validateWalletAddress(wa)) {
+      waVerified = true;
+    } else {
+      waVerified = false;
+    }
+    handleUpload(emailVerified, waVerified);
+  };
+
   const resetImage = () => {
     setFile("");
     setFileName("");
   };
   useEffect(() => {
     // console.log(userData);
-  }, [userData]);
+    setEmailFormatWarn(false);
+  }, [userData.email]);
+
+  useEffect(() => {
+    // console.log(userData);
+    setwaFormatWarn(false);
+  }, [userData.wallet_address]);
 
   return (
     <>
       <Navbar />
       <section className="signup-main">
         <div className="login-card">
+          <div
+            className="close-button"
+            onClick={() => {
+              navigate("/user/profile");
+            }}
+          >
+            <svg
+              id="Layer_1"
+              width="25px"
+              data-name="Layer 1"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 122.88 119.79"
+            >
+              <title>close-window</title>
+              <path d="M23.5,0H99.38a23.56,23.56,0,0,1,23.5,23.5V96.29a23.56,23.56,0,0,1-23.5,23.5H23.5a23.44,23.44,0,0,1-16.6-6.9l-.37-.4A23.43,23.43,0,0,1,0,96.29V23.5A23.56,23.56,0,0,1,23.5,0ZM41,49.35a7,7,0,0,1,9.89-9.89L61.44,50,72,39.46a7,7,0,1,1,9.89,9.9L71.33,59.9,81.87,70.43A7,7,0,0,1,72,80.33L61.44,69.79,50.9,80.33A7,7,0,0,1,41,70.43L51.55,59.89,41,49.35ZM99.38,12.52H23.5a11,11,0,0,0-11,11V96.29a10.92,10.92,0,0,0,3,7.49l.27.26a11,11,0,0,0,7.75,3.23H99.38a11,11,0,0,0,11-11V23.5a11,11,0,0,0-11-11Z" />
+            </svg>
+          </div>
           <h2>Edit Nominee</h2>
           {/* <h3>Enter your details</h3> */}
           <div action="" className="login-form">
-            <div className="input-outer-div name-input">
+            <div
+              className="input-outer-div name-input"
+              onClick={(e) => {
+                nameRef.current.focus();
+              }}
+            >
               <img src={namepic} alt="nameicon" />
               {/* <MailSvg /> */}
               <input
                 type="text"
                 placeholder="Name"
+                ref={nameRef}
                 defaultValue={location.state.name}
                 onChange={(e) => {
                   setUserData({ ...userData, name: e.target.value });
                 }}
               />
             </div>
-
-            <div className="input-outer-div">
+            <div
+              className={
+                emailFormatWarn ? "warning input-outer-div" : "input-outer-div"
+              }
+              onClick={(e) => {
+                emailRef.current.focus();
+              }}
+            >
               <img src={emailpic} alt="emailicon" />
               <input
                 type="email"
                 placeholder="Email"
+                ref={emailRef}
                 defaultValue={location.state.email}
                 onChange={(e) => {
                   setUserData({ ...userData, email: e.target.value });
                 }}
               />
-            </div>
-            <div className="input-outer-div">
+            </div>{" "}
+            {emailFormatWarn ? (
+              <p style={{ color: "red", fontSize: "14px" }}>
+                * Please enter valid email address
+              </p>
+            ) : (
+              ""
+            )}
+            <div
+              className={
+                waFormatWarn ? "warning input-outer-div" : "input-outer-div"
+              }
+              onClick={(e) => {
+                waRef.current.focus();
+              }}
+            >
               <img src={walletpic} alt="emailicon" />
               <input
                 type="text"
                 placeholder="Wallet Address"
                 defaultValue={location.state.walletAddress}
+                ref={waRef}
                 onChange={(e) => {
                   setUserData({ ...userData, wallet_address: e.target.value });
                 }}
               />
             </div>
+            {waFormatWarn ? (
+              <p style={{ color: "red", fontSize: "14px" }}>
+                * Please enter valid Wallet Address
+              </p>
+            ) : (
+              ""
+            )}
             {/* <div className="input-outer-div">
               <img src={profilepic} alt="profileicon" />
               <input
@@ -217,7 +336,6 @@ function EditNominee() {
                 </p>
               )}
             </div> */}
-
             {/* {file ? (
               <>
                 <div className="file-upload-div">
@@ -227,7 +345,6 @@ function EditNominee() {
               </>
             ) : null} */}
             {/* <button className="file-upload-btn">Select Profile Image</button> */}
-
             {/* {file && submitNotClicked ? (
               <>
                 <p className="reset-text">
@@ -244,10 +361,21 @@ function EditNominee() {
               </>
             )} */}
             <button
+              className={
+                userData.email === location.state.email &&
+                userData.name === location.state.name &&
+                userData.wallet_address === location.state.walletAddress
+                  ? "disabled"
+                  : ""
+              }
+              // onClick={() => {
+              //   handleUpload();
+              //   setSubmitNotClicked(false);
+              //   setbtnLoading(true);
+              // }}
               onClick={() => {
-                handleUpload();
-                setSubmitNotClicked(false);
-                setbtnLoading(true);
+                handleSubmit(userData.email, userData.wallet_address);
+                // handleUpload();
               }}
             >
               {btnloading ? (
@@ -266,6 +394,13 @@ function EditNominee() {
                 <>{uploaded}</>
               )}
             </button>
+            {error ? (
+              <p style={{ color: "red", fontSize: "14px" }}>
+                {"* " + errorMsg}
+              </p>
+            ) : (
+              ""
+            )}
           </div>
         </div>
       </section>

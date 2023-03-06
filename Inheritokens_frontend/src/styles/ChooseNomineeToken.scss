@@ -11,7 +11,28 @@
     width: 100%;
     // border: 1px solid black;
     // height: 500px;
-
+    .go-back {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 5px;
+      margin: 0px 5%;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      max-width: max-content;
+      &:hover {
+        background-color: #f3f4f6;
+      }
+      svg {
+        fill: #5a88e1;
+      }
+      span {
+        color: #5a88e1;
+        font-size: 1.25rem;
+        font-weight: 600;
+      }
+    }
     .sub-hero {
       margin: 0px auto;
       margin-bottom: 40px;

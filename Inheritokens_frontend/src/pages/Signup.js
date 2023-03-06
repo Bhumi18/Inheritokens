@@ -28,8 +28,15 @@ function Signup() {
   const [file, setFile] = useState("");
   const [fileName, setFileName] = useState("");
   // const [fileCid, setFileCid] = useState("");
+
+  const nameRef = useRef("");
+  const emailRef = useRef(null);
+
   const [btnloading, setbtnLoading] = useState(false);
+  const [emailFormatWarn, setEmailFormatWarn] = useState(false);
   const [submitNotClicked, setSubmitNotClicked] = useState(true);
+  const [error, setError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const [uploaded, setUploaded] = useState("Sign Up");
   const { address, isConnected } = useAccount();
 
@@ -39,6 +46,22 @@ function Signup() {
     cid: "",
     otp: "",
   });
+
+  //email validation function
+
+  const validateEmail = (email) => {
+    const emailFormat =
+      /^([A-Za-z0-9_\-.])+@([A-Za-z0-9_\-.])+\.([A-Za-z]{2,})$/.test(email);
+
+    if (emailFormat) {
+      setEmailFormatWarn(false);
+      return true;
+    } else {
+      setEmailFormatWarn(true);
+      console.log("Please enter valid email");
+      return false;
+    }
+  };
 
   async function uploadImage(e) {
     // console.log(e.target.value);
@@ -51,7 +74,15 @@ function Signup() {
   async function handleUpload() {
     var fileInput = document.getElementById("input");
     // console.log(fileInput);
-    const cid = await client.put(fileInput.files);
+    console.log(fileInput.files.length);
+
+    let cid;
+    if (fileInput.files.length > 0) {
+      cid = await client.put(fileInput.files);
+    }
+
+    // const cid = await client.put(fileInput.files);
+    console.log(cid);
     // console.log("new " + cid + "/" + fileName);
     // const rootCid = await client.put(fileInput.files, {
     //   name: "inheritokens profile images",
@@ -64,7 +95,14 @@ function Signup() {
     // const url = URL.createObjectURL(files[0]);
     // console.log(url);
     // console.log(files[0].cid);
-    const image_cid = cid + "/" + fileName;
+    let image_cid;
+    if (fileInput.files.length > 0) {
+      image_cid = cid + "/" + fileName;
+    } else {
+      image_cid =
+        "bafybeidn6hnteexegeou2by4hyic35g7w5wmtbgaaknehewf5wv5zj7kve/defaultprofileimage.png";
+    }
+    console.log(image_cid);
     setUserData({ ...userData, cid: cid + "/" + fileName });
     // setFileCid(files[0].cid);
     setUploaded("Uploaded");
@@ -106,7 +144,9 @@ function Signup() {
         onSuccess(image_cid, 1808);
       });
   };
+
   const onSuccess = async (image_cid, otp) => {
+    setError(false);
     setUploaded("Requesting...");
     // setTimeout(() => {
     //   setUploaded("Requesting...");
@@ -188,7 +228,12 @@ function Signup() {
         }
       }
     } catch (error) {
-      console.log(error);
+      setbtnLoading(false);
+      setUploaded("Sign Up");
+      let msg = error.message.split("(")[0];
+      setErrorMsg(msg);
+      setError(true);
+      console.log(error.message);
     }
     //contract code ends here.................................
 
@@ -203,7 +248,14 @@ function Signup() {
 
   useEffect(() => {
     // console.log(userData);
-  }, [userData]);
+    setEmailFormatWarn(false);
+  }, [userData.email]);
+
+  useEffect(() => {
+    if (!address) {
+      navigate("/");
+    }
+  }, [address, navigate]);
 
   return (
     <>
@@ -213,41 +265,58 @@ function Signup() {
           <h2>Sign Up</h2>
           {/* <h3>Enter your details</h3> */}
           <div action="" className="login-form">
-            <div className="input-outer-div name-input">
+            <div
+              className="input-outer-div name-input"
+              onClick={(e) => {
+                nameRef.current.focus();
+              }}
+            >
               <img src={namepic} alt="nameicon" />
               {/* <MailSvg /> */}
               <input
                 type="text"
                 placeholder="Name"
+                ref={nameRef}
                 onChange={(e) => {
                   setUserData({ ...userData, name: e.target.value });
                 }}
               />
             </div>
-            {/* <PhoneInput
-              inputExtraProps={{
-                name: "phone",
-                required: true,
-                autoFocus: false,
+
+            <div
+              className={
+                emailFormatWarn ? "warning input-outer-div" : "input-outer-div"
+              }
+              onClick={(e) => {
+                emailRef.current.focus();
               }}
-              // country={"us"}
-              placeholder="Phone number"
-              value={UserData.contact_number}
-              autoFocus="false"
-              onChange={(e) => setUserData({ ...UserData, contact_number: e })}
-            /> */}
-            <div className="input-outer-div">
+            >
               <img src={emailpic} alt="emailicon" />
               <input
                 type="email"
                 placeholder="Email"
+                ref={emailRef}
                 onChange={(e) => {
                   setUserData({ ...userData, email: e.target.value });
+                  // validateEmail(e.target.value);
                 }}
               />
             </div>
+            {emailFormatWarn ? (
+              <p style={{ color: "red", fontSize: "14px" }}>
+                * Please enter valid email address
+              </p>
+            ) : (
+              ""
+            )}
             <div className="input-outer-div file-upload-input">
-              <img src={profilepic} alt="profileicon" />
+              <img
+                src={profilepic}
+                alt="profileicon"
+                onClick={(e) => {
+                  profile_picture.current.click();
+                }}
+              />
               <input
                 className="input-edit-profile"
                 id="input"
@@ -314,10 +383,15 @@ function Signup() {
             )}
             <button
               onClick={() => {
-                handleUpload();
-                setSubmitNotClicked(false);
-                setbtnLoading(true);
+                if (validateEmail(userData.email)) {
+                  handleUpload();
+                  setSubmitNotClicked(false);
+                  setbtnLoading(true);
+                }
               }}
+              className={
+                userData.email === "" || userData.name === "" ? "disabled" : ""
+              }
             >
               {btnloading ? (
                 <svg
@@ -335,6 +409,13 @@ function Signup() {
                 <>{uploaded}</>
               )}
             </button>
+            {error ? (
+              <p style={{ color: "red", fontSize: "14px" }}>
+                {"* " + errorMsg}
+              </p>
+            ) : (
+              ""
+            )}
           </div>
         </div>
       </section>

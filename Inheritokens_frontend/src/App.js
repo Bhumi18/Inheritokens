@@ -33,6 +33,7 @@ import EmailVerified from "./components/EmailVerified";
 import ChooseNomineeNFT from "./pages/ChooseNomineeNFT";
 import ChooseNomineeToken from "./pages/ChooseNomineeToken";
 import { useEffect, useState } from "react";
+import Footer from "./components/Footer";
 
 const { provider, webSocketProvider } = configureChains(defaultChains, [
   alchemyProvider({ apiKey: "O5NYvtwLMNG0LjAXPQEk0YJT2l3UxTAY" }),
@@ -110,6 +111,29 @@ const client = createClient({
 /// wagmi end
 
 function App() {
+  // initial loading
+  const [isLoading, setLoading] = useState(true);
+
+  function someRequest() {
+    //Simulates a request; makes a "promise" that'll run for 2.5 seconds
+    return new Promise((resolve) => setTimeout(() => resolve(), 2500));
+  }
+
+  useEffect(() => {
+    someRequest().then(() => {
+      const loaderElement = document.querySelector(".loader-container");
+      if (loaderElement) {
+        loaderElement.remove();
+        setLoading(!isLoading);
+      }
+    });
+  });
+
+  if (isLoading) {
+    //
+    return null;
+  }
+
   return (
     <WagmiConfig client={client}>
       <ConnectKitProvider
@@ -135,6 +159,7 @@ function App() {
               <Route path="/*" element={<Home />} />
             </Routes>
           </Router>
+          <Footer />
         </div>
       </ConnectKitProvider>
     </WagmiConfig>

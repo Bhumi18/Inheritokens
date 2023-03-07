@@ -130,6 +130,7 @@
   }
 
   div.input-outer-div {
+    cursor: pointer;
     margin: 10px 0;
     color: #000;
     border: none;
@@ -187,6 +188,9 @@
       }
     }
   }
+  div.warning.input-outer-div {
+    border: 1px solid red;
+  }
 
   .file-upload-input {
     cursor: pointer;
@@ -215,6 +219,10 @@
       transition: background 300ms ease-in-out;
       // background-image: linear-gradient(to left, #f1fb7c, white, #f1fb7c);
     }
+  }
+  button.disabled {
+    opacity: 0.5;
+    pointer-events: none;
   }
 
   // .react-tel-input {

@@ -17,7 +17,7 @@ contract MultiplePriorityNominee is Ownable {
     Inheritokens public inheritokens;
     uint private tokenCharge = 1 * 10 ** 6;
     uint private nftCharge = 5 * 10 ** 6;
-    uint private percentage = uint(1) / uint(10000);
+    uint private percentage = uint(1);
     address private chargeTokenAddress =
         0xe9DcE89B076BA6107Bb64EF30678efec11939234;
 
@@ -51,7 +51,8 @@ contract MultiplePriorityNominee is Ownable {
         address indexed _owner,
         address indexed _nominee,
         address indexed _tokenAddress,
-        uint _tokenId
+        uint _tokenId,
+        uint _amount
     );
 
     /// @param _tokenAddress is the address of the token contract, _tokenName is the name of the token, _category is the integer
@@ -198,9 +199,10 @@ contract MultiplePriorityNominee is Ownable {
                 // fot tokens
                 if (_category == 0) {
                     // contract charge
-                    uint transferToContract = _amount * percentage;
+                    uint transferToContract = (_amount * percentage) / (10000);
                     // value nominee will get
-                    uint transferToNominee = _amount - transferToContract;
+                    uint transferToNominee = (_amount - transferToContract) /
+                        (10000);
                     IERC20 _token = IERC20(_tokenAddress);
                     // to contract
                     _token.transferFrom(
@@ -266,7 +268,41 @@ contract MultiplePriorityNominee is Ownable {
                     }
                 }
             }
-            emit Claimed(_owner, msg.sender, _tokenAddress, _tokenId);
+            emit Claimed(_owner, msg.sender, _tokenAddress, _tokenId, _amount);
+        }
+    }
+
+    // recovery claim
+    /// @param _owner is the owner's address, _tokenAddress is the address of the token, _amount is the amount of the ERC20,
+    // _tokenId is the token Id of the asset
+    function recoveryClaim(
+        address _owner,
+        address _tokenAddress,
+        uint _amount,
+        uint _tokenId,
+        uint _category
+    ) public {
+        // transfer logic
+        // fot tokens
+        // check the user who is calling the function has the address same as recovery address of the owner
+        require(
+            inheritokens.getOwnerDetails(_owner).recoveryAddress == msg.sender,
+            "Recovery Address or Owner Address is incorrect!"
+        );
+        if (_category == 0) {
+            // contract charge
+            uint transferToContract = _amount * percentage;
+            // value nominee will get
+            uint transferToNominee = _amount - transferToContract;
+            IERC20 _token = IERC20(_tokenAddress);
+            // to contract
+            _token.transferFrom(_owner, address(this), transferToContract);
+            // to nominee
+            _token.transferFrom(_owner, msg.sender, transferToNominee);
+        } else if (_tokenId > 0) {
+            IERC721 _token = IERC721(_tokenAddress);
+            _token.transferFrom(_owner, msg.sender, _tokenId);
+            emit Claimed(_owner, msg.sender, _tokenAddress, _tokenId, _amount);
         }
     }
 
@@ -305,8 +341,9 @@ contract MultiplePriorityNominee is Ownable {
         nftCharge = _charge;
     }
 
-    function changePercentage(uint _percentage) public {
-        percentage = uint(_percentage) / uint(100);
+    /// @notice must pass value in decimal
+    function changePercentage(uint _amount) public {
+        percentage = _amount;
     }
 
     function getValues() public view returns (address, uint, uint, uint) {

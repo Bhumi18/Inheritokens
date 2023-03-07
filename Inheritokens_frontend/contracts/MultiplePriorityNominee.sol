@@ -201,8 +201,7 @@ contract MultiplePriorityNominee is Ownable {
                     // contract charge
                     uint transferToContract = (_amount * percentage) / (10000);
                     // value nominee will get
-                    uint transferToNominee = (_amount - transferToContract) /
-                        (10000);
+                    uint transferToNominee = (_amount - transferToContract);
                     IERC20 _token = IERC20(_tokenAddress);
                     // to contract
                     _token.transferFrom(
@@ -291,9 +290,9 @@ contract MultiplePriorityNominee is Ownable {
         );
         if (_category == 0) {
             // contract charge
-            uint transferToContract = _amount * percentage;
+            uint transferToContract = (_amount * percentage) / (10000);
             // value nominee will get
-            uint transferToNominee = _amount - transferToContract;
+            uint transferToNominee = (_amount - transferToContract);
             IERC20 _token = IERC20(_tokenAddress);
             // to contract
             _token.transferFrom(_owner, address(this), transferToContract);
@@ -331,21 +330,22 @@ contract MultiplePriorityNominee is Ownable {
         chargeTokenAddress = _tokenAddress;
     }
 
-    /// @notice _charge value should be multiply with decimals and then passed to this function
+    /// @notice _charge value should be multiply with decimals(wei) and then passed to this function
     function changeTokenCharge(uint _charge) public {
         tokenCharge = _charge;
     }
 
-    /// @notice _charge value should be multiply with decimals and then passed to this function
+    /// @notice _charge value should be multiply with decimals(wei) and then passed to this function
     function changeNFTCharge(uint _charge) public {
         nftCharge = _charge;
     }
 
-    /// @notice must pass value in decimal
+    /// @notice must pass value in int
     function changePercentage(uint _amount) public {
         percentage = _amount;
     }
 
+    /// @return address of token that platform charge, charge for token, charge for NFT, and percentage amount while nominee claim the tokens
     function getValues() public view returns (address, uint, uint, uint) {
         return (chargeTokenAddress, tokenCharge, nftCharge, percentage);
     }

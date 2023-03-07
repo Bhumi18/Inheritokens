@@ -394,7 +394,7 @@ contract Inheritokens is Ownable {
     }
 
     // Function to call when user respond to our email
-    function setResponse() public {
+    function setResponse() public ownerAdded emailVerified {
         addressToOwner[msg.sender].isResponsed = true;
         emit OwnerResponded(msg.sender);
     }

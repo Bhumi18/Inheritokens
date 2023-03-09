@@ -61,19 +61,25 @@ contract Inheritokens is Ownable {
 
     // modifiers
     modifier ownerNotAdded() {
-        require(!isOwnerAdded[msg.sender], "Already registered");
+        require(
+            !isOwnerAdded[msg.sender],
+            "You've already signed up! No further registration is required."
+        );
         _;
     }
 
     modifier ownerAdded() {
-        require(isOwnerAdded[msg.sender], "First do registration");
+        require(
+            isOwnerAdded[msg.sender],
+            "You must first sign up for an account."
+        );
         _;
     }
 
     modifier emailVerified() {
         require(
             addressToOwner[msg.sender].isEmailVerified,
-            "email is not verified"
+            "Your email has not yet been validated. Verify your registered email address first."
         );
         _;
     }
@@ -152,10 +158,10 @@ contract Inheritokens is Ownable {
     }
 
     // verify owner's email
-    function verifyOwnerEmail() public ownerAdded {
+    function verifyOwnerEmail() public ownerAdded onlyOwner {
         require(
             !addressToOwner[msg.sender].isEmailVerified,
-            "Already your email is verified"
+            "Your email has already been verified."
         );
         addressToOwner[msg.sender].isEmailVerified = true;
         emit EmailVerified(msg.sender);
@@ -220,7 +226,10 @@ contract Inheritokens is Ownable {
         string memory _email,
         address _nominee
     ) public ownerAdded emailVerified {
-        require(!isNomineeAdded[_nominee], "Nominee is already added");
+        require(
+            !isNomineeAdded[_nominee],
+            "This nominee's address has already been added. Try adding a nominee with another account address."
+        );
         addressToNominee[_nominee] = Nominee(_name, _email, _nominee);
         addressToOwner[msg.sender].nominees.push(_nominee);
         isNomineeAdded[_nominee] = true;
@@ -235,7 +244,10 @@ contract Inheritokens is Ownable {
         string memory _email,
         address _newNomineeAddress
     ) public ownerAdded emailVerified {
-        require(isNomineeAdded[_oldNomineeAddress], "Nominee is not added");
+        require(
+            isNomineeAdded[_oldNomineeAddress],
+            "The nominee's address is not added. So you can't modify the details of this account's address. Please enter the valid address of the nominee."
+        );
         if (_oldNomineeAddress == _newNomineeAddress) {
             addressToNominee[_oldNomineeAddress].nominee_name = _name;
             addressToNominee[_oldNomineeAddress].nominee_email = _email;
@@ -308,11 +320,11 @@ contract Inheritokens is Ownable {
         uint _category,
         uint _tokenId,
         uint amount
-    ) public {
-        require(isOwnerAdded[_owner], "First do registration");
+    ) external {
+        require(isOwnerAdded[_owner], "You must first sign up for an account.");
         require(
             addressToOwner[_owner].isEmailVerified,
-            "email is not verified"
+            "Your email has not yet been validated. Verify your registered email address first."
         );
         // for token
         if (_category == 0) {
@@ -348,10 +360,10 @@ contract Inheritokens is Ownable {
         uint _amount,
         uint _category
     ) external {
-        require(isOwnerAdded[_owner], "First do registration");
+        require(isOwnerAdded[_owner], "You must first sign up for an account.");
         require(
             addressToOwner[_owner].isEmailVerified,
-            "email is not verified"
+            "Your email has not yet been validated. Verify your registered email address first."
         );
         // for token
         if (_category == 0) {
@@ -401,7 +413,7 @@ contract Inheritokens is Ownable {
 
     /// @param _owner is the owner's address
     function setOwnerNotAlive(address _owner) public onlyOwner {
-        require(!addressToOwner[_owner].isResponsed, "Owner responded");
+        require(!addressToOwner[_owner].isResponsed, "Owner has already responded.");
         addressToOwner[_owner].isAlive = false;
     }
 }

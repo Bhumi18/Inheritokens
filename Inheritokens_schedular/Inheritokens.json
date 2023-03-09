@@ -10,6 +10,163 @@
       {
         "indexed": true,
         "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_tokenAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "AllocatedShareUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_charityId",
+        "type": "uint256"
+      }
+    ],
+    "name": "CharityWhitelisted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      }
+    ],
+    "name": "EmailVerified",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_nominee",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "_name",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "_mail",
+        "type": "string"
+      }
+    ],
+    "name": "NomineeAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_oldAddress",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_newAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "_name",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "_mail",
+        "type": "string"
+      }
+    ],
+    "name": "NomineeDetailsUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "_name",
+        "type": "string"
+      }
+    ],
+    "name": "OwnerRegistered",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnerResponded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
         "name": "previousOwner",
         "type": "address"
       },
@@ -21,6 +178,100 @@
       }
     ],
     "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "_recoveryAddress",
+        "type": "address"
+      }
+    ],
+    "name": "RecoveryAddressAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "_date",
+        "type": "string"
+      }
+    ],
+    "name": "ResponsedDateSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_inactivity",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_mail",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_nominee",
+        "type": "uint256"
+      }
+    ],
+    "name": "TimePeriodsUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_tokenAddress",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "_tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "TokenStructureAssigned",
     "type": "event"
   },
   {
@@ -62,11 +313,6 @@
         "internalType": "string",
         "name": "_cid",
         "type": "string"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_months",
-        "type": "uint256"
       }
     ],
     "name": "addOwnerDetails",
@@ -76,11 +322,6 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_owner",
-        "type": "address"
-      },
       {
         "internalType": "address",
         "name": "_recoveryAddress",
@@ -116,11 +357,6 @@
         "internalType": "address",
         "name": "nominee_address",
         "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "hasClaimed",
-        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -152,6 +388,11 @@
         "type": "string"
       },
       {
+        "internalType": "string",
+        "name": "date",
+        "type": "string"
+      },
+      {
         "internalType": "bool",
         "name": "isEmailVerified",
         "type": "bool"
@@ -159,6 +400,11 @@
       {
         "internalType": "bool",
         "name": "isAlive",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "isResponsed",
         "type": "bool"
       },
       {
@@ -203,9 +449,9 @@
         "type": "string"
       },
       {
-        "internalType": "string",
+        "internalType": "uint256",
         "name": "_category",
-        "type": "string"
+        "type": "uint256"
       },
       {
         "internalType": "uint256",
@@ -254,7 +500,7 @@
         "type": "address"
       }
     ],
-    "name": "checkVerification",
+    "name": "checkEmailVerified",
     "outputs": [
       {
         "internalType": "bool",
@@ -269,22 +515,23 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_nominee",
+        "name": "_owner",
         "type": "address"
       }
     ],
-    "name": "claim",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "name": "checkOwnerAdded",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_owner",
-        "type": "address"
-      },
       {
         "internalType": "address",
         "name": "_oldNomineeAddress",
@@ -307,6 +554,29 @@
       }
     ],
     "name": "editNomineeDetails",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_name",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_email",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_cid",
+        "type": "string"
+      }
+    ],
+    "name": "editOwnerDetails",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -338,36 +608,12 @@
         "type": "address"
       }
     ],
-    "name": "getAllWhiteListedCharities",
+    "name": "getAllNomineesOfOwner",
     "outputs": [
       {
-        "internalType": "uint256[]",
+        "internalType": "address[]",
         "name": "",
-        "type": "uint256[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_owner",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_tokenAddress",
-        "type": "address"
-      }
-    ],
-    "name": "getIsNominated",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
+        "type": "address[]"
       }
     ],
     "stateMutability": "view",
@@ -399,35 +645,11 @@
             "internalType": "address",
             "name": "nominee_address",
             "type": "address"
-          },
-          {
-            "internalType": "bool",
-            "name": "hasClaimed",
-            "type": "bool"
           }
         ],
         "internalType": "struct Inheritokens.Nominee",
         "name": "",
         "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_owner",
-        "type": "address"
-      }
-    ],
-    "name": "getOwnerAlive",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -461,6 +683,11 @@
             "type": "string"
           },
           {
+            "internalType": "string",
+            "name": "date",
+            "type": "string"
+          },
+          {
             "internalType": "bool",
             "name": "isEmailVerified",
             "type": "bool"
@@ -468,6 +695,11 @@
           {
             "internalType": "bool",
             "name": "isAlive",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isResponsed",
             "type": "bool"
           },
           {
@@ -528,52 +760,61 @@
         "internalType": "address",
         "name": "_owner",
         "type": "address"
-      }
-    ],
-    "name": "getRecoveryAddress",
-    "outputs": [
+      },
       {
         "internalType": "address",
-        "name": "",
+        "name": "_tokenAddress",
         "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
+      },
       {
-        "internalType": "address",
-        "name": "_owner",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "_tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_category",
+        "type": "uint256"
       }
     ],
-    "name": "getResponse",
+    "name": "getTokenStruct",
     "outputs": [
       {
-        "internalType": "bool",
+        "components": [
+          {
+            "internalType": "address",
+            "name": "token_address",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "token_name",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "category",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "token_id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "allocated_share",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "isNominated",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct Inheritokens.Token",
         "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_owner",
-        "type": "address"
-      }
-    ],
-    "name": "getResponseDate",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -587,6 +828,25 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      }
+    ],
+    "name": "getWhiteListedCharities",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
       }
     ],
     "stateMutability": "view",
@@ -631,6 +891,60 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "nftAddressToTokenStruct",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "token_address",
+        "type": "address"
+      },
+      {
+        "internalType": "string",
+        "name": "token_name",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "category",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "token_id",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "allocated_share",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "isNominated",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "owner",
     "outputs": [
@@ -638,30 +952,6 @@
         "internalType": "address",
         "name": "",
         "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "ownerToResponse",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "date",
-        "type": "string"
-      },
-      {
-        "internalType": "bool",
-        "name": "isResponsed",
-        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -707,18 +997,7 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_owner",
-        "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "_response",
-        "type": "bool"
-      }
-    ],
+    "inputs": [],
     "name": "setResponse",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -744,11 +1023,6 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_owner",
-        "type": "address"
-      },
       {
         "internalType": "uint256",
         "name": "_charityId",
@@ -786,9 +1060,9 @@
         "type": "string"
       },
       {
-        "internalType": "string",
+        "internalType": "uint256",
         "name": "category",
-        "type": "string"
+        "type": "uint256"
       },
       {
         "internalType": "uint256",
@@ -836,7 +1110,17 @@
       },
       {
         "internalType": "uint256",
-        "name": "amount",
+        "name": "_tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_category",
         "type": "uint256"
       }
     ],
@@ -846,13 +1130,7 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_owner",
-        "type": "address"
-      }
-    ],
+    "inputs": [],
     "name": "verifyOwnerEmail",
     "outputs": [],
     "stateMutability": "nonpayable",

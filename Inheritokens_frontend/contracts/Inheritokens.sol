@@ -152,7 +152,7 @@ contract Inheritokens is Ownable {
     }
 
     // verify owner's email
-    function verifyOwnerEmail() public ownerAdded {
+    function verifyOwnerEmail() public ownerAdded{
         require(
             !addressToOwner[msg.sender].isEmailVerified,
             "Already your email is verified"

@@ -9,14 +9,14 @@ async function main() {
     `Inheritokens contract address is ${(await inheritokens).address}`
   );
 
-  // const CharityContract = await hre.ethers.getContractFactory(
-  //   "CharityContract"
-  // );
-  // const charityContract = CharityContract.deploy();
-  // await (await charityContract).deployed();
-  // console.log(
-  //   `charityContract contract address is ${(await charityContract).address}`
-  // );
+  const CharityContract = await hre.ethers.getContractFactory(
+    "CharityContract"
+  );
+  const charityContract = CharityContract.deploy();
+  await (await charityContract).deployed();
+  console.log(
+    `charityContract contract address is ${(await charityContract).address}`
+  );
 
   const MultiplePriorityNominee = await hre.ethers.getContractFactory(
     "MultiplePriorityNominee"
@@ -34,6 +34,6 @@ main().catch((error) => {
   process.exitCode = 1;
 });
 
-// Inheritokens contract address is 0x85085FfFEb6C7a07b6B87fC87531a46cB54399cD
-// charityContract contract address is 0x9cF7C877f42Bb94fF059eaC1B80C1deA5B908b0B
-// multipleNominee contract address is 0x7C04FeEd6fE39aceaa3249F49fEABa3ebF39Ec75
+// Inheritokens contract address is 0xAE10a756BDCabA70ab9F13736fAf0DE4B2b3f4D7
+// charityContract contract address is 0x75cBba99faD842AE4a83706aAfd928a079c0007a
+// multipleNominee contract address is 0x6a13Ab26Beb794247c5CfB4ADdA8a17Cc90CCf61

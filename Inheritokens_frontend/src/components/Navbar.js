@@ -4,7 +4,8 @@ import { useAccount } from "wagmi";
 // import profilepic1 from "";
 import profilepic1 from "../assets/images/defaultprofileimage.png";
 import logo from "../assets/images/interitokenslogo2.png";
-import ConnectWalletNavbar from "./ConnectWalletNavbar";
+// import ConnectWalletNavbar from "./ConnectWalletNavbar";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { ethers } from "ethers";
 import contract from "../artifacts/Main.json";
 import { Link } from "react-router-dom";
@@ -85,7 +86,17 @@ function Navbar({ userData }) {
                     "..." +
                     walletAdd.substring(walletAdd.length - 5, walletAdd.length)}
                 </span> */}
-                  <ConnectWalletNavbar />
+                  {/* <ConnectWalletNavbar /> */}
+                  <ConnectButton
+                    accountStatus={{
+                      smallScreen: "avatar",
+                      largeScreen: "full",
+                    }}
+                    showBalance={{
+                      smallScreen: false,
+                      largeScreen: true,
+                    }}
+                  />
                 </div>
                 <Link to="/user/profile">
                   {data[0][2] !== "https://ipfs.io/ipfs/" ? (
@@ -125,7 +136,17 @@ function Navbar({ userData }) {
               "..." +
               walletAdd.substring(walletAdd.length - 5, walletAdd.length)}
           </span> */}
-                  <ConnectWalletNavbar />
+                  {/* <ConnectWalletNavbar /> */}
+                  <ConnectButton
+                    accountStatus={{
+                      smallScreen: "avatar",
+                      largeScreen: "full",
+                    }}
+                    showBalance={{
+                      smallScreen: false,
+                      largeScreen: true,
+                    }}
+                  />
                 </div>
                 <Link to="/user/profile">
                   <img

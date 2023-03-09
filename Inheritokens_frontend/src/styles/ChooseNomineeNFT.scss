@@ -7,7 +7,28 @@
   padding-bottom: 2rem;
   padding-top: 2rem;
   // border: 1px solid black;
-
+  .go-back {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 5px;
+    margin: 0px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    max-width: max-content;
+    &:hover {
+      background-color: #f3f4f6;
+    }
+    svg {
+      fill: #5a88e1;
+    }
+    span {
+      color: #5a88e1;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+  }
   .cn-sub-hero-section {
     width: 100%;
     display: grid;

@@ -19,13 +19,14 @@ import {
   configureChains,
   chain,
 } from "wagmi";
+import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
-import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
-import { InjectedConnector } from "wagmi/connectors/injected";
-import { MetaMaskConnector } from "wagmi/connectors/metaMask";
-import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
+// import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
+// import { InjectedConnector } from "wagmi/connectors/injected";
+// import { MetaMaskConnector } from "wagmi/connectors/metaMask";
+// import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 
 import { ConnectKitProvider } from "connectkit";
 import SendingEmailRequest from "./components/SendingEmailRequest";
@@ -35,19 +36,30 @@ import ChooseNomineeToken from "./pages/ChooseNomineeToken";
 import { useEffect, useState } from "react";
 import Footer from "./components/Footer";
 
-const { provider, webSocketProvider } = configureChains(defaultChains, [
-  alchemyProvider({ apiKey: "O5NYvtwLMNG0LjAXPQEk0YJT2l3UxTAY" }),
-  publicProvider(),
-]);
+// rainbowkit
+import "@rainbow-me/rainbowkit/styles.css";
+import {
+  getDefaultWallets,
+  RainbowKitProvider,
+  lightTheme,
+} from "@rainbow-me/rainbowkit";
+import { polygonMumbai } from "wagmi/chains";
 
+// connectkit
+// const { provider, webSocketProvider } = configureChains(defaultChains, [
+//   alchemyProvider({ apiKey: "O5NYvtwLMNG0LjAXPQEk0YJT2l3UxTAY" }),
+//   publicProvider(),
+// ]);
 // const { chains } = configureChains(
 //   [chain.mainnet, chain.optimism],
 //   [publicProvider()]
 // );
-const customChain = {
+const BTTChain = {
   id: 1029,
   name: "BitTorrent Chain Donau",
   network: "BitTorrent Chain Donau",
+  iconUrl: "https://testscan.bt.io/static/media/BTT.e13a6c4e.svg",
+  iconBackground: "#fff",
   nativeCurrency: {
     decimals: 18,
     name: "BitTorrent Chain Donau",
@@ -65,7 +77,7 @@ const customChain = {
   testnet: true,
 };
 
-const chains = [chain.polygonMumbai, customChain];
+// const chains = [chain.polygonMumbai, customChain];
 
 // const client = createClient(
 //   getDefaultClient({
@@ -76,39 +88,63 @@ const chains = [chain.polygonMumbai, customChain];
 // );
 // Set up client
 
-const client = createClient({
-  autoConnect: true,
-  connectors: [
-    new MetaMaskConnector({ chains }),
-    new CoinbaseWalletConnector({
-      chains,
-      options: {
-        appName: "wagmi",
-      },
-    }),
-    new WalletConnectConnector({
-      chains,
-      options: {
-        qrcode: true,
-      },
-    }),
-    new InjectedConnector({
-      chains,
-      options: {
-        name: "Injected",
-        shimDisconnect: true,
-      },
-    }),
-  ],
-  provider,
-  webSocketProvider,
-});
+// const client = createClient({
+//   autoConnect: true,
+//   connectors: [
+//     new MetaMaskConnector({ chains }),
+//     new CoinbaseWalletConnector({
+//       chains,
+//       options: {
+//         appName: "wagmi",
+//       },
+//     }),
+//     new WalletConnectConnector({
+//       chains,
+//       options: {
+//         qrcode: true,
+//       },
+//     }),
+//     new InjectedConnector({
+//       chains,
+//       options: {
+//         name: "Injected",
+//         shimDisconnect: true,
+//       },
+//     }),
+//   ],
+//   provider,
+//   webSocketProvider,
+// });
+
 // const client = createClient({
 //   autoConnect: true,
 //   provider: getDefaultProvider(),
 // });
 
 /// wagmi end
+
+// rainbowkit
+
+const { chains, provider } = configureChains(
+  [polygonMumbai, BTTChain],
+  [
+    jsonRpcProvider({
+      rpc: (chain) => ({ http: "https://pre-rpc.bittorrentchain.io/" }),
+    }),
+    alchemyProvider({ apiKey: "O5NYvtwLMNG0LjAXPQEk0YJT2l3UxTAY" }),
+    // publicProvider(),
+  ]
+);
+const { connectors } = getDefaultWallets({
+  appName: "My RainbowKit App",
+  chains,
+});
+
+const wagmiClient = createClient({
+  autoConnect: true,
+  connectors,
+  provider,
+});
 
 function App() {
   // initial loading
@@ -135,11 +171,21 @@ function App() {
   }
 
   return (
-    <WagmiConfig client={client}>
-      <ConnectKitProvider
-        customTheme={{
-          "--ck-font-family": '"Josefin Sans"',
-        }}
+    <WagmiConfig client={wagmiClient}>
+      <RainbowKitProvider
+        chains={chains}
+        showRecentTransactions={true}
+        theme={lightTheme({
+          accentColor: "#ffffff",
+          accentColorForeground: "black",
+          borderRadius: "medium",
+          fontStack: "system",
+          overlayBlur: "small",
+          connectButtonText: "#5a88e1",
+          fonts: {
+            body: "JosefinSans",
+          },
+        })}
       >
         <div className="App">
           <Router>
@@ -161,7 +207,7 @@ function App() {
           </Router>
           <Footer />
         </div>
-      </ConnectKitProvider>
+      </RainbowKitProvider>
     </WagmiConfig>
   );
 }

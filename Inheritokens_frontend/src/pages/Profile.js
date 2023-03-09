@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import coverimg from "../assets/images/coverfornominee.png";
 import "../styles/profile.scss";
 import Navbar from "../components/Navbar";
@@ -9,7 +9,7 @@ import AllNfts from "../components/AllNfts";
 import { useState } from "react";
 import Tokens from "../components/Tokens";
 import EditProfile from "./EditProfile";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import NomineesList from "../components/NomineesList";
 import { useReducer } from "react";
@@ -21,12 +21,16 @@ export const CONTRACT_ADDRESS = "0xaEF8eb4EDCB0177A5ef6a5e3f46E581a5908eef4";
 export const BTTC_ADDRESS = "0xB987640A52415b64E2d19109E8f9d7a3492d5F54";
 
 function Profile() {
+  const location = useLocation();
+
   const dataFetchedRef = useRef(false);
   const [nftData, setNftData] = useState([]);
   const [recoveryAddress, setRecoveryAddress] = useState("");
   const [nftInfo, setNftInfo] = useState([{ token_address: "", token_id: "" }]);
   const { address, isConnected } = useAccount("");
   const navigate = useNavigate();
+  const { chain } = useNetwork();
+  // console.log(chain);
   // const [reducerValue, forceUpdate] = useReducer((x) => x + 1, 0);
   const [showProfileComponent, setProfileComponent] = useState(false);
   const [showAllNfts, setShowAllNfts] = useState(false);
@@ -34,6 +38,7 @@ function Profile() {
   const [showAllNominees, setShowAllNominees] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showRecoveryEdit, setRecoveryEdit] = useState(false);
+  const [nftShow, setnftShow] = useState(false);
   const [isLoading, setLoading] = React.useState(true);
   const [data, setData] = useState([]);
 
@@ -89,8 +94,18 @@ function Profile() {
   };
 
   useEffect(() => {
+    if (!address) {
+      navigate("/");
+    }
+  }, [address, navigate]);
+
+  useEffect(() => {
     showProfile();
   }, []);
+
+  useEffect(() => {
+    showProfile();
+  }, [chain]);
 
   const toggleEditProfile = () => {
     setShowEditProfile(!showEditProfile);
@@ -117,7 +132,7 @@ function Profile() {
 
     // console.log(nftData);
   };
-  const fetchNfts = async () => {
+  const fetchNfts = async (a) => {
     let url = "https://deep-index.moralis.io/api/v2/" + address + "/nft";
     const options = {
       method: "GET",
@@ -154,7 +169,8 @@ function Profile() {
         }
         setNftData(nftData);
         console.log(nftData);
-        setShowAllNfts(true);
+        setnftShow(true);
+        // setShowAllNfts(true);
         // console.log("inside the api function");
       })
       .catch(function (error) {
@@ -163,27 +179,48 @@ function Profile() {
     // get nft api ends
   };
 
+  // useEffect(() => {
+  //   // get nft from wallet address
+  //   // Moralis get nft api
+  //   // if (dataFetchedRef) return;
+
+  //   fetchNfts();
+
+  //   if (address) {
+  //     setProfileComponent(true);
+  //   } else {
+  //     navigate("/");
+  //   }
+  //   return () => {
+  //     // dataFetchedRef.current = true;
+  //     setShowAllNfts(false);
+  //   };
+  // }, []);
+
   useEffect(() => {
-    // get nft from wallet address
-    // Moralis get nft api
-    // if (dataFetchedRef) return;
-
-    fetchNfts();
-
-    if (address) {
-      setProfileComponent(true);
+    if (location.state) {
+      if (location.state.component === "nominee") {
+        setShowAllNominees(true);
+        setShowAllNfts(false);
+        setShowAllTokens(false);
+      } else if (location.state.component === "token") {
+        setShowAllTokens(true);
+        setShowAllNominees(false);
+        setShowAllNfts(false);
+      } else if (location.state.component === "nfts") {
+        fetchNfts(true);
+        setShowAllNfts(true);
+        setShowAllTokens(false);
+        setShowAllNominees(false);
+      }
     } else {
-      navigate("/");
+      setShowAllNfts(true);
+      setShowAllTokens(false);
+      setShowAllNominees(false);
     }
-    return () => {
-      // dataFetchedRef.current = true;
-      setShowAllNfts(false);
-    };
   }, []);
 
   useEffect(() => {
-    fetchNfts();
-
     if (address) {
       setProfileComponent(true);
     } else {
@@ -194,6 +231,10 @@ function Profile() {
       setShowAllNfts(false);
     };
   }, [address]);
+
+  useEffect(() => {
+    fetchNfts();
+  }, [showAllNfts]);
 
   if (showProfileComponent && !isLoading) {
     if (showEditProfile) {
@@ -248,7 +289,7 @@ function Profile() {
                       <svg
                         className="copy-address"
                         xmlns="http://www.w3.org/2000/svg"
-                        enable-background="new 0 0 24 24"
+                        enableBackground="new 0 0 24 24"
                         height="18px"
                         viewBox="0 0 24 24"
                         width="18px"
@@ -361,7 +402,7 @@ function Profile() {
                 </button>
                 {/* <button></button> */}
               </div>
-              {showAllNfts ? <AllNfts nftData={nftData} /> : null}
+              {showAllNfts && nftShow ? <AllNfts nftData={nftData} /> : null}
               {showAllTokens ? <Tokens /> : null}
               {showAllNominees ? <NomineesList /> : null}
             </div>

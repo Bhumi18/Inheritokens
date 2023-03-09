@@ -33,6 +33,15 @@
       cursor: pointer;
     }
   }
+  .title {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    svg {
+      cursor: pointer;
+    }
+  }
   span.main-title {
     border: 1px solid black;
     padding: 0.5rem 1rem;

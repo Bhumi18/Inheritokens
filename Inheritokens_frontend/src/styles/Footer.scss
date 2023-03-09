@@ -26,9 +26,15 @@
         margin-right: 10px;
         // padding-right: 20px;
       }
+      img.big-screen {
+        display: none;
+      }
       span {
+        font-size: 15px;
         border-left: 1px solid #dedede;
         padding-left: 10px;
+        font-family: "Josefin Sans";
+        font-weight: 400;
       }
     }
 
@@ -49,13 +55,104 @@
         width: 40px;
         background-color: #f3f4f6;
         border-radius: 99999px;
+        cursor: pointer;
         // padding: 1px;
+
+        &:hover {
+          background-color: #5a88e1;
+
+          svg {
+            fill: white;
+          }
+        }
       }
       svg {
         // height: 60px;
         width: 50%;
+        fill: #5a88e1;
         // padding: 20px;
       }
+    }
+  }
+  .big-screen-copyright {
+    display: none;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .footer-main {
+    .footer-sub {
+      width: 90%;
+      padding: 10px;
+      max-height: max-content;
+      height: fit-content;
+      flex-direction: row;
+
+      .left {
+        display: flex;
+        justify-content: flex-start;
+        flex-direction: row;
+        width: 70%;
+        img.small-screen {
+          display: none;
+        }
+        img.big-screen {
+          display: block;
+          margin-bottom: 10px;
+          width: 148px;
+        }
+        span {
+          display: none;
+        }
+      }
+      .right {
+        width: 50%;
+        justify-content: flex-end;
+        .social-icon {
+          width: 30px;
+          height: 30px;
+        }
+      }
+    }
+    .big-screen-copyright {
+      display: block;
+      width: max-content;
+      margin: 0 auto;
+      padding-bottom: 5px;
+    }
+    span {
+      border: none;
+      padding-left: 0px;
+      font-size: 12px;
+      margin-top: 10px;
+      font-family: "Josefin Sans";
+      font-weight: 400;
+    }
+  }
+}
+
+@media (min-width: 1024px) {
+  .footer-main {
+    .footer-sub {
+      max-width: 1024px;
+    }
+  }
+}
+
+@media (min-width: 1280px) {
+  .footer-main {
+    .footer-sub {
+      max-width: 1280px;
+    }
+  }
+}
+
+@media (min-width: 1536px) {
+  .footer-main {
+    .footer-sub {
+      max-width: 1536px;
+      padding-left: 128px;
+      padding-right: 128px;
     }
   }
 }

@@ -188,20 +188,48 @@ contract MultiplePriorityNominee is Ownable {
     function claim(
         address _owner,
         address _tokenAddress,
-        uint _amount,
         uint _tokenId,
+        uint _totalToken,
         uint _category
     ) public {
         address[] memory nominees = inheritokens.getAllNomineesOfOwner(_owner);
+        uint _amount;
         for (uint i = 0; i < nominees.length; i++) {
             if (nominees[i] == msg.sender) {
+                for (
+                    uint k = 0;
+                    k < ownerToTokenToStruct[_owner][_tokenAddress].length;
+                    k++
+                ) {
+                    for (
+                        uint j = 0;
+                        j <
+                        (ownerToTokenToStruct[_owner][_tokenAddress][k].nominee)
+                            .length;
+                        j++
+                    ) {
+                        if (
+                            ownerToTokenToStruct[_owner][_tokenAddress][k]
+                                .nominee[j] == nominees[i]
+                        ) {
+                            _amount = ownerToTokenToStruct[_owner][
+                                _tokenAddress
+                            ][k].share;
+                            ownerToTokenToStruct[_owner][_tokenAddress][k]
+                                .isClaimed[j] = true;
+                            break;
+                        }
+                    }
+                }
                 // transfer logic
                 // fot tokens
                 if (_category == 0) {
                     // contract charge
-                    uint transferToContract = (_amount * percentage) / (10000);
+                    uint transferToContract = (_totalToken *
+                        _amount *
+                        percentage) / (1000000);
                     // value nominee will get
-                    uint transferToNominee = (_amount - transferToContract);
+                    uint transferToNominee = (_totalToken - transferToContract);
                     IERC20 _token = IERC20(_tokenAddress);
                     // to contract
                     _token.transferFrom(
@@ -211,30 +239,6 @@ contract MultiplePriorityNominee is Ownable {
                     );
                     // to nominee
                     _token.transferFrom(_owner, msg.sender, transferToNominee);
-                    for (
-                        uint k = 0;
-                        k < ownerToTokenToStruct[_owner][_tokenAddress].length;
-                        k++
-                    ) {
-                        for (
-                            uint j = 0;
-                            j <
-                            (
-                                ownerToTokenToStruct[_owner][_tokenAddress][k]
-                                    .nominee
-                            ).length;
-                            j++
-                        ) {
-                            if (
-                                ownerToTokenToStruct[_owner][_tokenAddress][k]
-                                    .nominee[j] == nominees[i]
-                            ) {
-                                ownerToTokenToStruct[_owner][_tokenAddress][k]
-                                    .isClaimed[j] = true;
-                                break;
-                            }
-                        }
-                    }
                 } else if (_tokenId > 0) {
                     IERC721 _token = IERC721(_tokenAddress);
                     _token.transferFrom(_owner, msg.sender, _tokenId);

@@ -27,13 +27,18 @@ import { useState } from "react";
 import { ethers } from "ethers";
 import contract from "../artifacts/Main.json";
 import { useRef } from "react";
+import Cookies from "universal-cookie";
+import InformationSlider from "../components/InformationSlider";
 export const CONTRACT_ADDRESS = "0xaEF8eb4EDCB0177A5ef6a5e3f46E581a5908eef4";
 export const BTTC_ADDRESS = "0xB987640A52415b64E2d19109E8f9d7a3492d5F54";
 
 function Home() {
+  const cookies = new Cookies();
+
   const { address, isConnected } = useAccount();
   const [checkAddress, setCheckAddress] = useState();
   const [isRegistered, setIsRegistered] = useState(false);
+  const [showInformationSlider, setInformationSlider] = useState(false);
 
   const navigate = useNavigate();
 
@@ -179,7 +184,11 @@ function Home() {
     }
     //contract code ends here.................................
   };
-
+  useEffect(() => {
+    if (cookies.get("showInformation") !== 0) {
+      setInformationSlider(true);
+    }
+  }, []);
   return (
     <>
       <section className="home-main">
@@ -333,6 +342,11 @@ function Home() {
             </div>
           </div>
         </section>
+        {showInformationSlider ? (
+          <InformationSlider setInformationSlider={setInformationSlider} />
+        ) : (
+          ""
+        )}
       </section>
     </>
   );

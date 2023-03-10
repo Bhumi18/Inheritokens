@@ -15,15 +15,18 @@ import "./Inheritokens.sol";
 contract MultiplePriorityNominee is Ownable {
     address public inheritokensAddress;
     Inheritokens public inheritokens;
-    uint private tokenCharge = 1 * 10 ** 6;
-    uint private nftCharge = 5 * 10 ** 6;
-    uint private percentage = uint(1);
-    address private chargeTokenAddress =
-        0xe9DcE89B076BA6107Bb64EF30678efec11939234; // USDC
+    uint public tokenCharge;
+    uint public nftCharge;
+    uint public percentage;
+    address public chargeTokenAddress; // USDC
 
     constructor(address _inheritokensAddress) Ownable() {
         inheritokensAddress = _inheritokensAddress;
         inheritokens = Inheritokens(inheritokensAddress);
+        tokenCharge = 1000000;
+        nftCharge = 5000000;
+        percentage = 1;
+        chargeTokenAddress = 0xe9DcE89B076BA6107Bb64EF30678efec11939234;
     }
 
     // structure for multiple and Priority nominee

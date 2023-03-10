@@ -158,13 +158,14 @@ contract Inheritokens is Ownable {
     }
 
     // verify owner's email
-    function verifyOwnerEmail() public ownerAdded onlyOwner {
+    function verifyOwnerEmail(address _owner) public onlyOwner {
+        require(isOwnerAdded[_owner], "You must first sign up for an account.");
         require(
-            !addressToOwner[msg.sender].isEmailVerified,
+            !addressToOwner[_owner].isEmailVerified,
             "Your email has already been verified."
         );
-        addressToOwner[msg.sender].isEmailVerified = true;
-        emit EmailVerified(msg.sender);
+        addressToOwner[_owner].isEmailVerified = true;
+        emit EmailVerified(_owner);
     }
 
     /// @param _recoveryAddress is the address which owner wants to add as a backup address
@@ -413,7 +414,10 @@ contract Inheritokens is Ownable {
 
     /// @param _owner is the owner's address
     function setOwnerNotAlive(address _owner) public onlyOwner {
-        require(!addressToOwner[_owner].isResponsed, "Owner has already responded.");
+        require(
+            !addressToOwner[_owner].isResponsed,
+            "Owner has already responded."
+        );
         addressToOwner[_owner].isAlive = false;
     }
 }

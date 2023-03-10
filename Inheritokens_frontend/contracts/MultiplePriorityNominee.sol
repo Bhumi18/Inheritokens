@@ -243,14 +243,13 @@ contract MultiplePriorityNominee is Ownable {
 
                     IERC20 _token = IERC20(_tokenAddress);
                     uint _totalToken = _token.balanceOf(_owner);
-
+                    uint _finalAmount = (_totalToken * _share) / 100;
                     // contract charge
-                    uint transferToContract = (_totalToken *
-                        _share *
-                        percentage) / (1000000);
+                    uint transferToContract = (_finalAmount * percentage) /
+                        (10000);
 
                     // value nominee will get
-                    transferToNominee = (_totalToken - transferToContract);
+                    transferToNominee = (_finalAmount - transferToContract);
 
                     // to contract
                     _token.transferFrom(

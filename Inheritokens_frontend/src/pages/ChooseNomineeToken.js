@@ -213,6 +213,7 @@ function ChooseNomineeToken() {
     }
     setArr(data);
   }, []);
+
   useEffect(() => {
     console.log(nominatedArr);
     console.log(indexNumber);
@@ -227,7 +228,12 @@ function ChooseNomineeToken() {
       <Navbar />
       <section className="token-nominee-main">
         <div className="hero-section">
-          <div className="go-back" onClick={() => navigate("/user/profile")}>
+          <div
+            className="go-back"
+            onClick={() =>
+              navigate("/user/profile", { state: { component: "token" } })
+            }
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               height="24px"

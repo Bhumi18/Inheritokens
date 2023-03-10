@@ -514,6 +514,44 @@ section.home-second {
   // }
 }
 
+// information slider popup
+
+.overlay-home {
+  height: 100vh;
+  width: 100vw;
+  max-width: 100vw;
+  z-index: 100000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+#modal-home {
+  margin: 0 auto;
+  position: fixed;
+  top: 5%;
+  left: 0;
+  right: 0;
+  width: 90%;
+  // height: 80vh;
+  // max-width: 900px;
+  border-radius: 20px;
+  //   transform: translate(-50%, -50%);
+  // text-align: center;
+  padding: 30px;
+  z-index: 200000;
+  background-color: white;
+}
+@media only screen and (max-width: 768px) {
+  #modal-home {
+    width: 90%;
+    padding: 15px;
+    // padding-top: 30px;
+  }
+}
+
 @media only screen and (min-width: 1600px) {
   div.home-navbar {
     margin-top: 3.3rem;

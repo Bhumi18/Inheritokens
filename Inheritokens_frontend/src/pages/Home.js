@@ -3,7 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../styles/home.scss";
 import { useAccount } from "wagmi";
-import ConnectWallet from "../components/ConnectWallet";
+// import ConnectWallet from "../components/ConnectWallet";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 import bg1 from "../assets/images/background_copy.svg";
 import avatar2 from "../assets/images/Avatar_1.svg";
@@ -38,7 +39,7 @@ function Home() {
   const { address, isConnected } = useAccount();
   const [checkAddress, setCheckAddress] = useState();
   const [isRegistered, setIsRegistered] = useState(false);
-  const [showInformationSlider, setInformationSlider] = useState(false);
+  const [showInformationSlider, setInformationSlider] = useState(true);
 
   const navigate = useNavigate();
 
@@ -185,26 +186,37 @@ function Home() {
     //contract code ends here.................................
   };
   useEffect(() => {
-    if (cookies.get("showInformation") !== 0) {
-      setInformationSlider(true);
+    if (cookies.get("showInformation")) {
+      console.log(cookies.get("showInformation"));
+      setInformationSlider(false);
     }
+    console.log(cookies.get("showInformation"));
   }, []);
+
   return (
     <>
       <section className="home-main">
         <div className="home-navbar">
           <div className="navbar-menu">
             {/* <ul>
-              
                 <li className="logo-li">Inheritokens</li>
-              
             </ul> */}
             <Link to="/">
               <img className="logo-image" src={logo} alt="logo" />
             </Link>
           </div>
           {/* <ConnectKitButton /> */}
-          <ConnectWallet />
+          <ConnectButton
+            chainStatus="icon"
+            accountStatus={{
+              smallScreen: "avatar",
+              largeScreen: "full",
+            }}
+            showBalance={{
+              smallScreen: false,
+              largeScreen: false,
+            }}
+          />
           {/* <button className="home-connect-btn" onClick={togglePopup}>
             Connect Wallet
           </button> */}

@@ -233,7 +233,7 @@ function AddNominee() {
           <div
             className="close-button"
             onClick={() => {
-              navigate("/user/profile");
+              navigate("/user/profile", { state: { component: "nominee" } });
             }}
           >
             <svg

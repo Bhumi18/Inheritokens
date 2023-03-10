@@ -44,6 +44,7 @@ import {
   lightTheme,
 } from "@rainbow-me/rainbowkit";
 import { polygonMumbai } from "wagmi/chains";
+import AllCharitiesList from "./pages/AllCharitiesList";
 
 // connectkit
 // const { provider, webSocketProvider } = configureChains(defaultChains, [
@@ -201,6 +202,7 @@ function App() {
               <Route path="/email/verified/:slug" element={<EmailVerified />} />
               <Route path="/nominee/nft" element={<ChooseNomineeNFT />} />
               <Route path="/nominee/token" element={<ChooseNomineeToken />} />
+              <Route path="/nominee/charities" element={<AllCharitiesList />} />
 
               <Route path="/*" element={<Home />} />
             </Routes>

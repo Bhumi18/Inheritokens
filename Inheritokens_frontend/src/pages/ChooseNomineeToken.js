@@ -4,10 +4,15 @@ import { chainId, useAccount, useNetwork } from "wagmi";
 import Navbar from "../components/Navbar";
 import image from "../assets/images/defaultprofileimage.png";
 import "../styles/ChooseNomineeToken.scss";
+
 import TokenNomineeDetails from "../components/TokenNomineeDetails";
 import NomineesListPopupForToken from "../components/NomineesListPopupForToken";
 import UpdateOrViewNominees from "../components/UpdateOrViewNominees";
 import GetOrdinal from "../components/GetOrdinal";
+import contract from "../artifacts/Main.json";
+import { ethers } from "ethers";
+export const CONTRACT_ADDRESS = "0xaEF8eb4EDCB0177A5ef6a5e3f46E581a5908eef4";
+export const BTTC_ADDRESS = "0xB987640A52415b64E2d19109E8f9d7a3492d5F54";
 
 function ChooseNomineeToken() {
   const navigate = useNavigate();
@@ -32,22 +37,23 @@ function ChooseNomineeToken() {
   const [arr, setArr] = useState([]);
   const [nominatedArr, setNominatedArr] = useState([]);
   const [arrChanged, setArrChanged] = useState(1);
+  const [data, setData] = useState([]);
   // const [showNominatedArrChanged, setNominatedArrChanged] = useState(1);
 
-  const printArr = () => {
-    console.log(arr);
-  };
-  const handleAddElement = (item) => {
-    nominatedArr.push(item);
-    arr.splice(arr.indexOf(item), 1);
-    printArr();
-    setArrChanged((prev) => prev + 1);
-  };
-  const handleRestoreElement = (key) => {
-    arr.push(nominatedArr[key]);
-    nominatedArr.splice(key, 1);
-    setArrChanged((prev) => prev + 1);
-  };
+  // const printArr = () => {
+  //   console.log(arr);
+  // };
+  // const handleAddElement = (item) => {
+  //   nominatedArr.push(item);
+  //   arr.splice(arr.indexOf(item), 1);
+  //   printArr();
+  //   setArrChanged((prev) => prev + 1);
+  // };
+  // const handleRestoreElement = (key) => {
+  //   arr.push(nominatedArr[key]);
+  //   nominatedArr.splice(key, 1);
+  //   setArrChanged((prev) => prev + 1);
+  // };
   const handleParentDelete = (key, k, ratio) => {
     console.log("key", key, "k", k);
     nominatedArr[key].ratio = nominatedArr[key].ratio - ratio;
@@ -58,82 +64,82 @@ function ChooseNomineeToken() {
     }
     setArrChanged((prev) => prev + 1);
   };
-  const handleMoveUpElement = (key) => {
-    var element = nominatedArr[key];
-    nominatedArr.splice(key, 1);
-    nominatedArr.splice(key - 1, 0, element);
-    setArrChanged((prev) => prev + 1);
-    printArr();
-  };
-  const handleMoveDownElement = (key) => {
-    var element = nominatedArr[key];
-    nominatedArr.splice(key, 1);
-    nominatedArr.splice(key + 1, 0, element);
-    setArrChanged((prev) => prev + 1);
-    printArr();
-  };
-  const data = [
-    {
-      img: image,
-      name: "Bhumi Sadariya",
-      email: "bhumi@gmail.com",
-      w_add: "0xeB88DDaEdA226129a8Fisj0137B2ae35aA42A975",
-    },
-    {
-      img: image,
-      name: "Jaydip Patel",
-      email: "jaydip@gmail.com",
-      w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-    },
-    {
-      img: image,
-      name: "Lajja Vaniya",
-      email: "lajja@gmail.com",
-      w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-    },
-    {
-      img: image,
-      name: "Deepak Rathore",
-      email: "deepak@gmail.com",
-      w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-    },
-    {
-      img: image,
-      name: "Bhadresh",
-      email: "bhadresh@gmail.com",
-      w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-    },
-    {
-      img: image,
-      name: "Rahul Rajan",
-      email: "rahul@gmail.com",
-      w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-    },
-    {
-      img: image,
-      name: "Aakash Palan",
-      email: "akashpalan@gmail.com",
-      w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-    },
-    {
-      img: image,
-      name: "Adithya",
-      email: "adithya@gmail.com",
-      w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-    },
-    {
-      img: image,
-      name: "Sarvagna Kadiya",
-      email: "sarvagna@gmail.com",
-      w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-    },
-    {
-      img: image,
-      name: "Prashant Suthar",
-      email: "prashant@gmail.com",
-      w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-    },
-  ];
+  // const handleMoveUpElement = (key) => {
+  //   var element = nominatedArr[key];
+  //   nominatedArr.splice(key, 1);
+  //   nominatedArr.splice(key - 1, 0, element);
+  //   setArrChanged((prev) => prev + 1);
+  //   printArr();
+  // };
+  // const handleMoveDownElement = (key) => {
+  //   var element = nominatedArr[key];
+  //   nominatedArr.splice(key, 1);
+  //   nominatedArr.splice(key + 1, 0, element);
+  //   setArrChanged((prev) => prev + 1);
+  //   printArr();
+  // };
+  // const data = [
+  //   {
+  //     img: image,
+  //     name: "Bhumi Sadariya",
+  //     email: "bhumi@gmail.com",
+  //     w_add: "0xeB88DDaEdA226129a8Fisj0137B2ae35aA42A975",
+  //   },
+  //   {
+  //     img: image,
+  //     name: "Jaydip Patel",
+  //     email: "jaydip@gmail.com",
+  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
+  //   },
+  //   {
+  //     img: image,
+  //     name: "Lajja Vaniya",
+  //     email: "lajja@gmail.com",
+  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
+  //   },
+  //   {
+  //     img: image,
+  //     name: "Deepak Rathore",
+  //     email: "deepak@gmail.com",
+  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
+  //   },
+  //   {
+  //     img: image,
+  //     name: "Bhadresh",
+  //     email: "bhadresh@gmail.com",
+  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
+  //   },
+  //   {
+  //     img: image,
+  //     name: "Rahul Rajan",
+  //     email: "rahul@gmail.com",
+  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
+  //   },
+  //   {
+  //     img: image,
+  //     name: "Aakash Palan",
+  //     email: "akashpalan@gmail.com",
+  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
+  //   },
+  //   {
+  //     img: image,
+  //     name: "Adithya",
+  //     email: "adithya@gmail.com",
+  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
+  //   },
+  //   {
+  //     img: image,
+  //     name: "Sarvagna Kadiya",
+  //     email: "sarvagna@gmail.com",
+  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
+  //   },
+  //   {
+  //     img: image,
+  //     name: "Prashant Suthar",
+  //     email: "prashant@gmail.com",
+  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
+  //   },
+  // ];
   // search bar components
 
   const [searchField, setSearchField] = useState("");
@@ -268,7 +274,7 @@ function ChooseNomineeToken() {
                     <span className="token-name">
                       {tokenDetails ? tokenDetails.token_name : ""}
                     </span>
-                  </p>{" "}
+                  </p>
                 </div>
               </div>
               <div className="token-details">
@@ -615,7 +621,7 @@ function ChooseNomineeToken() {
                                         </td>
                                       </tr>
                                     );
-                                })}{" "}
+                                })}
                               </tbody>
                             </table>
                           ) : (
@@ -672,7 +678,7 @@ function ChooseNomineeToken() {
             {/* Available ratio */}
             <div>
               <span className="available-ratio">
-                Available Ratio :{" "}
+                Available Ratio :
                 {parseFloat(100 - parseFloat(totalUsedRatio)).toFixed(2)} %
               </span>
             </div>

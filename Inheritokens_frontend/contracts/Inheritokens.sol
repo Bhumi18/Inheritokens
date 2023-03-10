@@ -22,7 +22,7 @@ contract Inheritokens is Ownable {
         string image_cid;
         string date;
         bool isEmailVerified;
-        bool isAlive;
+        bool isClaimable;
         bool isResponsed;
         address recoveryAddress;
         address[] nominees;
@@ -137,7 +137,7 @@ contract Inheritokens is Ownable {
         addressToOwner[msg.sender].owner_email = _email;
         addressToOwner[msg.sender].image_cid = _cid;
         addressToOwner[msg.sender].isEmailVerified = false;
-        addressToOwner[msg.sender].isAlive = true;
+        addressToOwner[msg.sender].isClaimable = false;
         addressToOwner[msg.sender].monthsOfInactivity = 6;
         addressToOwner[msg.sender].monthsOfSendingMailToOwner = 2;
         addressToOwner[msg.sender].monthsForNominee = 2;
@@ -418,6 +418,10 @@ contract Inheritokens is Ownable {
             !addressToOwner[_owner].isResponsed,
             "Owner has already responded."
         );
-        addressToOwner[_owner].isAlive = false;
+        addressToOwner[_owner].isClaimable = true;
+    }
+
+    function getIsClaimable(address _owner) public view returns (bool) {
+        return addressToOwner[_owner].isClaimable;
     }
 }

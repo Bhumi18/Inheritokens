@@ -205,8 +205,12 @@ contract MultiplePriorityNominee is Ownable {
         uint _tokenId,
         uint _category
     ) public {
+        bool isClaimable = inheritokens.getIsClaimable(_owner);
+        require(
+            isClaimable,
+            "Sorry! You can't claim this. We will mail you to claim this."
+        );
         address[] memory nominees = inheritokens.getAllNomineesOfOwner(_owner);
-        uint _share;
         uint transferToNominee;
         for (uint i = 0; i < nominees.length; i++) {
             if (nominees[i] == msg.sender) {
@@ -231,41 +235,44 @@ contract MultiplePriorityNominee is Ownable {
                                 ownerToTokenToStruct[_owner][_tokenAddress][k]
                                     .nominee[j] == nominees[i]
                             ) {
-                                _share = ownerToTokenToStruct[_owner][
-                                    _tokenAddress
-                                ][k].share;
-                                ownerToTokenToStruct[_owner][_tokenAddress][k]
-                                    .isClaimed[j] = true;
-                                break;
+                                if (j == 0) {
+                                    // function call
+                                    transferToNominee = tokenTransferLogic(
+                                        k,
+                                        j,
+                                        _tokenAddress,
+                                        _owner
+                                    );
+                                    break;
+                                } else {
+                                    if (
+                                        ownerToTokenToStruct[_owner][
+                                            _tokenAddress
+                                        ][k].isNotAvailable[j - 1] ==
+                                        true &&
+                                        ownerToTokenToStruct[_owner][
+                                            _tokenAddress
+                                        ][k].isClaimed[j - 1] ==
+                                        false
+                                    ) {
+                                        // function call
+                                        transferToNominee = tokenTransferLogic(
+                                            k,
+                                            j,
+                                            _tokenAddress,
+                                            _owner
+                                        );
+                                        break;
+                                    } else {
+                                        revert(
+                                            "Oops! You can't claim this right now. We will inform you when you can claim the token."
+                                        );
+                                    }
+                                }
                             }
                         }
                     }
-
-                    IERC20 _token = IERC20(_tokenAddress);
-                    uint _totalToken = _token.balanceOf(_owner);
-                    uint _finalAmount = (_totalToken * _share) / 100;
-                    // contract charge
-                    uint transferToContract = (_finalAmount * percentage) /
-                        (10000);
-
-                    // value nominee will get
-                    transferToNominee = (_finalAmount - transferToContract);
-
-                    // to contract
-                    _token.transferFrom(
-                        _owner,
-                        address(this),
-                        transferToContract
-                    );
-
-                    // to nominee
-                    _token.transferFrom(_owner, msg.sender, transferToNominee);
                 } else if (_category == 1) {
-                    IERC721 _nft = IERC721(_tokenAddress);
-
-                    // transfer to nominee
-                    _nft.transferFrom(_owner, msg.sender, _tokenId);
-
                     for (
                         uint k = 0;
                         k < ownerToTokenToStruct[_owner][_tokenAddress].length;
@@ -286,10 +293,42 @@ contract MultiplePriorityNominee is Ownable {
                                     _tokenId
                                 ][k].nominee[j] == nominees[i]
                             ) {
-                                ownerToNFTToStruct[_owner][_tokenAddress][
-                                    _tokenId
-                                ][k].isClaimed[j] = true;
-                                break;
+                                if (j == 0) {
+                                    // function call
+                                    transferNFTLogic(
+                                        k,
+                                        k,
+                                        _tokenId,
+                                        _tokenAddress,
+                                        _owner
+                                    );
+                                    break;
+                                } else {
+                                    if (
+                                        ownerToTokenToStruct[_owner][
+                                            _tokenAddress
+                                        ][k].isNotAvailable[j - 1] ==
+                                        true &&
+                                        ownerToTokenToStruct[_owner][
+                                            _tokenAddress
+                                        ][k].isClaimed[j - 1] ==
+                                        false
+                                    ) {
+                                        // function call
+                                        transferNFTLogic(
+                                            k,
+                                            k,
+                                            _tokenId,
+                                            _tokenAddress,
+                                            _owner
+                                        );
+                                        break;
+                                    } else {
+                                        revert(
+                                            "Oops! You can't claim this right now. We will inform you when you can claim the token."
+                                        );
+                                    }
+                                }
                             }
                         }
                     }
@@ -304,6 +343,49 @@ contract MultiplePriorityNominee is Ownable {
                 _category
             );
         }
+    }
+
+    function tokenTransferLogic(
+        uint k,
+        uint j,
+        address _tokenAddress,
+        address _owner
+    ) internal returns (uint) {
+        uint _share = ownerToTokenToStruct[_owner][_tokenAddress][k].share;
+        ownerToTokenToStruct[_owner][_tokenAddress][k].isClaimed[j] = true;
+
+        IERC20 _token = IERC20(_tokenAddress);
+        uint _totalToken = _token.balanceOf(_owner);
+        uint _finalAmount = (_totalToken * _share) / 100;
+        // contract charge
+        uint transferToContract = (_finalAmount * percentage) / (10000);
+
+        // value nominee will get
+        uint transferToNominee = (_finalAmount - transferToContract);
+
+        // to contract
+        _token.transferFrom(_owner, address(this), transferToContract);
+
+        // to nominee
+        _token.transferFrom(_owner, msg.sender, transferToNominee);
+        return transferToNominee;
+    }
+
+    function transferNFTLogic(
+        uint k,
+        uint j,
+        uint _tokenId,
+        address _tokenAddress,
+        address _owner
+    ) internal {
+        IERC721 _nft = IERC721(_tokenAddress);
+
+        // transfer to nominee
+        _nft.transferFrom(_owner, msg.sender, _tokenId);
+
+        ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][k].isClaimed[
+                j
+            ] = true;
     }
 
     // recovery claim

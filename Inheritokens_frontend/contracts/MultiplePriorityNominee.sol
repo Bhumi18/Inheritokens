@@ -99,6 +99,10 @@ contract MultiplePriorityNominee is Ownable {
             msg.sender
         );
         bool flag;
+        uint[] memory listedCharities = inheritokens.getWhiteListedCharities(
+            msg.sender
+        );
+        bool hasFlag;
         for (uint i = 0; i < data.length; i++) {
             for (uint k = 0; k < data[i].nominee.length; k++) {
                 flag = false;
@@ -114,13 +118,6 @@ contract MultiplePriorityNominee is Ownable {
                     );
                 }
             }
-        }
-
-        uint[] memory listedCharities = inheritokens.getWhiteListedCharities(
-            msg.sender
-        );
-        bool hasFlag;
-        for (uint i = 0; i < data.length; i++) {
             for (uint j = 0; j < listedCharities.length; j++) {
                 if (data[i].charityId == listedCharities[j]) {
                     hasFlag = true;
@@ -184,20 +181,6 @@ contract MultiplePriorityNominee is Ownable {
                 );
             }
         }
-        // if token is already assigned then delete the data
-        // uint len;
-        // if (_category == 0) {
-        //     len = ownerToTokenToStruct[msg.sender][_tokenAddress].length;
-        //     if (len > 0) {
-        //         delete ownerToTokenToStruct[msg.sender][_tokenAddress];
-        //     }
-        // } else {
-        //     len = ownerToNFTToStruct[msg.sender][_tokenAddress][_tokenId]
-        //         .length;
-        //     if (len > 0) {
-        //         delete ownerToNFTToStruct[msg.sender][_tokenAddress][_tokenId];
-        //     }
-        // }
         inheritokens.updateAllocatedShare(
             msg.sender,
             _tokenAddress,
@@ -599,43 +582,19 @@ contract MultiplePriorityNominee is Ownable {
     }
 
     /// @notice this function is to change the token we charge while nominating, for example by default the token we charge is USDC
+    // _tokenCharge value should be multiply with decimals(wei) according to the token and then passed to this function
+    // _nftCharge value should be multiply with decimals(wei) according to the token and then passed to this function
+    // _percentage amount must be multiplied with 100 and pass the integer value only, decimal won't work here
     /// @param _tokenAddress is the address of the token which platform wants to charge while owner nominate the nominee
-    function changeChargeTokenAddress(address _tokenAddress) public onlyOwner {
-        chargeTokenAddress = _tokenAddress;
-    }
-
-    /// @notice _charge value should be multiply with decimals(wei) according to the token and then passed to this function
-    function changeTokenCharge(uint _charge) public onlyOwner {
-        tokenCharge = _charge;
-    }
-
-    /// @notice _charge value should be multiply with decimals(wei) according to the token and then passed to this function
-    function changeNFTCharge(uint _charge) public onlyOwner {
-        nftCharge = _charge;
-    }
-
-    /// @notice percentage amount must be multiplied with 100 and pass the integer value only, decimal won't work here
-    function changePercentage(uint _amount) public onlyOwner {
-        percentage = _amount;
-    }
-
-    /// @param _owner is the address of the owner, _tokenAddress is the addresss of the token contract, _tokenId is the id
-    // of the nft, _category is integer displaying 0 for token and 1 for nft
-    function getAllStructs(
-        address _owner,
+    function changeCharges(
         address _tokenAddress,
-        uint _tokenId,
-        uint _category
-    ) public view returns (MultiplePriority[] memory) {
-        if (_category == 0) {
-            return ownerToTokenToStruct[_owner][_tokenAddress];
-        } else {
-            return ownerToNFTToStruct[_owner][_tokenAddress][_tokenId];
-        }
-    }
-
-    /// @return address of token that platform charge, charge for token, charge for NFT, and percentage amount while nominee claim the tokens
-    function getValues() public view returns (address, uint, uint, uint) {
-        return (chargeTokenAddress, tokenCharge, nftCharge, percentage);
+        uint _tokenCharge,
+        uint _nftCharge,
+        uint _percentage
+    ) public onlyOwner {
+        chargeTokenAddress = _tokenAddress;
+        tokenCharge = _tokenCharge;
+        nftCharge = _nftCharge;
+        percentage = _percentage;
     }
 }

@@ -270,7 +270,8 @@
     .nominees-not-found {
       border: 1px solid rgb(243, 244, 246);
       border-radius: 20px;
-      height: 20vh;
+      // height: 20vh;
+      padding: 20px 0px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -495,6 +496,11 @@
           td.add-this {
             width: 30%;
           }
+        }
+      }
+      .nominees-not-found {
+        p {
+          font-size: 15px;
         }
       }
     }

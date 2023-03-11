@@ -195,6 +195,7 @@ function TokenNomineeDetails({
             type="text"
             placeholder="10%"
             className="disabled"
+            readOnly
             value={
               ratio
                 ? parseFloat(ratio / parseInt(arr.length)).toFixed(2)

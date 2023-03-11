@@ -18,7 +18,8 @@ function SelectNomineeForToken({ tokenDetails, setNomineesComponent }) {
   const [data, setData] = useState([]);
   const [index, setIndex] = useState();
 
-  console.log(tokenDetails);
+  // console.log(tokenDetails);
+
   const showNominees = async () => {
     //contract code starts here...............................
     try {

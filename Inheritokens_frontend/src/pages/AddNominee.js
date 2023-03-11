@@ -157,18 +157,18 @@ function AddNominee() {
             image_cid,
             userData.wallet_address
           );
-          tx.wait();
-          navigate("/user/profile");
+          await tx.wait();
+          navigate("/user/profile", { state: { component: "nominee" } });
         } else if (chainId === 1029) {
           const con = new ethers.Contract(BTTC_ADDRESS, contract, signer);
           const tx = await con.addNomineesDetails(
             userData.name,
             userData.email,
             image_cid,
-            userData.wallet_address
+            userData.wallet_address.toLowerCase()
           );
-          tx.wait();
-          navigate("/user/profile");
+          await tx.wait();
+          navigate("/user/profile", { state: { component: "nominee" } });
         } else {
           alert(
             "Please connect to the mumbai test network or BTTC test network!"
@@ -395,7 +395,7 @@ function AddNominee() {
               </>
             ) : file && !submitNotClicked ? (
               <>
-                <p className="reset-text">Uploading your image on ipfs</p>
+                <p className="reset-text">Uploading your image on ipfs...</p>
               </>
             ) : (
               <>

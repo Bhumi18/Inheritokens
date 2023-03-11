@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
-import image from "../assets/images/defaultprofileimage.png";
+// import image from "../assets/images/defaultprofileimage.png";
 import "../styles/NomineesListPopupForToken.scss";
+import contract from "../artifacts/Main.json";
+import { ethers } from "ethers";
+import { useAccount } from "wagmi";
+export const CONTRACT_ADDRESS = "0xaEF8eb4EDCB0177A5ef6a5e3f46E581a5908eef4";
+export const BTTC_ADDRESS = "0xB987640A52415b64E2d19109E8f9d7a3492d5F54";
 
 function NomineesListPopupForToken({
   setNomineesListPopUp,
@@ -10,81 +15,165 @@ function NomineesListPopupForToken({
   indexNumber,
 }) {
   const [nomineesArr, setNomineesArr] = useState([]);
+  const { address } = useAccount();
   const [allNomiees, setAllNomiees] = useState(true);
   const [allCharities, setAllCharities] = useState(false);
   const [index, setIndex] = useState();
   const [indexChild, setIndexChild] = useState();
+  const [data, setData] = useState([]);
+  console.log(arr);
+  // const data = [
+  //   {
+  //     img: image,
+  //     name: "Bhumi Sadariya",
+  //     email: "bhumi@gmail.com",
+  //     w_add: "0xeB88DDaEdA226129a8Fisj0137B2ae35aA42A975",
+  //   },
+  //   {
+  //     img: image,
+  //     name: "Jaydip Patel",
+  //     email: "jaydip@gmail.com",
+  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
+  //   },
+  //   {
+  //     img: image,
+  //     name: "Lajja Vaniya",
+  //     email: "lajja@gmail.com",
+  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
+  //   },
+  //   {
+  //     img: image,
+  //     name: "Deepak Rathore",
+  //     email: "deepak@gmail.com",
+  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
+  //   },
+  //   {
+  //     img: image,
+  //     name: "Bhadresh",
+  //     email: "bhadresh@gmail.com",
+  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
+  //   },
+  //   {
+  //     img: image,
+  //     name: "Rahul Rajan",
+  //     email: "rahul@gmail.com",
+  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
+  //   },
+  //   {
+  //     img: image,
+  //     name: "Aakash Palan",
+  //     email: "akashpalan@gmail.com",
+  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
+  //   },
+  //   {
+  //     img: image,
+  //     name: "Adithya",
+  //     email: "adithya@gmail.com",
+  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
+  //   },
+  //   {
+  //     img: image,
+  //     name: "Sarvagna Kadiya",
+  //     email: "sarvagna@gmail.com",
+  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
+  //   },
+  //   {
+  //     img: image,
+  //     name: "Prashant Suthar",
+  //     email: "prashant@gmail.com",
+  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
+  //   },
+  // ];
+  const showNominees = async () => {
+    //contract code starts here...............................
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        if (!provider) {
+          console.log("Metamask is not installed, please install!");
+        }
+        const { chainId } = await provider.getNetwork();
+        console.log("switch case for this case is: " + chainId);
+        if (chainId === 80001) {
+          const con = new ethers.Contract(CONTRACT_ADDRESS, contract, signer);
+          const address_array = await con.getNominees(address);
+          // console.log(address_array);
+          for (let i = 0; i < address_array.length; i++) {
+            // console.log(address_array[i]);
+            const nominee_details = await con.getNomineeDetails(
+              address_array[i]
+            );
+            // console.log(nominee_details[0]);
+            // console.log(nominee_details[1]);
+            // console.log(nominee_details[2]);
+            const url = "https://ipfs.io/ipfs/" + nominee_details[2];
+            console.log(
+              !data.find((item) => nominee_details[3] === item.w_add)
+            );
+            if (!data.find((item) => nominee_details[3] === item.w_add)) {
+              // if (data.length < address_array.length) {
+              data.push({
+                name: nominee_details[0],
+                email: nominee_details[1],
+                img: url,
+                w_add: nominee_details[3],
+              });
+            }
+          }
+          setData(data);
+          setNomineesArr(data);
+          console.log(data);
+          // setLoading(false);
+        } else if (chainId === 1029) {
+          const con = new ethers.Contract(BTTC_ADDRESS, contract, signer);
+          const address_array = await con.getNominees(address);
+          // console.log(address_array);
+          for (let i = 0; i < address_array.length; i++) {
+            // console.log(address_array[i]);
+            const nominee_details = await con.getNomineeDetails(
+              address_array[i]
+            );
+            // console.log(nominee_details[0]);
+            // console.log(nominee_details[1]);
+            // console.log(nominee_details[2]);
+            const url = "https://ipfs.io/ipfs/" + nominee_details[2];
+            if (!data.find((item) => nominee_details[3] === item.w_add)) {
+              // if (data.length < address_array.length) {
+              data.push({
+                name: nominee_details[0],
+                email: nominee_details[1],
+                img: url,
+                w_add: nominee_details[3],
+              });
+            }
+          }
+          setData(data);
+          setNomineesArr(data);
+          console.log(data);
+          // setLoading(false);
+        } else {
+          alert(
+            "Please connect to the mumbai test network or BTTC test network!"
+          );
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    //contract code ends here.................................
+  };
 
-  const data = [
-    {
-      img: image,
-      name: "Bhumi Sadariya",
-      email: "bhumi@gmail.com",
-      w_add: "0xeB88DDaEdA226129a8Fisj0137B2ae35aA42A975",
-    },
-    {
-      img: image,
-      name: "Jaydip Patel",
-      email: "jaydip@gmail.com",
-      w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-    },
-    {
-      img: image,
-      name: "Lajja Vaniya",
-      email: "lajja@gmail.com",
-      w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-    },
-    {
-      img: image,
-      name: "Deepak Rathore",
-      email: "deepak@gmail.com",
-      w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-    },
-    {
-      img: image,
-      name: "Bhadresh",
-      email: "bhadresh@gmail.com",
-      w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-    },
-    {
-      img: image,
-      name: "Rahul Rajan",
-      email: "rahul@gmail.com",
-      w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-    },
-    {
-      img: image,
-      name: "Aakash Palan",
-      email: "akashpalan@gmail.com",
-      w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-    },
-    {
-      img: image,
-      name: "Adithya",
-      email: "adithya@gmail.com",
-      w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-    },
-    {
-      img: image,
-      name: "Sarvagna Kadiya",
-      email: "sarvagna@gmail.com",
-      w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-    },
-    {
-      img: image,
-      name: "Prashant Suthar",
-      email: "prashant@gmail.com",
-      w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-    },
-  ];
+  useEffect(() => {
+    showNominees();
+  }, []);
 
   useEffect(() => {
     if (indexNumber) {
       setIndexChild(parseInt(indexNumber.child));
       setIndex(parseInt(indexNumber.parent));
     }
-
-    setNomineesArr(data);
   }, []);
 
   // search bar components
@@ -131,8 +220,9 @@ function NomineesListPopupForToken({
                 nominatedArr[index].nominees[indexChild].priority_nominees.push(
                   filteredPersons[key]
                 );
-              setNomineesListPopUp(false);
-              setNomineesListPopUp2(false);
+              setNomineesListPopUp2
+                ? setNomineesListPopUp2(false)
+                : setNomineesListPopUp(false);
             }}
           >
             Add this

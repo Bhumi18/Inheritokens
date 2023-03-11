@@ -109,7 +109,8 @@ function EditNominee() {
             userData.email,
             userData.wallet_address
           );
-          tx.wait();
+          await tx.wait();
+          navigate("/user/profile", { state: { component: "nominee" } });
         } else if (chainId === 1029) {
           const con = new ethers.Contract(BTTC_ADDRESS, contract, signer);
           const tx = await con.editNomineeDetails(
@@ -119,7 +120,8 @@ function EditNominee() {
             userData.email,
             userData.wallet_address
           );
-          tx.wait();
+          await tx.wait();
+          navigate("/user/profile", { state: { component: "nominee" } });
         } else {
           alert(
             "Please connect to the mumbai test network or BTTC test network!"

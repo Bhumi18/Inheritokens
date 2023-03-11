@@ -11,7 +11,6 @@ export const BTTC_ADDRESS = "0xB987640A52415b64E2d19109E8f9d7a3492d5F54";
 
 function NomineesList() {
   const navigate = useNavigate();
-  const walletAdd = "0x054ae6107caadc187c304de87365bc52f8c2adb9";
   const { address, isConnected } = useAccount();
   const [isLoading, setLoading] = React.useState(true);
   const [data, setData] = useState([]);

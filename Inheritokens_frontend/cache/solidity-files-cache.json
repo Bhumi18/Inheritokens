@@ -111,8 +111,8 @@
       ]
     },
     "D:\\Lampros Projects\\Inheritokens\\Inheritokens_frontend\\contracts\\Inheritokens.sol": {
-      "lastModificationDate": 1678515401565,
-      "contentHash": "ed6f6ee070fca87a305d0dfd90f01ddf",
+      "lastModificationDate": 1678516460533,
+      "contentHash": "0fd617a59af0aa077e6ec6a59cb8e559",
       "sourceName": "contracts/Inheritokens.sol",
       "solcConfig": {
         "version": "0.8.17",

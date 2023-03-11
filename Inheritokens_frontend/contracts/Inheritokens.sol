@@ -58,6 +58,9 @@ contract Inheritokens is Ownable {
     mapping(address => mapping(address => mapping(uint => Token)))
         public nftAddressToTokenStruct;
 
+    // multiplePriorityNominee contract address
+    address multiplePriorityContract;
+
     // modifiers
     modifier ownerNotAdded() {
         require(
@@ -68,10 +71,7 @@ contract Inheritokens is Ownable {
     }
 
     modifier ownerAdded(address _owner) {
-        require(
-            isOwnerAdded[_owner],
-            "You must first sign up for an account."
-        );
+        require(isOwnerAdded[_owner], "You must first sign up for an account.");
         _;
     }
 
@@ -230,7 +230,11 @@ contract Inheritokens is Ownable {
             !isNomineeAdded[msg.sender][_nominee],
             "This nominee's address has already been added. Try adding a nominee with another account address."
         );
-        addressToNominee[msg.sender][_nominee] = Nominee(_name, _email, _nominee);
+        addressToNominee[msg.sender][_nominee] = Nominee(
+            _name,
+            _email,
+            _nominee
+        );
         addressToOwner[msg.sender].nominees.push(_nominee);
         isNomineeAdded[msg.sender][_nominee] = true;
         emit NomineeAdded(msg.sender, _nominee, _name, _email);
@@ -255,8 +259,10 @@ contract Inheritokens is Ownable {
         ) {
             if (addressToOwner[msg.sender].nominees[i] == _oldNomineeAddress) {
                 addressToOwner[msg.sender].nominees[i] = _newNomineeAddress;
-                addressToNominee[msg.sender][_newNomineeAddress].nominee_name = _name;
-                addressToNominee[msg.sender][_newNomineeAddress].nominee_email = _email;
+                addressToNominee[msg.sender][_newNomineeAddress]
+                    .nominee_name = _name;
+                addressToNominee[msg.sender][_newNomineeAddress]
+                    .nominee_email = _email;
                 addressToNominee[msg.sender][_newNomineeAddress]
                     .nominee_address = _newNomineeAddress;
             }
@@ -280,7 +286,8 @@ contract Inheritokens is Ownable {
 
     /// @param _nominee is the nominee address
     /// @return nominee structure
-    function getNomineeDetails(address _owner,
+    function getNomineeDetails(
+        address _owner,
         address _nominee
     ) public view returns (Nominee memory) {
         return addressToNominee[_owner][_nominee];
@@ -313,7 +320,11 @@ contract Inheritokens is Ownable {
         uint _category,
         uint _tokenId,
         uint amount
-    ) external ownerAdded(msg.sender) emailVerified(msg.sender){
+    ) external ownerAdded(_owner) emailVerified(_owner) {
+        require(
+            msg.sender == multiplePriorityContract,
+            "Oops! You cannot call this function. The caller should be contract."
+        );
         // for token
         if (_category == 0) {
             tokenAddressToTokenStruct[_owner][_tokenAddress] = Token(
@@ -347,7 +358,11 @@ contract Inheritokens is Ownable {
         uint _tokenId,
         uint _amount,
         uint _category
-    ) external ownerAdded(msg.sender) emailVerified(msg.sender) {
+    ) external ownerAdded(_owner) emailVerified(_owner) {
+        require(
+            msg.sender == multiplePriorityContract,
+            "Oops! You cannot call this function. The caller should be contract."
+        );
         // for token
         if (_category == 0) {
             tokenAddressToTokenStruct[_owner][_tokenAddress]
@@ -389,7 +404,11 @@ contract Inheritokens is Ownable {
     }
 
     // Function to call when user respond to our email
-    function setResponse() public ownerAdded(msg.sender) emailVerified(msg.sender) {
+    function setResponse()
+        public
+        ownerAdded(msg.sender)
+        emailVerified(msg.sender)
+    {
         addressToOwner[msg.sender].isResponsed = true;
         emit OwnerResponded(msg.sender);
     }
@@ -405,5 +424,10 @@ contract Inheritokens is Ownable {
 
     function getIsClaimable(address _owner) public view returns (bool) {
         return addressToOwner[_owner].isClaimable;
+    }
+
+    // set multiplePriorityContract address
+    function setMultiplePriorityAddress(address _contract) public onlyOwner {
+        multiplePriorityContract = _contract;
     }
 }

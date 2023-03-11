@@ -67,17 +67,17 @@ contract Inheritokens is Ownable {
         _;
     }
 
-    modifier ownerAdded() {
+    modifier ownerAdded(address _owner) {
         require(
-            isOwnerAdded[msg.sender],
+            isOwnerAdded[_owner],
             "You must first sign up for an account."
         );
         _;
     }
 
-    modifier emailVerified() {
+    modifier emailVerified(address _owner) {
         require(
-            addressToOwner[msg.sender].isEmailVerified,
+            addressToOwner[_owner].isEmailVerified,
             "Your email has not yet been validated. Verify your registered email address first."
         );
         _;
@@ -150,7 +150,7 @@ contract Inheritokens is Ownable {
         string memory _name,
         string memory _email,
         string memory _cid
-    ) public ownerAdded {
+    ) public ownerAdded(msg.sender) {
         addressToOwner[msg.sender].owner_name = _name;
         addressToOwner[msg.sender].owner_email = _email;
         addressToOwner[msg.sender].image_cid = _cid;
@@ -170,7 +170,7 @@ contract Inheritokens is Ownable {
     /// @param _recoveryAddress is the address which owner wants to add as a backup address
     function addWalletRecovery(
         address _recoveryAddress
-    ) public ownerAdded emailVerified {
+    ) public ownerAdded(msg.sender) emailVerified(msg.sender) {
         addressToOwner[msg.sender].recoveryAddress = _recoveryAddress;
         emit RecoveryAddressAdded(msg.sender, _recoveryAddress);
     }
@@ -179,7 +179,7 @@ contract Inheritokens is Ownable {
         uint _inactivity,
         uint _mail,
         uint _nominee
-    ) public ownerAdded emailVerified {
+    ) public ownerAdded(msg.sender) emailVerified(msg.sender) {
         addressToOwner[msg.sender].monthsOfInactivity = _inactivity;
         addressToOwner[msg.sender].monthsOfSendingMailToOwner = _mail;
         addressToOwner[msg.sender].monthsForNominee = _nominee;
@@ -225,7 +225,7 @@ contract Inheritokens is Ownable {
         string memory _name,
         string memory _email,
         address _nominee
-    ) public ownerAdded emailVerified {
+    ) public ownerAdded(msg.sender) emailVerified(msg.sender) {
         require(
             !isNomineeAdded[msg.sender][_nominee],
             "This nominee's address has already been added. Try adding a nominee with another account address."
@@ -243,12 +243,11 @@ contract Inheritokens is Ownable {
         string memory _name,
         string memory _email,
         address _newNomineeAddress
-    ) public ownerAdded emailVerified {
+    ) public ownerAdded(msg.sender) emailVerified(msg.sender) {
         require(
             isNomineeAdded[msg.sender][_oldNomineeAddress],
             "The nominee's address is not added. So you can't modify the details of this account's address. Please enter the valid address of the nominee."
         );
-        bool flag;
         for (
             uint256 i = 0;
             i < addressToOwner[msg.sender].nominees.length;
@@ -260,11 +259,7 @@ contract Inheritokens is Ownable {
                 addressToNominee[msg.sender][_newNomineeAddress].nominee_email = _email;
                 addressToNominee[msg.sender][_newNomineeAddress]
                     .nominee_address = _newNomineeAddress;
-                flag = true;
             }
-        }
-        if (flag == false){
-            revert("This nominee's address was not added! First, add a nominee.");
         }
         emit NomineeDetailsUpdated(
             msg.sender,
@@ -296,7 +291,7 @@ contract Inheritokens is Ownable {
     /// @param _charityId is the ID of the charity that the owner wants to keep in the whitelisted array.
     function setWhiteListedCharities(
         uint _charityId
-    ) public ownerAdded emailVerified {
+    ) public ownerAdded(msg.sender) emailVerified(msg.sender) {
         addressToOwner[msg.sender].charities.push(_charityId);
         emit CharityWhitelisted(msg.sender, _charityId);
     }
@@ -318,12 +313,7 @@ contract Inheritokens is Ownable {
         uint _category,
         uint _tokenId,
         uint amount
-    ) external {
-        require(isOwnerAdded[_owner], "You must first sign up for an account.");
-        require(
-            addressToOwner[_owner].isEmailVerified,
-            "Your email has not yet been validated. Verify your registered email address first."
-        );
+    ) external ownerAdded(msg.sender) emailVerified(msg.sender){
         // for token
         if (_category == 0) {
             tokenAddressToTokenStruct[_owner][_tokenAddress] = Token(
@@ -357,12 +347,7 @@ contract Inheritokens is Ownable {
         uint _tokenId,
         uint _amount,
         uint _category
-    ) external {
-        require(isOwnerAdded[_owner], "You must first sign up for an account.");
-        require(
-            addressToOwner[_owner].isEmailVerified,
-            "Your email has not yet been validated. Verify your registered email address first."
-        );
+    ) external ownerAdded(msg.sender) emailVerified(msg.sender) {
         // for token
         if (_category == 0) {
             tokenAddressToTokenStruct[_owner][_tokenAddress]
@@ -404,7 +389,7 @@ contract Inheritokens is Ownable {
     }
 
     // Function to call when user respond to our email
-    function setResponse() public ownerAdded emailVerified {
+    function setResponse() public ownerAdded(msg.sender) emailVerified(msg.sender) {
         addressToOwner[msg.sender].isResponsed = true;
         emit OwnerResponded(msg.sender);
     }

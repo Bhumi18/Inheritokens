@@ -111,8 +111,8 @@
       ]
     },
     "D:\\Lampros Projects\\Inheritokens\\Inheritokens_frontend\\contracts\\Inheritokens.sol": {
-      "lastModificationDate": 1678445455605,
-      "contentHash": "981cb52d3f45444c5ab47d6662bf1a0b",
+      "lastModificationDate": 1678514477981,
+      "contentHash": "c96b8bf66368383e182c734ddbbf1dbd",
       "sourceName": "contracts/Inheritokens.sol",
       "solcConfig": {
         "version": "0.8.17",
@@ -138,8 +138,7 @@
         }
       },
       "imports": [
-        "../node_modules/@openzeppelin/contracts/access/Ownable.sol",
-        "hardhat/console.sol"
+        "../node_modules/@openzeppelin/contracts/access/Ownable.sol"
       ],
       "versionPragmas": [
         "^0.8.0"

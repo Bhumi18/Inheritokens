@@ -6,7 +6,6 @@ pragma solidity ^0.8.0;
 /// @author Bhumi Sadariya
 
 import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
-import "hardhat/console.sol";
 
 contract Inheritokens is Ownable {
     constructor() Ownable() {}
@@ -33,15 +32,15 @@ contract Inheritokens is Ownable {
     }
     mapping(address => Owner) public addressToOwner;
 
-    // Nominee structure and mapping of the nominee's address to the nominee structure
+    // Nominee structure and mapping of the owner's address to nominee's address to the nominee structure
     struct Nominee {
         string nominee_name;
         string nominee_email;
         address nominee_address;
     }
-    mapping(address => Nominee) public addressToNominee;
-    // mapping of nominee address to bool to check whether nominee is added or not
-    mapping(address => bool) public isNomineeAdded;
+    mapping(address => mapping(address => Nominee)) public addressToNominee;
+    // mapping of owner's address to nominee address to bool to check whether nominee is added or not
+    mapping(address => mapping(address => bool)) public isNomineeAdded;
 
     // Token Structure
     struct Token {
@@ -228,12 +227,12 @@ contract Inheritokens is Ownable {
         address _nominee
     ) public ownerAdded emailVerified {
         require(
-            !isNomineeAdded[_nominee],
+            !isNomineeAdded[msg.sender][_nominee],
             "This nominee's address has already been added. Try adding a nominee with another account address."
         );
-        addressToNominee[_nominee] = Nominee(_name, _email, _nominee);
+        addressToNominee[msg.sender][_nominee] = Nominee(_name, _email, _nominee);
         addressToOwner[msg.sender].nominees.push(_nominee);
-        isNomineeAdded[_nominee] = true;
+        isNomineeAdded[msg.sender][_nominee] = true;
         emit NomineeAdded(msg.sender, _nominee, _name, _email);
     }
 
@@ -246,28 +245,26 @@ contract Inheritokens is Ownable {
         address _newNomineeAddress
     ) public ownerAdded emailVerified {
         require(
-            isNomineeAdded[_oldNomineeAddress],
+            isNomineeAdded[msg.sender][_oldNomineeAddress],
             "The nominee's address is not added. So you can't modify the details of this account's address. Please enter the valid address of the nominee."
         );
-        if (_oldNomineeAddress == _newNomineeAddress) {
-            addressToNominee[_oldNomineeAddress].nominee_name = _name;
-            addressToNominee[_oldNomineeAddress].nominee_email = _email;
-        } else {
-            addressToNominee[_newNomineeAddress].nominee_name = _name;
-            addressToNominee[_newNomineeAddress].nominee_email = _email;
-            addressToNominee[_newNomineeAddress]
-                .nominee_address = _newNomineeAddress;
-            for (
-                uint256 i = 0;
-                i < addressToOwner[msg.sender].nominees.length;
-                i++
-            ) {
-                if (
-                    addressToOwner[msg.sender].nominees[i] == _oldNomineeAddress
-                ) {
-                    addressToOwner[msg.sender].nominees[i] = _newNomineeAddress;
-                }
+        bool flag;
+        for (
+            uint256 i = 0;
+            i < addressToOwner[msg.sender].nominees.length;
+            i++
+        ) {
+            if (addressToOwner[msg.sender].nominees[i] == _oldNomineeAddress) {
+                addressToOwner[msg.sender].nominees[i] = _newNomineeAddress;
+                addressToNominee[msg.sender][_newNomineeAddress].nominee_name = _name;
+                addressToNominee[msg.sender][_newNomineeAddress].nominee_email = _email;
+                addressToNominee[msg.sender][_newNomineeAddress]
+                    .nominee_address = _newNomineeAddress;
+                flag = true;
             }
+        }
+        if (flag == false){
+            revert("This nominee's address was not added! First, add a nominee.");
         }
         emit NomineeDetailsUpdated(
             msg.sender,
@@ -288,10 +285,10 @@ contract Inheritokens is Ownable {
 
     /// @param _nominee is the nominee address
     /// @return nominee structure
-    function getNomineeDetails(
+    function getNomineeDetails(address _owner,
         address _nominee
     ) public view returns (Nominee memory) {
-        return addressToNominee[_nominee];
+        return addressToNominee[_owner][_nominee];
     }
 
     // charity-------------------------------------------------------------------

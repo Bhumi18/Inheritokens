@@ -2,7 +2,6 @@
 
 pragma solidity ^0.8.0;
 
-import "hardhat/console.sol";
 import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
 import "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol";
@@ -11,30 +10,37 @@ import "../node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol";
 /// @author Bhumi Sadariya
 
 import "./Inheritokens.sol";
+import "./Charity.sol";
 
 contract MultiplePriorityNominee is Ownable {
     address public inheritokensAddress;
     Inheritokens public inheritokens;
-    uint public tokenCharge;
-    uint public nftCharge;
-    uint public percentage;
-    address public chargeTokenAddress; // USDC
+    address public charityContractAddress;
+    CharityContract public charityContract;
+    uint public tokenCharge = 1000000;
+    uint public nftCharge = 5000000;
+    uint public percentage = 1;
+    address public chargeTokenAddress =
+        0xe9DcE89B076BA6107Bb64EF30678efec11939234; // USDC
 
-    constructor(address _inheritokensAddress) Ownable() {
+    constructor(
+        address _inheritokensAddress,
+        address _charityContractAddress
+    ) Ownable() {
         inheritokensAddress = _inheritokensAddress;
         inheritokens = Inheritokens(inheritokensAddress);
-        tokenCharge = 1000000;
-        nftCharge = 5000000;
-        percentage = 1;
-        chargeTokenAddress = 0xe9DcE89B076BA6107Bb64EF30678efec11939234;
+        charityContractAddress = _charityContractAddress;
+        charityContract = CharityContract(charityContractAddress);
     }
 
     // structure for multiple and Priority nominee
     struct MultiplePriority {
         uint share;
+        uint charityId;
         address[] nominee;
         bool[] isNotAvailable; // true means not available and false means available
         bool[] isClaimed; // true means nominee has claimed
+        bool isDone; // true means it is reached to the charity
     }
     // mapping of owner address to token address to structure
     mapping(address => mapping(address => MultiplePriority[]))
@@ -79,11 +85,12 @@ contract MultiplePriorityNominee is Ownable {
         MultiplePriority[] memory data
     ) public {
         // owner should be added, and email should be verified
-        bool isAdded = inheritokens.checkOwnerAdded(msg.sender);
-        bool isVerified = inheritokens.checkEmailVerified(msg.sender);
-        require(isAdded, "You must first sign up for an account.");
         require(
-            isVerified,
+            inheritokens.checkOwnerAdded(msg.sender),
+            "You must first sign up for an account."
+        );
+        require(
+            inheritokens.checkEmailVerified(msg.sender),
             "Your email has not yet been validated. Verify your registered email address first."
         );
 
@@ -104,6 +111,24 @@ contract MultiplePriorityNominee is Ownable {
                 if (flag == false) {
                     revert(
                         "Check that all the nominees you are nominating are added as nominees."
+                    );
+                }
+            }
+        }
+
+        uint[] memory listedCharities = inheritokens.getWhiteListedCharities(
+            msg.sender
+        );
+        bool hasFlag;
+        for (uint i = 0; i < data.length; i++) {
+            for (uint j = 0; j < listedCharities.length; j++) {
+                if (data[i].charityId == listedCharities[j]) {
+                    hasFlag = true;
+                    break;
+                }
+                if (hasFlag == false) {
+                    revert(
+                        "Check that the charity you are nominating is listed as a white-listed charity."
                     );
                 }
             }
@@ -436,6 +461,141 @@ contract MultiplePriorityNominee is Ownable {
     ) public payable onlyOwner {
         IERC20 _token = IERC20(_tokenAddress);
         _token.transfer(msg.sender, _amount);
+    }
+
+    // charity claim
+
+    function charityClaim(
+        address _owner,
+        address _tokenAddress,
+        uint _tokenId,
+        uint _category
+    ) public payable {
+        uint[] memory listedCharities = inheritokens.getWhiteListedCharities(
+            _owner
+        );
+        address charityAddress;
+        if (_category == 0) {
+            for (
+                uint i = 0;
+                i < ownerToTokenToStruct[_owner][_tokenAddress].length;
+                i++
+            ) {
+                if (
+                    ownerToTokenToStruct[_owner][_tokenAddress][i].isDone ==
+                    false
+                ) {
+                    for (
+                        uint j = 0;
+                        j <
+                        ownerToTokenToStruct[_owner][_tokenAddress][i]
+                            .isNotAvailable
+                            .length;
+                        j++
+                    ) {
+                        if (
+                            ownerToTokenToStruct[_owner][_tokenAddress][i]
+                                .isNotAvailable[j] ==
+                            false &&
+                            ownerToTokenToStruct[_owner][_tokenAddress][i]
+                                .isClaimed[j] ==
+                            true
+                        ) {
+                            revert(
+                                "Sorry! You cannot claim it now. If Nominee does not claim, then we will inform you."
+                            );
+                        }
+                    }
+
+                    for (uint k = 0; k < listedCharities.length; k++) {
+                        (, charityAddress, , , ) = charityContract.idToCharity(
+                            listedCharities[k]
+                        );
+                        if (charityAddress == msg.sender) {
+                            uint _share = ownerToTokenToStruct[_owner][
+                                _tokenAddress
+                            ][i].share;
+                            IERC20 _token = IERC20(_tokenAddress);
+                            // uint _totalToken = _token.balanceOf(_owner);
+                            uint _finalAmount = ((_token.balanceOf(_owner)) *
+                                _share) / 100;
+                            // contract charge
+                            uint transferToContract = (_finalAmount *
+                                percentage) / (10000);
+
+                            // value charity will get
+                            uint transferToCharity = (_finalAmount -
+                                transferToContract);
+
+                            // to contract
+                            _token.transferFrom(
+                                _owner,
+                                address(this),
+                                transferToContract
+                            );
+
+                            // to charity
+                            _token.transferFrom(
+                                _owner,
+                                msg.sender,
+                                transferToCharity
+                            );
+                            ownerToTokenToStruct[_owner][_tokenAddress][i]
+                                .isDone = true;
+                        }
+                    }
+                }
+            }
+        } else if (_category == 1) {
+            for (
+                uint i = 0;
+                i < ownerToNFTToStruct[_owner][_tokenAddress][_tokenId].length;
+                i++
+            ) {
+                if (
+                    ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][i]
+                        .isDone == false
+                ) {
+                    for (
+                        uint j = 0;
+                        j <
+                        ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][i]
+                            .isNotAvailable
+                            .length;
+                        j++
+                    ) {
+                        if (
+                            ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][
+                                i
+                            ].isNotAvailable[j] ==
+                            false &&
+                            ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][
+                                i
+                            ].isClaimed[j] ==
+                            true
+                        ) {
+                            revert(
+                                "Sorry! You cannot claim it now. If Nominee does not claim, then we will inform you."
+                            );
+                        }
+                    }
+                    for (uint k = 0; k < listedCharities.length; k++) {
+                        (, charityAddress, , , ) = charityContract.idToCharity(
+                            listedCharities[k]
+                        );
+                        if (charityAddress == msg.sender) {
+                            IERC721 _nft = IERC721(_tokenAddress);
+
+                            // transfer to charity
+                            _nft.transferFrom(_owner, msg.sender, _tokenId);
+                            ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][
+                                i
+                            ].isDone = true;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /// @notice this function is to change the token we charge while nominating, for example by default the token we charge is USDC

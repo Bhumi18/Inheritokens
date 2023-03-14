@@ -123,8 +123,16 @@ function NomineesListPopupForToken({
             }
           }
           setData(data);
-          setNomineesArr(data);
-          console.log(data);
+          if (arr.length > 0) {
+            let filteredNomineesArr = data.filter((elem) =>
+              arr.every((ele) => ele.w_add !== elem.w_add)
+            );
+            console.log(filteredNomineesArr);
+            setNomineesArr(filteredNomineesArr);
+          } else {
+            setNomineesArr(data);
+          }
+          // console.log(data);
           // setLoading(false);
         } else if (chainId === 1029) {
           const con = new ethers.Contract(BTTC_ADDRESS, contract, signer);

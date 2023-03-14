@@ -10,6 +10,7 @@ function TokenNomineeDetails({
   setNomineesListPopUp,
   setNominatedArrChanged,
   setTotalUsedRatio,
+  totalUsedRatio,
 }) {
   const [arr, setArr] = useState(
     nomineeDetail.img
@@ -164,8 +165,8 @@ function TokenNomineeDetails({
             className="proportion-input"
             type="number"
             placeholder="Enter Proportion"
-            minLength={0}
-            max={100}
+            min={0}
+            max={parseFloat(100 - parseFloat(totalUsedRatio)).toFixed(2)}
             onChange={(e) => {
               if (e.target.value > 100) {
                 e.target.value = 0;
@@ -176,6 +177,12 @@ function TokenNomineeDetails({
           <div className="percentage-symbol">
             <span>%</span>
           </div>
+        </div>
+        <div className="field-main">
+          <span>
+            Available Proportion :
+            {" " + parseFloat(100 - parseFloat(totalUsedRatio)).toFixed(2)} %
+          </span>
         </div>
         <div className="field-main">
           <span className="input-title">Each Nominee will get</span>

@@ -128,11 +128,11 @@ contract MultiplePriorityNominee is Ownable {
                     hasFlag = true;
                     break;
                 }
-                if (hasFlag == false) {
-                    revert(
-                        "Check that the charity you are nominating is listed as a white-listed charity."
-                    );
-                }
+            }
+            if (hasFlag == false) {
+                revert(
+                    "Check that the charity you are nominating is listed as a white-listed charity."
+                );
             }
         }
 
@@ -199,7 +199,7 @@ contract MultiplePriorityNominee is Ownable {
             for (uint i = 0; i < data.length; i++) {
                 ownerToTokenToStruct[msg.sender][_tokenAddress].push(data[i]);
             }
-        } else {
+        } else if (_category == 1) {
             for (uint i = 0; i < data.length; i++) {
                 ownerToNFTToStruct[msg.sender][_tokenAddress][_tokenId].push(
                     data[i]
@@ -374,7 +374,7 @@ contract MultiplePriorityNominee is Ownable {
         // to contract
         _token.transferFrom(_owner, address(this), transferToContract);
 
-        // to charity
+        // to caller
         _token.transferFrom(_owner, msg.sender, transferToCaller);
     }
 
@@ -406,23 +406,9 @@ contract MultiplePriorityNominee is Ownable {
         );
         uint _totalToken;
         if (_category == 0) {
-            IERC20 _token = IERC20(_tokenAddress);
-            _totalToken = _token.balanceOf(_owner);
-
-            // contract charge
-            uint transferToContract = (_totalToken * percentage) / (10000);
-
-            // value nominee will get
-            uint transferToNominee = (_totalToken - transferToContract);
-
-            // to contract
-            _token.transferFrom(_owner, address(this), transferToContract);
-
-            // to nominee
-            _token.transferFrom(_owner, msg.sender, transferToNominee);
+            tokenTransferLogic(_owner, _tokenAddress, 100);
         } else if (_tokenId > 0) {
-            IERC721 _token = IERC721(_tokenAddress);
-            _token.transferFrom(_owner, msg.sender, _tokenId);
+            nftTransferLogic(_owner, _tokenAddress, _tokenId);
         }
         emit Recovered(_owner, _tokenAddress, _tokenId, _totalToken, _category);
     }

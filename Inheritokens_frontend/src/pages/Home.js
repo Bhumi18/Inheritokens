@@ -30,6 +30,8 @@ import contract from "../artifacts/Main.json";
 import { useRef } from "react";
 import Cookies from "universal-cookie";
 import InformationSlider from "../components/InformationSlider";
+import { prints } from "../components/Contracts";
+
 export const CONTRACT_ADDRESS = "0xaEF8eb4EDCB0177A5ef6a5e3f46E581a5908eef4";
 export const BTTC_ADDRESS = "0xB987640A52415b64E2d19109E8f9d7a3492d5F54";
 
@@ -191,6 +193,7 @@ function Home() {
       setInformationSlider(false);
     }
     console.log(cookies.get("showInformation"));
+    console.log(prints);
   }, []);
 
   return (

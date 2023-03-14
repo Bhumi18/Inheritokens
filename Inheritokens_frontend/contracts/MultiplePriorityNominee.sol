@@ -2,7 +2,6 @@
 
 pragma solidity ^0.8.0;
 
-import "hardhat/console.sol";
 import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
 import "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol";
@@ -11,30 +10,36 @@ import "../node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol";
 /// @author Bhumi Sadariya
 
 import "./Inheritokens.sol";
+import "./Charity.sol";
 
 contract MultiplePriorityNominee is Ownable {
     address public inheritokensAddress;
     Inheritokens public inheritokens;
-    uint public tokenCharge;
-    uint public nftCharge;
-    uint public percentage;
-    address public chargeTokenAddress; // USDC
+    address public charityContractAddress;
+    CharityContract public charityContract;
+    uint public tokenCharge = 1000000;
+    uint public nftCharge = 5000000;
+    uint public percentage = 1;
+    address public chargeTokenAddress =
+        0xe9DcE89B076BA6107Bb64EF30678efec11939234; // USDC
 
-    constructor(address _inheritokensAddress) Ownable() {
+    constructor(
+        address _inheritokensAddress,
+        address _charityContractAddress
+    ) Ownable() {
         inheritokensAddress = _inheritokensAddress;
         inheritokens = Inheritokens(inheritokensAddress);
-        tokenCharge = 1000000;
-        nftCharge = 5000000;
-        percentage = 1;
-        chargeTokenAddress = 0xe9DcE89B076BA6107Bb64EF30678efec11939234;
+        charityContractAddress = _charityContractAddress;
+        charityContract = CharityContract(charityContractAddress);
     }
 
     // structure for multiple and Priority nominee
     struct MultiplePriority {
         uint share;
+        address charityAddress;
+        address canClaim;
         address[] nominee;
-        bool[] isNotAvailable; // true means not available and false means available
-        bool[] isClaimed; // true means nominee has claimed
+        bool isClaimed;
     }
     // mapping of owner address to token address to structure
     mapping(address => mapping(address => MultiplePriority[]))
@@ -79,11 +84,12 @@ contract MultiplePriorityNominee is Ownable {
         MultiplePriority[] memory data
     ) public {
         // owner should be added, and email should be verified
-        bool isAdded = inheritokens.checkOwnerAdded(msg.sender);
-        bool isVerified = inheritokens.checkEmailVerified(msg.sender);
-        require(isAdded, "You must first sign up for an account.");
         require(
-            isVerified,
+            inheritokens.checkOwnerAdded(msg.sender),
+            "You must first sign up for an account."
+        );
+        require(
+            inheritokens.checkEmailVerified(msg.sender),
             "Your email has not yet been validated. Verify your registered email address first."
         );
 
@@ -92,6 +98,10 @@ contract MultiplePriorityNominee is Ownable {
             msg.sender
         );
         bool flag;
+        uint[] memory listedCharities = inheritokens.getWhiteListedCharities(
+            msg.sender
+        );
+        bool hasFlag;
         for (uint i = 0; i < data.length; i++) {
             for (uint k = 0; k < data[i].nominee.length; k++) {
                 flag = false;
@@ -106,6 +116,21 @@ contract MultiplePriorityNominee is Ownable {
                         "Check that all the nominees you are nominating are added as nominees."
                     );
                 }
+            }
+            for (uint j = 0; j < listedCharities.length; j++) {
+                address _charityAddress;
+                (, _charityAddress, , , ) = charityContract.idToCharity(
+                    listedCharities[i]
+                );
+                if (data[i].charityAddress == _charityAddress) {
+                    hasFlag = true;
+                    break;
+                }
+            }
+            if (hasFlag == false) {
+                revert(
+                    "Check that the charity you are nominating is listed as a white-listed charity."
+                );
             }
         }
 
@@ -159,20 +184,6 @@ contract MultiplePriorityNominee is Ownable {
                 );
             }
         }
-        // if token is already assigned then delete the data
-        // uint len;
-        // if (_category == 0) {
-        //     len = ownerToTokenToStruct[msg.sender][_tokenAddress].length;
-        //     if (len > 0) {
-        //         delete ownerToTokenToStruct[msg.sender][_tokenAddress];
-        //     }
-        // } else {
-        //     len = ownerToNFTToStruct[msg.sender][_tokenAddress][_tokenId]
-        //         .length;
-        //     if (len > 0) {
-        //         delete ownerToNFTToStruct[msg.sender][_tokenAddress][_tokenId];
-        //     }
-        // }
         inheritokens.updateAllocatedShare(
             msg.sender,
             _tokenAddress,
@@ -186,7 +197,7 @@ contract MultiplePriorityNominee is Ownable {
             for (uint i = 0; i < data.length; i++) {
                 ownerToTokenToStruct[msg.sender][_tokenAddress].push(data[i]);
             }
-        } else {
+        } else if (_category == 1) {
             for (uint i = 0; i < data.length; i++) {
                 ownerToNFTToStruct[msg.sender][_tokenAddress][_tokenId].push(
                     data[i]
@@ -205,187 +216,103 @@ contract MultiplePriorityNominee is Ownable {
         uint _tokenId,
         uint _category
     ) public {
-        bool isClaimable = inheritokens.getIsClaimable(_owner);
         require(
-            isClaimable,
+            inheritokens.getIsClaimable(_owner),
             "Sorry! You can't claim this. We will mail you to claim this."
         );
-        address[] memory nominees = inheritokens.getAllNomineesOfOwner(_owner);
+        // address[] memory nominees = inheritokens.getAllNomineesOfOwner(_owner);
         uint transferToNominee;
-        for (uint i = 0; i < nominees.length; i++) {
-            if (nominees[i] == msg.sender) {
-                // transfer logic
-                // fot tokens
-                if (_category == 0) {
-                    for (
-                        uint k = 0;
-                        k < ownerToTokenToStruct[_owner][_tokenAddress].length;
-                        k++
-                    ) {
-                        for (
-                            uint j = 0;
-                            j <
-                            (
-                                ownerToTokenToStruct[_owner][_tokenAddress][k]
-                                    .nominee
-                            ).length;
-                            j++
-                        ) {
-                            if (
-                                ownerToTokenToStruct[_owner][_tokenAddress][k]
-                                    .nominee[j] == nominees[i]
-                            ) {
-                                if (j == 0) {
-                                    // function call
-                                    transferToNominee = tokenTransferLogic(
-                                        k,
-                                        j,
-                                        _tokenAddress,
-                                        _owner
-                                    );
-                                    break;
-                                } else {
-                                    if (
-                                        ownerToTokenToStruct[_owner][
-                                            _tokenAddress
-                                        ][k].isNotAvailable[j - 1] ==
-                                        true &&
-                                        ownerToTokenToStruct[_owner][
-                                            _tokenAddress
-                                        ][k].isClaimed[j - 1] ==
-                                        false
-                                    ) {
-                                        // function call
-                                        transferToNominee = tokenTransferLogic(
-                                            k,
-                                            j,
-                                            _tokenAddress,
-                                            _owner
-                                        );
-                                        break;
-                                    } else {
-                                        revert(
-                                            "Oops! You can't claim this right now. We will inform you when you can claim the token."
-                                        );
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } else if (_category == 1) {
-                    for (
-                        uint k = 0;
-                        k < ownerToTokenToStruct[_owner][_tokenAddress].length;
-                        k++
-                    ) {
-                        for (
-                            uint j = 0;
-                            j <
-                            (
-                                ownerToNFTToStruct[_owner][_tokenAddress][
-                                    _tokenId
-                                ][k].nominee
-                            ).length;
-                            j++
-                        ) {
-                            if (
-                                ownerToNFTToStruct[_owner][_tokenAddress][
-                                    _tokenId
-                                ][k].nominee[j] == nominees[i]
-                            ) {
-                                if (j == 0) {
-                                    // function call
-                                    transferNFTLogic(
-                                        k,
-                                        k,
-                                        _tokenId,
-                                        _tokenAddress,
-                                        _owner
-                                    );
-                                    break;
-                                } else {
-                                    if (
-                                        ownerToTokenToStruct[_owner][
-                                            _tokenAddress
-                                        ][k].isNotAvailable[j - 1] ==
-                                        true &&
-                                        ownerToTokenToStruct[_owner][
-                                            _tokenAddress
-                                        ][k].isClaimed[j - 1] ==
-                                        false
-                                    ) {
-                                        // function call
-                                        transferNFTLogic(
-                                            k,
-                                            k,
-                                            _tokenId,
-                                            _tokenAddress,
-                                            _owner
-                                        );
-                                        break;
-                                    } else {
-                                        revert(
-                                            "Oops! You can't claim this right now. We will inform you when you can claim the token."
-                                        );
-                                    }
-                                }
-                            }
-                        }
-                    }
+        bool flag;
+        if (_category == 0) {
+            for (
+                uint i = 0;
+                i < ownerToTokenToStruct[_owner][_tokenAddress].length;
+                i++
+            ) {
+                if (
+                    ownerToTokenToStruct[_owner][_tokenAddress][i].canClaim ==
+                    msg.sender
+                ) {
+                    uint _share = ownerToTokenToStruct[_owner][_tokenAddress][i]
+                        .share;
+                    // function call
+                    tokenTransferLogic(_owner, _tokenAddress, _share);
+
+                    //------------------------------------------------------------------------
+                    ownerToTokenToStruct[_owner][_tokenAddress][i]
+                        .isClaimed = true;
+                    flag = true;
                 }
             }
-            emit Claimed(
-                _owner,
-                msg.sender,
-                _tokenAddress,
-                _tokenId,
-                transferToNominee,
-                _category
-            );
+            if (flag == false) {
+                revert(
+                    "Oops! You can't claim this right now. We will inform you when you can claim the token."
+                );
+            }
+        } else if (_category == 1) {
+            for (
+                uint i = 0;
+                i < ownerToTokenToStruct[_owner][_tokenAddress].length;
+                i++
+            ) {
+                if (
+                    ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][i]
+                        .canClaim == msg.sender
+                ) {
+                    // function call
+                    nftTransferLogic(_owner, _tokenAddress, _tokenId);
+
+                    ownerToTokenToStruct[_owner][_tokenAddress][i]
+                        .isClaimed = true;
+                    flag = true;
+                    break;
+                }
+            }
+            if (flag == false) {
+                revert(
+                    "Oops! You can't claim this right now. We will inform you when you can claim the token."
+                );
+            }
         }
+        emit Claimed(
+            _owner,
+            msg.sender,
+            _tokenAddress,
+            _tokenId,
+            transferToNominee,
+            _category
+        );
     }
 
     function tokenTransferLogic(
-        uint k,
-        uint j,
+        address _owner,
         address _tokenAddress,
-        address _owner
-    ) internal returns (uint) {
-        uint _share = ownerToTokenToStruct[_owner][_tokenAddress][k].share;
-        ownerToTokenToStruct[_owner][_tokenAddress][k].isClaimed[j] = true;
-
+        uint _share
+    ) public {
         IERC20 _token = IERC20(_tokenAddress);
-        uint _totalToken = _token.balanceOf(_owner);
-        uint _finalAmount = (_totalToken * _share) / 100;
+        // uint _totalToken = _token.balanceOf(_owner);
+        uint _finalAmount = ((_token.balanceOf(_owner)) * _share) / 100;
         // contract charge
         uint transferToContract = (_finalAmount * percentage) / (10000);
 
-        // value nominee will get
-        uint transferToNominee = (_finalAmount - transferToContract);
+        // value msg.sender will get
+        uint transferToCaller = (_finalAmount - transferToContract);
 
         // to contract
         _token.transferFrom(_owner, address(this), transferToContract);
 
-        // to nominee
-        _token.transferFrom(_owner, msg.sender, transferToNominee);
-        return transferToNominee;
+        // to caller
+        _token.transferFrom(_owner, msg.sender, transferToCaller);
     }
 
-    function transferNFTLogic(
-        uint k,
-        uint j,
-        uint _tokenId,
+    function nftTransferLogic(
+        address _owner,
         address _tokenAddress,
-        address _owner
-    ) internal {
+        uint _tokenId
+    ) public {
         IERC721 _nft = IERC721(_tokenAddress);
-
-        // transfer to nominee
+        // transfer to charity
         _nft.transferFrom(_owner, msg.sender, _tokenId);
-
-        ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][k].isClaimed[
-                j
-            ] = true;
     }
 
     // recovery claim
@@ -406,23 +333,9 @@ contract MultiplePriorityNominee is Ownable {
         );
         uint _totalToken;
         if (_category == 0) {
-            IERC20 _token = IERC20(_tokenAddress);
-            _totalToken = _token.balanceOf(_owner);
-
-            // contract charge
-            uint transferToContract = (_totalToken * percentage) / (10000);
-
-            // value nominee will get
-            uint transferToNominee = (_totalToken - transferToContract);
-
-            // to contract
-            _token.transferFrom(_owner, address(this), transferToContract);
-
-            // to nominee
-            _token.transferFrom(_owner, msg.sender, transferToNominee);
+            tokenTransferLogic(_owner, _tokenAddress, 100);
         } else if (_tokenId > 0) {
-            IERC721 _token = IERC721(_tokenAddress);
-            _token.transferFrom(_owner, msg.sender, _tokenId);
+            nftTransferLogic(_owner, _tokenAddress, _tokenId);
         }
         emit Recovered(_owner, _tokenAddress, _tokenId, _totalToken, _category);
     }
@@ -439,43 +352,19 @@ contract MultiplePriorityNominee is Ownable {
     }
 
     /// @notice this function is to change the token we charge while nominating, for example by default the token we charge is USDC
+    // _tokenCharge value should be multiply with decimals(wei) according to the token and then passed to this function
+    // _nftCharge value should be multiply with decimals(wei) according to the token and then passed to this function
+    // _percentage amount must be multiplied with 100 and pass the integer value only, decimal won't work here
     /// @param _tokenAddress is the address of the token which platform wants to charge while owner nominate the nominee
-    function changeChargeTokenAddress(address _tokenAddress) public onlyOwner {
-        chargeTokenAddress = _tokenAddress;
-    }
-
-    /// @notice _charge value should be multiply with decimals(wei) according to the token and then passed to this function
-    function changeTokenCharge(uint _charge) public onlyOwner {
-        tokenCharge = _charge;
-    }
-
-    /// @notice _charge value should be multiply with decimals(wei) according to the token and then passed to this function
-    function changeNFTCharge(uint _charge) public onlyOwner {
-        nftCharge = _charge;
-    }
-
-    /// @notice percentage amount must be multiplied with 100 and pass the integer value only, decimal won't work here
-    function changePercentage(uint _amount) public onlyOwner {
-        percentage = _amount;
-    }
-
-    /// @param _owner is the address of the owner, _tokenAddress is the addresss of the token contract, _tokenId is the id
-    // of the nft, _category is integer displaying 0 for token and 1 for nft
-    function getAllStructs(
-        address _owner,
+    function changeCharges(
         address _tokenAddress,
-        uint _tokenId,
-        uint _category
-    ) public view returns (MultiplePriority[] memory) {
-        if (_category == 0) {
-            return ownerToTokenToStruct[_owner][_tokenAddress];
-        } else {
-            return ownerToNFTToStruct[_owner][_tokenAddress][_tokenId];
-        }
-    }
-
-    /// @return address of token that platform charge, charge for token, charge for NFT, and percentage amount while nominee claim the tokens
-    function getValues() public view returns (address, uint, uint, uint) {
-        return (chargeTokenAddress, tokenCharge, nftCharge, percentage);
+        uint _tokenCharge,
+        uint _nftCharge,
+        uint _percentage
+    ) public onlyOwner {
+        chargeTokenAddress = _tokenAddress;
+        tokenCharge = _tokenCharge;
+        nftCharge = _nftCharge;
+        percentage = _percentage;
     }
 }

@@ -36,7 +36,8 @@ contract MultiplePriorityNominee is Ownable {
     // structure for multiple and Priority nominee
     struct MultiplePriority {
         uint share;
-        uint charityId;
+        address charityAddress;
+        address canClaim;
         address[] nominee;
         bool[] isNotAvailable; // true means not available and false means available
         bool[] isClaimed; // true means nominee has claimed
@@ -119,7 +120,11 @@ contract MultiplePriorityNominee is Ownable {
                 }
             }
             for (uint j = 0; j < listedCharities.length; j++) {
-                if (data[i].charityId == listedCharities[j]) {
+                address _charityAddress;
+                (, _charityAddress, , , ) = charityContract.idToCharity(
+                    listedCharities[i]
+                );
+                if (data[i].charityAddress == _charityAddress) {
                     hasFlag = true;
                     break;
                 }
@@ -213,187 +218,174 @@ contract MultiplePriorityNominee is Ownable {
         uint _tokenId,
         uint _category
     ) public {
-        bool isClaimable = inheritokens.getIsClaimable(_owner);
         require(
-            isClaimable,
+            inheritokens.getIsClaimable(_owner),
             "Sorry! You can't claim this. We will mail you to claim this."
         );
-        address[] memory nominees = inheritokens.getAllNomineesOfOwner(_owner);
+        // address[] memory nominees = inheritokens.getAllNomineesOfOwner(_owner);
         uint transferToNominee;
-        for (uint i = 0; i < nominees.length; i++) {
-            if (nominees[i] == msg.sender) {
-                // transfer logic
-                // fot tokens
-                if (_category == 0) {
-                    for (
-                        uint k = 0;
-                        k < ownerToTokenToStruct[_owner][_tokenAddress].length;
-                        k++
-                    ) {
-                        for (
-                            uint j = 0;
-                            j <
-                            (
-                                ownerToTokenToStruct[_owner][_tokenAddress][k]
-                                    .nominee
-                            ).length;
-                            j++
-                        ) {
-                            if (
-                                ownerToTokenToStruct[_owner][_tokenAddress][k]
-                                    .nominee[j] == nominees[i]
-                            ) {
-                                if (j == 0) {
-                                    // function call
-                                    transferToNominee = tokenTransferLogic(
-                                        k,
-                                        j,
-                                        _tokenAddress,
-                                        _owner
-                                    );
-                                    break;
-                                } else {
-                                    if (
-                                        ownerToTokenToStruct[_owner][
-                                            _tokenAddress
-                                        ][k].isNotAvailable[j - 1] ==
-                                        true &&
-                                        ownerToTokenToStruct[_owner][
-                                            _tokenAddress
-                                        ][k].isClaimed[j - 1] ==
-                                        false
-                                    ) {
-                                        // function call
-                                        transferToNominee = tokenTransferLogic(
-                                            k,
-                                            j,
-                                            _tokenAddress,
-                                            _owner
-                                        );
-                                        break;
-                                    } else {
-                                        revert(
-                                            "Oops! You can't claim this right now. We will inform you when you can claim the token."
-                                        );
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } else if (_category == 1) {
-                    for (
-                        uint k = 0;
-                        k < ownerToTokenToStruct[_owner][_tokenAddress].length;
-                        k++
-                    ) {
-                        for (
-                            uint j = 0;
-                            j <
-                            (
-                                ownerToNFTToStruct[_owner][_tokenAddress][
-                                    _tokenId
-                                ][k].nominee
-                            ).length;
-                            j++
-                        ) {
-                            if (
-                                ownerToNFTToStruct[_owner][_tokenAddress][
-                                    _tokenId
-                                ][k].nominee[j] == nominees[i]
-                            ) {
-                                if (j == 0) {
-                                    // function call
-                                    transferNFTLogic(
-                                        k,
-                                        k,
-                                        _tokenId,
-                                        _tokenAddress,
-                                        _owner
-                                    );
-                                    break;
-                                } else {
-                                    if (
-                                        ownerToTokenToStruct[_owner][
-                                            _tokenAddress
-                                        ][k].isNotAvailable[j - 1] ==
-                                        true &&
-                                        ownerToTokenToStruct[_owner][
-                                            _tokenAddress
-                                        ][k].isClaimed[j - 1] ==
-                                        false
-                                    ) {
-                                        // function call
-                                        transferNFTLogic(
-                                            k,
-                                            k,
-                                            _tokenId,
-                                            _tokenAddress,
-                                            _owner
-                                        );
-                                        break;
-                                    } else {
-                                        revert(
-                                            "Oops! You can't claim this right now. We will inform you when you can claim the token."
-                                        );
-                                    }
-                                }
-                            }
-                        }
-                    }
+        bool flag;
+        // for (uint i = 0; i < nominees.length; i++) {
+        // if (nominees[i] == msg.sender) {
+        // transfer logic
+        // fot tokens
+        if (_category == 0) {
+            for (
+                uint i = 0;
+                i < ownerToTokenToStruct[_owner][_tokenAddress].length;
+                i++
+            ) {
+                if (
+                    ownerToTokenToStruct[_owner][_tokenAddress][i].canClaim ==
+                    msg.sender
+                ) {
+                    uint _share = ownerToTokenToStruct[_owner][_tokenAddress][i]
+                        .share;
+                    // function call
+                    tokenTransferLogic(_owner, _tokenAddress, _share);
+
+                    //------------------------------------------------------------------------
+                    // ownerToTokenToStruct[_owner][_tokenAddress][k].isClaimed[
+                    //         j
+                    //     ] = true;
+                    flag = true;
+                    break;
                 }
             }
-            emit Claimed(
-                _owner,
-                msg.sender,
-                _tokenAddress,
-                _tokenId,
-                transferToNominee,
-                _category
+            if (flag == false) {
+                revert(
+                    "Oops! You can't claim this right now. We will inform you when you can claim the token."
+                );
+            }
+        } else if (_category == 1) {
+            for (
+                uint i = 0;
+                i < ownerToTokenToStruct[_owner][_tokenAddress].length;
+                i++
+            ) {
+                if (
+                    ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][i]
+                        .canClaim == msg.sender
+                ) {
+                    // function call
+                    nftTransferLogic(_owner, _tokenAddress, _tokenId);
+
+                    // ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][k]
+                    //     .isClaimed[j] = true;
+                    flag = true;
+                    break;
+                }
+            }
+            if (flag == false) {
+                revert(
+                    "Oops! You can't claim this right now. We will inform you when you can claim the token."
+                );
+            }
+        }
+        // }
+        emit Claimed(
+            _owner,
+            msg.sender,
+            _tokenAddress,
+            _tokenId,
+            transferToNominee,
+            _category
+        );
+        // }
+    }
+
+    // charity claim
+    function charityClaim(
+        address _owner,
+        address _tokenAddress,
+        uint _tokenId,
+        uint _category
+    ) public payable {
+        uint[] memory listedCharities = inheritokens.getWhiteListedCharities(
+            _owner
+        );
+        address _charityAddress;
+        bool flag;
+        for (uint i = 0; i < listedCharities.length; i++) {
+            (, _charityAddress, , , ) = charityContract.idToCharity(
+                listedCharities[i]
             );
+            if (_charityAddress == msg.sender) {
+                flag = true;
+                break;
+            }
+        }
+        if (flag == false) {
+            revert("Sorry! You are not nominated by this owner");
+        }
+        if (_category == 0) {
+            for (
+                uint i = 0;
+                i < ownerToTokenToStruct[_owner][_tokenAddress].length;
+                i++
+            ) {
+                if (
+                    ownerToTokenToStruct[_owner][_tokenAddress][i].canClaim ==
+                    msg.sender
+                ) {
+                    uint _share = ownerToTokenToStruct[_owner][_tokenAddress][i]
+                        .share;
+
+                    // function call
+                    tokenTransferLogic(_owner, _tokenAddress, _share);
+
+                    ownerToTokenToStruct[_owner][_tokenAddress][i]
+                        .isDone = true;
+                }
+            }
+        } else if (_category == 1) {
+            for (
+                uint i = 0;
+                i < ownerToNFTToStruct[_owner][_tokenAddress][_tokenId].length;
+                i++
+            ) {
+                if (
+                    ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][i]
+                        .canClaim == msg.sender
+                ) {
+                    // function call
+                    nftTransferLogic(_owner, _tokenAddress, _tokenId);
+                    ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][i]
+                        .isDone = true;
+                }
+            }
         }
     }
 
     function tokenTransferLogic(
-        uint k,
-        uint j,
+        address _owner,
         address _tokenAddress,
-        address _owner
-    ) internal returns (uint) {
-        uint _share = ownerToTokenToStruct[_owner][_tokenAddress][k].share;
-        ownerToTokenToStruct[_owner][_tokenAddress][k].isClaimed[j] = true;
-
+        uint _share
+    ) public {
         IERC20 _token = IERC20(_tokenAddress);
-        uint _totalToken = _token.balanceOf(_owner);
-        uint _finalAmount = (_totalToken * _share) / 100;
+        // uint _totalToken = _token.balanceOf(_owner);
+        uint _finalAmount = ((_token.balanceOf(_owner)) * _share) / 100;
         // contract charge
         uint transferToContract = (_finalAmount * percentage) / (10000);
 
-        // value nominee will get
-        uint transferToNominee = (_finalAmount - transferToContract);
+        // value msg.sender will get
+        uint transferToCaller = (_finalAmount - transferToContract);
 
         // to contract
         _token.transferFrom(_owner, address(this), transferToContract);
 
-        // to nominee
-        _token.transferFrom(_owner, msg.sender, transferToNominee);
-        return transferToNominee;
+        // to charity
+        _token.transferFrom(_owner, msg.sender, transferToCaller);
     }
 
-    function transferNFTLogic(
-        uint k,
-        uint j,
-        uint _tokenId,
+    function nftTransferLogic(
+        address _owner,
         address _tokenAddress,
-        address _owner
-    ) internal {
+        uint _tokenId
+    ) public {
         IERC721 _nft = IERC721(_tokenAddress);
-
-        // transfer to nominee
+        // transfer to charity
         _nft.transferFrom(_owner, msg.sender, _tokenId);
-
-        ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][k].isClaimed[
-                j
-            ] = true;
     }
 
     // recovery claim
@@ -444,141 +436,6 @@ contract MultiplePriorityNominee is Ownable {
     ) public payable onlyOwner {
         IERC20 _token = IERC20(_tokenAddress);
         _token.transfer(msg.sender, _amount);
-    }
-
-    // charity claim
-
-    function charityClaim(
-        address _owner,
-        address _tokenAddress,
-        uint _tokenId,
-        uint _category
-    ) public payable {
-        uint[] memory listedCharities = inheritokens.getWhiteListedCharities(
-            _owner
-        );
-        address charityAddress;
-        if (_category == 0) {
-            for (
-                uint i = 0;
-                i < ownerToTokenToStruct[_owner][_tokenAddress].length;
-                i++
-            ) {
-                if (
-                    ownerToTokenToStruct[_owner][_tokenAddress][i].isDone ==
-                    false
-                ) {
-                    for (
-                        uint j = 0;
-                        j <
-                        ownerToTokenToStruct[_owner][_tokenAddress][i]
-                            .isNotAvailable
-                            .length;
-                        j++
-                    ) {
-                        if (
-                            ownerToTokenToStruct[_owner][_tokenAddress][i]
-                                .isNotAvailable[j] ==
-                            false &&
-                            ownerToTokenToStruct[_owner][_tokenAddress][i]
-                                .isClaimed[j] ==
-                            true
-                        ) {
-                            revert(
-                                "Sorry! You cannot claim it now. If Nominee does not claim, then we will inform you."
-                            );
-                        }
-                    }
-
-                    for (uint k = 0; k < listedCharities.length; k++) {
-                        (, charityAddress, , , ) = charityContract.idToCharity(
-                            listedCharities[k]
-                        );
-                        if (charityAddress == msg.sender) {
-                            uint _share = ownerToTokenToStruct[_owner][
-                                _tokenAddress
-                            ][i].share;
-                            IERC20 _token = IERC20(_tokenAddress);
-                            // uint _totalToken = _token.balanceOf(_owner);
-                            uint _finalAmount = ((_token.balanceOf(_owner)) *
-                                _share) / 100;
-                            // contract charge
-                            uint transferToContract = (_finalAmount *
-                                percentage) / (10000);
-
-                            // value charity will get
-                            uint transferToCharity = (_finalAmount -
-                                transferToContract);
-
-                            // to contract
-                            _token.transferFrom(
-                                _owner,
-                                address(this),
-                                transferToContract
-                            );
-
-                            // to charity
-                            _token.transferFrom(
-                                _owner,
-                                msg.sender,
-                                transferToCharity
-                            );
-                            ownerToTokenToStruct[_owner][_tokenAddress][i]
-                                .isDone = true;
-                        }
-                    }
-                }
-            }
-        } else if (_category == 1) {
-            for (
-                uint i = 0;
-                i < ownerToNFTToStruct[_owner][_tokenAddress][_tokenId].length;
-                i++
-            ) {
-                if (
-                    ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][i]
-                        .isDone == false
-                ) {
-                    for (
-                        uint j = 0;
-                        j <
-                        ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][i]
-                            .isNotAvailable
-                            .length;
-                        j++
-                    ) {
-                        if (
-                            ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][
-                                i
-                            ].isNotAvailable[j] ==
-                            false &&
-                            ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][
-                                i
-                            ].isClaimed[j] ==
-                            true
-                        ) {
-                            revert(
-                                "Sorry! You cannot claim it now. If Nominee does not claim, then we will inform you."
-                            );
-                        }
-                    }
-                    for (uint k = 0; k < listedCharities.length; k++) {
-                        (, charityAddress, , , ) = charityContract.idToCharity(
-                            listedCharities[k]
-                        );
-                        if (charityAddress == msg.sender) {
-                            IERC721 _nft = IERC721(_tokenAddress);
-
-                            // transfer to charity
-                            _nft.transferFrom(_owner, msg.sender, _tokenId);
-                            ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][
-                                i
-                            ].isDone = true;
-                        }
-                    }
-                }
-            }
-        }
     }
 
     /// @notice this function is to change the token we charge while nominating, for example by default the token we charge is USDC

@@ -39,9 +39,7 @@ contract MultiplePriorityNominee is Ownable {
         address charityAddress;
         address canClaim;
         address[] nominee;
-        bool[] isNotAvailable; // true means not available and false means available
-        bool[] isClaimed; // true means nominee has claimed
-        bool isDone; // true means it is reached to the charity
+        bool isClaimed;
     }
     // mapping of owner address to token address to structure
     mapping(address => mapping(address => MultiplePriority[]))
@@ -225,10 +223,6 @@ contract MultiplePriorityNominee is Ownable {
         // address[] memory nominees = inheritokens.getAllNomineesOfOwner(_owner);
         uint transferToNominee;
         bool flag;
-        // for (uint i = 0; i < nominees.length; i++) {
-        // if (nominees[i] == msg.sender) {
-        // transfer logic
-        // fot tokens
         if (_category == 0) {
             for (
                 uint i = 0;
@@ -245,11 +239,9 @@ contract MultiplePriorityNominee is Ownable {
                     tokenTransferLogic(_owner, _tokenAddress, _share);
 
                     //------------------------------------------------------------------------
-                    // ownerToTokenToStruct[_owner][_tokenAddress][k].isClaimed[
-                    //         j
-                    //     ] = true;
+                    ownerToTokenToStruct[_owner][_tokenAddress][i]
+                        .isClaimed = true;
                     flag = true;
-                    break;
                 }
             }
             if (flag == false) {
@@ -270,8 +262,8 @@ contract MultiplePriorityNominee is Ownable {
                     // function call
                     nftTransferLogic(_owner, _tokenAddress, _tokenId);
 
-                    // ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][k]
-                    //     .isClaimed[j] = true;
+                    ownerToTokenToStruct[_owner][_tokenAddress][i]
+                        .isClaimed = true;
                     flag = true;
                     break;
                 }
@@ -282,7 +274,6 @@ contract MultiplePriorityNominee is Ownable {
                 );
             }
         }
-        // }
         emit Claimed(
             _owner,
             msg.sender,
@@ -291,70 +282,6 @@ contract MultiplePriorityNominee is Ownable {
             transferToNominee,
             _category
         );
-        // }
-    }
-
-    // charity claim
-    function charityClaim(
-        address _owner,
-        address _tokenAddress,
-        uint _tokenId,
-        uint _category
-    ) public payable {
-        uint[] memory listedCharities = inheritokens.getWhiteListedCharities(
-            _owner
-        );
-        address _charityAddress;
-        bool flag;
-        for (uint i = 0; i < listedCharities.length; i++) {
-            (, _charityAddress, , , ) = charityContract.idToCharity(
-                listedCharities[i]
-            );
-            if (_charityAddress == msg.sender) {
-                flag = true;
-                break;
-            }
-        }
-        if (flag == false) {
-            revert("Sorry! You are not nominated by this owner");
-        }
-        if (_category == 0) {
-            for (
-                uint i = 0;
-                i < ownerToTokenToStruct[_owner][_tokenAddress].length;
-                i++
-            ) {
-                if (
-                    ownerToTokenToStruct[_owner][_tokenAddress][i].canClaim ==
-                    msg.sender
-                ) {
-                    uint _share = ownerToTokenToStruct[_owner][_tokenAddress][i]
-                        .share;
-
-                    // function call
-                    tokenTransferLogic(_owner, _tokenAddress, _share);
-
-                    ownerToTokenToStruct[_owner][_tokenAddress][i]
-                        .isDone = true;
-                }
-            }
-        } else if (_category == 1) {
-            for (
-                uint i = 0;
-                i < ownerToNFTToStruct[_owner][_tokenAddress][_tokenId].length;
-                i++
-            ) {
-                if (
-                    ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][i]
-                        .canClaim == msg.sender
-                ) {
-                    // function call
-                    nftTransferLogic(_owner, _tokenAddress, _tokenId);
-                    ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][i]
-                        .isDone = true;
-                }
-            }
-        }
     }
 
     function tokenTransferLogic(

@@ -108,6 +108,9 @@
   .input-field.disabled {
     cursor: not-allowed;
   }
+  .input-field.warning {
+    border: 1px solid red;
+  }
 
   .nominees-list {
     display: flex;

@@ -68,10 +68,10 @@ function UpdateOrViewNominees({
           </div>
           <div className="details">
             <span className="title">
-              Nominated - <span className="content">{ratio} %</span>
+              {/* Nominated - <span className="content">{ratio} %</span> */}
+              Nominated - <input type="text" placeholder={ratio + " %"} />
             </span>
           </div>
-
           <div className="table-div">
             {arrChanged && arr.length > 0 ? (
               <table>

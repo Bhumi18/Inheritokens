@@ -120,7 +120,7 @@ contract MultiplePriorityNominee is Ownable {
             for (uint j = 0; j < listedCharities.length; j++) {
                 address _charityAddress;
                 (, _charityAddress, , , ) = charityContract.idToCharity(
-                    listedCharities[i]
+                    listedCharities[j]
                 );
                 if (data[i].charityAddress == _charityAddress) {
                     hasFlag = true;
@@ -136,10 +136,19 @@ contract MultiplePriorityNominee is Ownable {
 
         // get data of whether token is nominated at least once
         bool nominated;
-        (, , , , , nominated) = inheritokens.tokenAddressToTokenStruct(
-            msg.sender,
-            _tokenAddress
-        );
+
+        if (_category == 0) {
+            (, , , , , nominated) = inheritokens.tokenAddressToTokenStruct(
+                msg.sender,
+                _tokenAddress
+            );
+        } else if (_category == 1) {
+            (, , , , , nominated) = inheritokens.nftAddressToTokenStruct(
+                msg.sender,
+                _tokenAddress,
+                _tokenId
+            );
+        }
 
         // calculate total share by looping over data
         uint totalShare;

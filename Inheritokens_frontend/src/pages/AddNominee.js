@@ -17,6 +17,7 @@ import Navbar from "../components/Navbar";
 // import MailSvg from "../components/MailSvg";
 
 import contract from "../artifacts/Main.json";
+import { inheritokensInstance } from "../components/Contracts";
 export const CONTRACT_ADDRESS = "0xaEF8eb4EDCB0177A5ef6a5e3f46E581a5908eef4";
 export const BTTC_ADDRESS = "0xB987640A52415b64E2d19109E8f9d7a3492d5F54";
 
@@ -151,6 +152,7 @@ function AddNominee() {
         console.log("switch case for this case is: " + chainId);
         if (chainId === 80001) {
           const con = new ethers.Contract(CONTRACT_ADDRESS, contract, signer);
+          // const con = await inheritokensInstance();
           const tx = await con.addNomineesDetails(
             userData.name,
             userData.email,

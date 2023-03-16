@@ -244,7 +244,9 @@ contract MultiplePriorityNominee is Ownable {
             ) {
                 if (
                     ownerToTokenToStruct[_owner][_tokenAddress][i].canClaim ==
-                    msg.sender
+                    msg.sender &&
+                    ownerToTokenToStruct[_owner][_tokenAddress][i].isClaimed ==
+                    false
                 ) {
                     uint _share = ownerToTokenToStruct[_owner][_tokenAddress][i]
                         .share;
@@ -265,17 +267,21 @@ contract MultiplePriorityNominee is Ownable {
         } else if (_category == 1) {
             for (
                 uint i = 0;
-                i < ownerToTokenToStruct[_owner][_tokenAddress].length;
+                i < ownerToNFTToStruct[_owner][_tokenAddress][_tokenId].length;
                 i++
             ) {
                 if (
                     ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][i]
-                        .canClaim == msg.sender
+                        .canClaim ==
+                    msg.sender &&
+                    ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][i]
+                        .isClaimed ==
+                    false
                 ) {
                     // function call
                     nftTransferLogic(_owner, _tokenAddress, _tokenId);
 
-                    ownerToTokenToStruct[_owner][_tokenAddress][i]
+                    ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][i]
                         .isClaimed = true;
                     flag = true;
                     break;
@@ -348,6 +354,10 @@ contract MultiplePriorityNominee is Ownable {
         require(
             inheritokens.getOwnerDetails(_owner).recoveryAddress == msg.sender,
             "The recovery address or owner address is incorrect!"
+        );
+        require(
+            !(inheritokens.getIsClaimable(_owner)),
+            "Sorry! You have not replied to us. Your assets may be claimed by the nominee."
         );
         uint _totalToken;
         if (_category == 0) {

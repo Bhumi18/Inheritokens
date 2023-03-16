@@ -58,9 +58,10 @@ function Profile() {
         if (chainId === 80001) {
           // const con = new ethers.Contract(CONTRACT_ADDRESS, contract, signer);
           const con = await inheritokensInstance();
-          console.log(con);
+          // console.log(con);
           const owner_details = await con.getOwnerDetails(address);
-          // console.log(owner_details);
+          console.log(owner_details);
+          setRecoveryAddress(owner_details.recoveryAddress);
           const url = "https://ipfs.io/ipfs/" + owner_details[2];
           data.push([
             owner_details[0],
@@ -246,7 +247,12 @@ function Profile() {
       );
     } else if (showRecoveryEdit) {
       return (
-        <EditWalletRecoveryAdd setRecoveryEdit={setRecoveryEdit} data={data} />
+        <EditWalletRecoveryAdd
+          setRecoveryEdit={setRecoveryEdit}
+          data={data}
+          recoveryAddress={recoveryAddress}
+          setRecoveryAddress={setRecoveryAddress}
+        />
       );
     } else {
       return (
@@ -321,14 +327,14 @@ function Profile() {
                     </p>
                     <div className="recovery-address">
                       {"Recovery Address "}
-                      {recoveryAddress ? (
+                      {recoveryAddress && !showRecoveryEdit ? (
                         <>
                           <span>
-                            {address.substring(0, 6) +
+                            {recoveryAddress.substring(0, 6) +
                               "..." +
-                              address.substring(
-                                address.length - 5,
-                                address.length
+                              recoveryAddress.substring(
+                                recoveryAddress.length - 5,
+                                recoveryAddress.length
                               )}
                           </span>
                           <svg
@@ -338,6 +344,7 @@ function Profile() {
                             viewBox="0 0 24 24"
                             width="18px"
                             fill="#000000"
+                            onClick={() => toggleEditWalletRecoveryAdd()}
                           >
                             <path d="M0 0h24v24H0V0z" fill="none" />
                             <path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />

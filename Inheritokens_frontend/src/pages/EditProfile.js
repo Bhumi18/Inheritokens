@@ -14,6 +14,7 @@ import { ethers } from "ethers";
 import "../styles/signup.scss";
 // import MailSvg from "../components/MailSvg";
 import contract from "../artifacts/Main.json";
+import { inheritokensInstance } from "../components/Contracts";
 export const CONTRACT_ADDRESS = "0xaEF8eb4EDCB0177A5ef6a5e3f46E581a5908eef4";
 export const BTTC_ADDRESS = "0xB987640A52415b64E2d19109E8f9d7a3492d5F54";
 const API_TOKEN =
@@ -25,18 +26,22 @@ function EditProfile({ setShowEditProfile, data }) {
   const profile_picture = useRef();
   const navigate = useNavigate();
   const location = useLocation();
-
-  const [file, setFile] = useState(data[0][3]);
-  const [fileName, setFileName] = useState("");
-  // const [fileCid, setFileCid] = useState("");
+  const nameRef = useRef("");
+  const emailRef = useRef(null);
+  const [file, setFile] = useState("https://ipfs.io/ipfs/" + data[0][3]);
+  const [fileName, setFileName] = useState(data[0][2].split("/")[5]);
+  const [fileChanged, setFileChanged] = useState(false);
   const [btnloading, setbtnLoading] = useState(false);
   const [submitNotClicked, setSubmitNotClicked] = useState(true);
   const [uploaded, setUploaded] = useState("Update");
   const { address, isConnected } = useAccount();
+  const [emailFormatWarn, setEmailFormatWarn] = useState(false);
 
   const [userData, setUserData] = useState({
     name: data[0][0],
     email: data[0][1],
+    cid: data[0][2],
+    fileName: data[0][2].split("/")[0],
   });
   // console.log(location.state.profile_cid);
   async function uploadImage(e) {
@@ -45,11 +50,19 @@ function EditProfile({ setShowEditProfile, data }) {
     setFileName(document.getElementById("input").files[0].name);
     // console.log(URL.createObjectURL(e.target.files[0]));
     setFile(URL.createObjectURL(e.target.files[0]));
+    setFileChanged(true);
   }
 
   async function handleUpload() {
-    // var fileInput = document.getElementById("input");
+    var fileInput = document.getElementById("input");
     // console.log(fileInput);
+    console.log(fileInput.files.length);
+
+    let cid;
+    if (fileInput.files.length > 0) {
+      cid = await client.put(fileInput.files);
+    }
+    console.log(cid);
     // const cid = await client.put(fileInput.files);
     // const rootCid = await client.put(fileInput.files, {
     //   name: "inheritokens",
@@ -65,16 +78,24 @@ function EditProfile({ setShowEditProfile, data }) {
     // const image_cid = cid + "/" + fileName;
     // setUserData({ ...userData, cid: cid + "/" + fileName });
     // setFileCid(files[0].cid);
+    let image_cid;
+    if (fileInput.files.length > 0) {
+      image_cid = cid + "/" + fileName;
+    } else {
+      image_cid = data[0][3];
+    }
+    console.log(image_cid);
+    setUserData({ ...userData, cid: image_cid });
     setUploaded("Image Uploaded");
     setbtnLoading(false);
-    onSuccess();
+    onSuccess(image_cid);
     // setFile(url);
   }
   // const resetFile = () => {
   //   setFile("");
   //   setUploaded("Upload File");
   // };
-  const onSuccess = async () => {
+  const onSuccess = async (image_cid) => {
     //contract code starts here...............................
     try {
       const { ethereum } = window;
@@ -88,14 +109,14 @@ function EditProfile({ setShowEditProfile, data }) {
         const { chainId } = await provider.getNetwork();
         console.log("switch case for this case is: " + chainId);
         if (chainId === 80001) {
-          const con = new ethers.Contract(CONTRACT_ADDRESS, contract, signer);
+          // const con = new ethers.Contract(CONTRACT_ADDRESS, contract, signer);
+          const con = await inheritokensInstance();
           const tx = await con.editOwnerDetails(
-            address,
             userData.name,
             userData.email,
-            data[0][3]
+            image_cid
           );
-          tx.wait();
+          await tx.wait();
         } else if (chainId === 1029) {
           const con = new ethers.Contract(BTTC_ADDRESS, contract, signer);
           const tx = await con.editOwnerDetails(
@@ -126,13 +147,37 @@ function EditProfile({ setShowEditProfile, data }) {
   };
 
   const resetImage = () => {
+    setFileChanged(false);
     setFile("");
     setFileName("");
     // setUploaded("Upload File");
   };
 
+  //email validation function
+
+  const validateEmail = (email) => {
+    const emailFormat =
+      /^([A-Za-z0-9_\-.])+@([A-Za-z0-9_\-.])+\.([A-Za-z]{2,})$/.test(email);
+
+    if (emailFormat) {
+      setEmailFormatWarn(false);
+      return true;
+    } else {
+      setEmailFormatWarn(true);
+      console.log("Please enter valid email");
+      return false;
+    }
+  };
+
   useEffect(() => {
     // console.log(userData);
+    setEmailFormatWarn(false);
+  }, [userData.email]);
+
+  useEffect(() => {
+    // console.log(userData);
+    console.log(data[0][3]);
+    console.log(data[0][2].split("/")[5]);
   }, [userData]);
 
   return (
@@ -158,44 +203,45 @@ function EditProfile({ setShowEditProfile, data }) {
             </svg>
           </div>
           <h2>Edit Profile</h2>
-          {/* <h3>Enter your details</h3> */}
+
           <div action="" className="login-form">
-            <div className="input-outer-div name-input">
+            <div
+              className="input-outer-div name-input"
+              onClick={(e) => {
+                nameRef.current.focus();
+              }}
+            >
               <img src={namepic} alt="nameicon" />
               {/* <MailSvg /> */}
               <input
                 type="text"
                 defaultValue={data[0][0]}
+                ref={nameRef}
                 placeholder="Name"
                 onChange={(e) => {
                   setUserData({ ...userData, name: e.target.value });
                 }}
               />
             </div>
-            {/* <PhoneInput
-              inputExtraProps={{
-                name: "phone",
-                required: true,
-                autoFocus: false,
+
+            <div
+              className="input-outer-div"
+              onClick={(e) => {
+                emailRef.current.focus();
               }}
-              // country={"us"}
-              placeholder="Phone number"
-              value={UserData.contact_number}
-              autoFocus="false"
-              onChange={(e) => setUserData({ ...UserData, contact_number: e })}
-            /> */}
-            <div className="input-outer-div">
+            >
               <img src={emailpic} alt="emailicon" />
               <input
                 type="email"
                 defaultValue={data[0][1]}
+                ref={emailRef}
                 placeholder="Email"
                 onChange={(e) => {
                   setUserData({ ...userData, email: e.target.value });
                 }}
               />
             </div>
-            {/* <div className="input-outer-div file-upload-input">
+            <div className="input-outer-div file-upload-input">
               <img src={profilepic} alt="profileicon" />
               <input
                 className="input-edit-profile"
@@ -246,7 +292,7 @@ function EditProfile({ setShowEditProfile, data }) {
               </>
             ) : null}
             {/* <button className="file-upload-btn">Select Profile Image</button> */}
-            {/* {file && submitNotClicked ? (
+            {file && submitNotClicked ? (
               <>
                 <p className="reset-text">
                   * To reset the file, click on the reset button.
@@ -260,12 +306,23 @@ function EditProfile({ setShowEditProfile, data }) {
               <>
                 <p className="reset-text"></p>
               </>
-            )}  */}
+            )}
             <button
+              className={
+                userData.email === "" ||
+                userData.name === "" ||
+                (userData.name === data[0][0] &&
+                  userData.email === data[0][1] &&
+                  !fileChanged)
+                  ? "disabled"
+                  : ""
+              }
               onClick={() => {
-                handleUpload();
-                setSubmitNotClicked(false);
-                setbtnLoading(true);
+                if (validateEmail(userData.email)) {
+                  handleUpload();
+                  setSubmitNotClicked(false);
+                  setbtnLoading(true);
+                }
               }}
             >
               {btnloading ? (

@@ -36,6 +36,7 @@ contract Inheritokens is Ownable {
     struct Nominee {
         string nominee_name;
         string nominee_email;
+        string nominee_cid;
         address nominee_address;
     }
     mapping(address => mapping(address => Nominee)) public addressToNominee;
@@ -224,6 +225,7 @@ contract Inheritokens is Ownable {
     function addNomineesDetails(
         string memory _name,
         string memory _email,
+        string memory _cid,
         address _nominee
     ) public ownerAdded(msg.sender) emailVerified(msg.sender) {
         require(
@@ -233,6 +235,7 @@ contract Inheritokens is Ownable {
         addressToNominee[msg.sender][_nominee] = Nominee(
             _name,
             _email,
+            _cid,
             _nominee
         );
         addressToOwner[msg.sender].nominees.push(_nominee);
@@ -246,6 +249,7 @@ contract Inheritokens is Ownable {
         address _oldNomineeAddress,
         string memory _name,
         string memory _email,
+        string memory _cid,
         address _newNomineeAddress
     ) public ownerAdded(msg.sender) emailVerified(msg.sender) {
         require(
@@ -263,6 +267,8 @@ contract Inheritokens is Ownable {
                     .nominee_name = _name;
                 addressToNominee[msg.sender][_newNomineeAddress]
                     .nominee_email = _email;
+                addressToNominee[msg.sender][_newNomineeAddress]
+                    .nominee_cid = _cid;
                 addressToNominee[msg.sender][_newNomineeAddress]
                     .nominee_address = _newNomineeAddress;
             }
@@ -337,7 +343,7 @@ contract Inheritokens is Ownable {
             );
         }
         // for NFT
-        else {
+        else if (_category == 1) {
             nftAddressToTokenStruct[_owner][_tokenAddress][_tokenId] = Token(
                 _tokenAddress,
                 _tokenName,

@@ -14,6 +14,7 @@ import { ethers } from "ethers";
 import "../styles/signup.scss";
 // import MailSvg from "../components/MailSvg";
 import contract from "../artifacts/Main.json";
+import { inheritokensInstance } from "../components/Contracts";
 export const CONTRACT_ADDRESS = "0xaEF8eb4EDCB0177A5ef6a5e3f46E581a5908eef4";
 export const BTTC_ADDRESS = "0xB987640A52415b64E2d19109E8f9d7a3492d5F54";
 const API_TOKEN =
@@ -22,21 +23,67 @@ const API_TOKEN =
 const client = new Web3Storage({ token: API_TOKEN });
 
 function EditWalletRecoveryAdd({ setRecoveryEdit }) {
-  const profile_picture = useRef();
+  const w_add = useRef();
   const navigate = useNavigate();
   const location = useLocation();
 
   const [fileName, setFileName] = useState("");
   // const [fileCid, setFileCid] = useState("");
   const [btnloading, setbtnLoading] = useState(false);
+  const [waFormatWarn, setwaFormatWarn] = useState(false);
   const [submitNotClicked, setSubmitNotClicked] = useState(true);
   const [uploaded, setUploaded] = useState("Update");
   const { address, isConnected } = useAccount();
 
   const [userData, setUserData] = useState({
-    name: "",
-    email: "",
+    w_add: "",
   });
+
+  const validateWalletAddress = (wa) => {
+    console.log("inside wa validation");
+    const waFormat = /^0x[a-fA-F0-9]{40}$/g.test(wa);
+    console.log(waFormat);
+
+    if (waFormat) {
+      setwaFormatWarn(false);
+      return true;
+    } else {
+      setwaFormatWarn(true);
+      console.log("Please enter valid Wallet Address");
+      return false;
+    }
+  };
+
+  const handleUpload = async (a) => {
+    if (a) {
+      setSubmitNotClicked(false);
+      setbtnLoading(true);
+      const con = await inheritokensInstance();
+      const tx = await con.addWalletRecovery(
+        "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+      );
+      await tx.wait();
+      console.log("inside handleUpload");
+      setbtnLoading(false);
+      setUploaded("Requesting...");
+    }
+  };
+
+  const handleSubmit = (wa) => {
+    let waVerified = false;
+
+    if (validateWalletAddress(wa)) {
+      waVerified = true;
+    } else {
+      waVerified = false;
+    }
+    handleUpload(waVerified);
+  };
+
+  useEffect(() => {
+    // console.log(userData);
+    setwaFormatWarn(false);
+  }, [userData.w_add]);
 
   return (
     <>
@@ -63,17 +110,34 @@ function EditWalletRecoveryAdd({ setRecoveryEdit }) {
           <h2>Add/Edit Recovery Wallet</h2>
           {/* <h3>Enter your details</h3> */}
           <div action="" className="login-form">
-            <div className="input-outer-div name-input">
+            <div
+              className={
+                waFormatWarn
+                  ? "warning input-outer-div name-input"
+                  : "input-outer-div name-input"
+              }
+              onClick={(e) => {
+                w_add.current.focus();
+              }}
+            >
               <img src={namepic} alt="nameicon" />
               {/* <MailSvg /> */}
               <input
                 type="text"
+                ref={w_add}
                 placeholder="Enter Recovery Wallet Address"
                 onChange={(e) => {
-                  setUserData({ ...userData, name: e.target.value });
+                  setUserData({ ...userData, w_add: e.target.value });
                 }}
               />
             </div>
+            {waFormatWarn ? (
+              <p style={{ color: "red", fontSize: "14px" }}>
+                * Please enter valid Wallet Address
+              </p>
+            ) : (
+              ""
+            )}
 
             {/* <div className="input-outer-div">
               <img src={emailpic} alt="emailicon" />
@@ -86,10 +150,10 @@ function EditWalletRecoveryAdd({ setRecoveryEdit }) {
               />
             </div> */}
             <button
+              className={userData.w_add === "" ? "disabled" : ""}
               onClick={() => {
                 // handleUpload();
-                setSubmitNotClicked(false);
-                setbtnLoading(true);
+                handleSubmit(userData.w_add);
               }}
             >
               {btnloading ? (

@@ -21,69 +21,7 @@ function NomineesListPopupForToken({
   const [index, setIndex] = useState();
   const [indexChild, setIndexChild] = useState();
   const [data, setData] = useState([]);
-  console.log(arr);
-  // const data = [
-  //   {
-  //     img: image,
-  //     name: "Bhumi Sadariya",
-  //     email: "bhumi@gmail.com",
-  //     w_add: "0xeB88DDaEdA226129a8Fisj0137B2ae35aA42A975",
-  //   },
-  //   {
-  //     img: image,
-  //     name: "Jaydip Patel",
-  //     email: "jaydip@gmail.com",
-  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-  //   },
-  //   {
-  //     img: image,
-  //     name: "Lajja Vaniya",
-  //     email: "lajja@gmail.com",
-  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-  //   },
-  //   {
-  //     img: image,
-  //     name: "Deepak Rathore",
-  //     email: "deepak@gmail.com",
-  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-  //   },
-  //   {
-  //     img: image,
-  //     name: "Bhadresh",
-  //     email: "bhadresh@gmail.com",
-  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-  //   },
-  //   {
-  //     img: image,
-  //     name: "Rahul Rajan",
-  //     email: "rahul@gmail.com",
-  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-  //   },
-  //   {
-  //     img: image,
-  //     name: "Aakash Palan",
-  //     email: "akashpalan@gmail.com",
-  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-  //   },
-  //   {
-  //     img: image,
-  //     name: "Adithya",
-  //     email: "adithya@gmail.com",
-  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-  //   },
-  //   {
-  //     img: image,
-  //     name: "Sarvagna Kadiya",
-  //     email: "sarvagna@gmail.com",
-  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-  //   },
-  //   {
-  //     img: image,
-  //     name: "Prashant Suthar",
-  //     email: "prashant@gmail.com",
-  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-  //   },
-  // ];
+
   const showNominees = async () => {
     //contract code starts here...............................
     try {
@@ -113,7 +51,6 @@ function NomineesListPopupForToken({
               !data.find((item) => nominee_details[3] === item.w_add)
             );
             if (!data.find((item) => nominee_details[3] === item.w_add)) {
-              // if (data.length < address_array.length) {
               data.push({
                 name: nominee_details[0],
                 email: nominee_details[1],
@@ -123,8 +60,16 @@ function NomineesListPopupForToken({
             }
           }
           setData(data);
-          setNomineesArr(data);
-          console.log(data);
+          if (arr.length > 0) {
+            let filteredNomineesArr = data.filter((elem) =>
+              arr.every((ele) => ele.w_add !== elem.w_add)
+            );
+            console.log(filteredNomineesArr);
+            setNomineesArr(filteredNomineesArr);
+          } else {
+            setNomineesArr(data);
+          }
+          // console.log(data);
           // setLoading(false);
         } else if (chainId === 1029) {
           const con = new ethers.Contract(BTTC_ADDRESS, contract, signer);
@@ -150,9 +95,15 @@ function NomineesListPopupForToken({
             }
           }
           setData(data);
-          setNomineesArr(data);
-          console.log(data);
-          // setLoading(false);
+          if (arr.length > 0) {
+            let filteredNomineesArr = data.filter((elem) =>
+              arr.every((ele) => ele.w_add !== elem.w_add)
+            );
+            console.log(filteredNomineesArr);
+            setNomineesArr(filteredNomineesArr);
+          } else {
+            setNomineesArr(data);
+          }
         } else {
           alert(
             "Please connect to the mumbai test network or BTTC test network!"

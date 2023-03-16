@@ -56,6 +56,7 @@ function Profile() {
         console.log("switch case for this case is: " + chainId);
         if (chainId === 80001) {
           const con = new ethers.Contract(CONTRACT_ADDRESS, contract, signer);
+          console.log(con);
           const owner_details = await con.getOwnerDetails(address);
           // console.log(owner_details);
           const url = "https://ipfs.io/ipfs/" + owner_details[2];

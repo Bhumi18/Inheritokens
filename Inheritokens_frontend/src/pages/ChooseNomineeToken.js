@@ -707,6 +707,7 @@ function ChooseNomineeToken() {
             setNomineesListPopUp={setNomineesListPopUp}
             setNominatedArrChanged={setArrChanged}
             setTotalUsedRatio={setTotalUsedRatio}
+            totalUsedRatio={totalUsedRatio}
           />
         ) : (
           ""

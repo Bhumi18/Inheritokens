@@ -2,7 +2,6 @@ import React from "react";
 import "../styles/Footer.scss";
 import logo from "../assets/images/logo192.png";
 import logofull from "../assets/images/interitokenslogo2.png";
-import { useNavigate } from "react-router-dom";
 
 function Footer() {
   return (
@@ -12,7 +11,9 @@ function Footer() {
           <img src={logo} className="small-screen" alt="logo" width="32px" />
           <img src={logofull} className="big-screen" alt="logo" width="200px" />
 
-          <span className="big-screen">Copyright © 2022 Inheritokens.com</span>
+          <span className="big-screen">
+            Copyright &#xa9; 2022 Inheritokens.com
+          </span>
         </div>
         <div className="right">
           <div className="social-icon">

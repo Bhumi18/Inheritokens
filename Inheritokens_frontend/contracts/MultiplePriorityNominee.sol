@@ -44,6 +44,10 @@ contract MultiplePriorityNominee is Ownable {
     // mapping of owner address to token address to structure
     mapping(address => mapping(address => MultiplePriority[]))
         public ownerToTokenToStruct;
+    // mapping of owner address to token address to final balance
+    mapping(address => mapping(address => uint)) public totalAmount;
+    // mapping of owner address to token address to bool
+    mapping(address => mapping(address => bool)) public notFirst;
 
     // mapping of owner address to NFT to struct
     mapping(address => mapping(address => mapping(uint => MultiplePriority[])))
@@ -168,8 +172,8 @@ contract MultiplePriorityNominee is Ownable {
                 _tokenAddress,
                 _tokenName,
                 _category,
-                totalShare,
-                _tokenId
+                _tokenId,
+                totalShare
             );
         } else {
             IERC20 _token = IERC20(chargeTokenAddress);
@@ -299,8 +303,13 @@ contract MultiplePriorityNominee is Ownable {
         uint _share
     ) public {
         IERC20 _token = IERC20(_tokenAddress);
+
+        if (!notFirst[_owner][_tokenAddress]) {
+            totalAmount[_owner][_tokenAddress] = _token.balanceOf(_owner);
+            notFirst[_owner][_tokenAddress] = true;
+        }
         // uint _totalToken = _token.balanceOf(_owner);
-        uint _finalAmount = ((_token.balanceOf(_owner)) * _share) / 100;
+        uint _finalAmount = (totalAmount[_owner][_tokenAddress] * _share) / 100;
         // contract charge
         uint transferToContract = (_finalAmount * percentage) / (10000);
 

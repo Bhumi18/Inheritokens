@@ -292,12 +292,12 @@ contract Inheritokens is Ownable {
 
     /// @param _nominee is the nominee address
     /// @return nominee structure
-    function getNomineeDetails(
-        address _owner,
-        address _nominee
-    ) public view returns (Nominee memory) {
-        return addressToNominee[_owner][_nominee];
-    }
+    // function getNomineeDetails(
+    //     address _owner,
+    //     address _nominee
+    // ) public view returns (Nominee memory) {
+    //     return addressToNominee[_owner][_nominee];
+    // }
 
     // charity-------------------------------------------------------------------
 
@@ -307,6 +307,16 @@ contract Inheritokens is Ownable {
     ) public ownerAdded(msg.sender) emailVerified(msg.sender) {
         addressToOwner[msg.sender].charities.push(_charityId);
         emit CharityWhitelisted(msg.sender, _charityId);
+    }
+
+    function removeWhiteListedCharities(uint _charityId) public {
+        uint[] memory temp = addressToOwner[msg.sender].charities;
+        delete addressToOwner[msg.sender].charities;
+        for (uint i = 0; i < temp.length; i++) {
+            if (temp[i] != _charityId) {
+                addressToOwner[msg.sender].charities.push(temp[i]);
+            }
+        }
     }
 
     function getWhiteListedCharities(
@@ -385,18 +395,18 @@ contract Inheritokens is Ownable {
     /// @param _owner is the address of the owner, _tokenAddress is the address of the token, _tokenId is the id of the NFT,
     // _category is the ERC20 or ERC721
     /// @return Token structure
-    function getTokenStruct(
-        address _owner,
-        address _tokenAddress,
-        uint _tokenId,
-        uint _category
-    ) public view returns (Token memory) {
-        if (_category == 0) {
-            return tokenAddressToTokenStruct[_owner][_tokenAddress];
-        } else {
-            return nftAddressToTokenStruct[_owner][_tokenAddress][_tokenId];
-        }
-    }
+    // function getTokenStruct(
+    //     address _owner,
+    //     address _tokenAddress,
+    //     uint _tokenId,
+    //     uint _category
+    // ) public view returns (Token memory) {
+    //     if (_category == 0) {
+    //         return tokenAddressToTokenStruct[_owner][_tokenAddress];
+    //     } else {
+    //         return nftAddressToTokenStruct[_owner][_tokenAddress][_tokenId];
+    //     }
+    // }
 
     // response-----------------------------------------------------
 

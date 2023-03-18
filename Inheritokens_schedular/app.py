@@ -10,6 +10,7 @@ import schedule
 from web3 import Web3
 import json
 from moralis import evm_api
+from datetime import datetime, timedelta
 
 load_dotenv()
 
@@ -158,7 +159,7 @@ def getTransactionDetails():
             and isResponded == False
         ):
             print(contract.functions.getIsClaimable(data[i]).call())
-            break
+
             # get all the ERC20 and ERC721 assets from moralis api
             (t20, t721) = getTokenAddresses(data[i])
 
@@ -181,30 +182,23 @@ def getTransactionDetails():
                 print(assigned_tokens)
 
                 for p in range(0, len(assigned_tokens)):
-                    for q in range(0, len(assigned_tokens[p][1])):
-                        if assigned_tokens[p][2][q] == True:
-                            continue
-                        else:
-                            if no_res_days < (
-                                ((no_of_months_nominee * 30) * (q + 1))
-                                + (no_of_months_mail * 30)
-                            ):
-                                if assigned_tokens[p][3][q] == False:
-                                    nominee_mail = contract.functions.getNomineeDetails(
-                                        assigned_tokens[p][1][q]
-                                    ).call()[1]
-                                    print("nominee number")
-                                    print(q + 1)
-                                    print(nominee_mail)
-                                    # send mail to the nominee********************************************
-                                    break
-                            else:
-                                if (
-                                    assigned_tokens[p][2][q] == False
-                                    and assigned_tokens[p][3][q] == False
-                                ):
-                                    print("set not available in contract")
-                                    # call contract function here********************************************
+                    if assigned_tokens[p][5] == "":
+                        # set date
+                        setDateForNominee(data[i], t20[t], 0, 0, p)
+                    current_date = date.today()
+                    later_date = assigned_tokens[p][5]
+                    if current_date < later_date:
+                        # send mail to the can claim nominee
+                        nominee_details = contract.functions.getNomineeDetails(
+                            data[i], assigned_tokens[p][2]
+                        ).call()
+                        nominee_mail = nominee_details[1]
+                        message = "Hi, Congratulations you are nominated for cryptos!"
+                        sendMail(message, nominee_mail)
+                    else:
+                        # set date and can claim
+                        setDateForNominee(data[i], t20[t], 0, 0, p)
+                        changeCanClaim(data[i], t20[t], 0, 0, p)
 
             temp = [
                 {
@@ -213,40 +207,30 @@ def getTransactionDetails():
                 }
             ]
             print("NFT Part")
-            # get all the structure data from the contract for a given NFT
-            for u in range(len(temp)):
-                assigned_nfts = contract1.functions.getAllStructs(
-                    data[i],
-                    Web3.to_checksum_address(temp[u]["token_address"]),
-                    int(temp[u]["token_id"]),
-                    1,
+            for t in range(len(t721)):
+                assigned_tokens = contract1.functions.getAllStructs(
+                    data[i], Web3.to_checksum_address(t721[t][0]), t721[t][1], 1
                 ).call()
-                print(assigned_nfts)
-
-                for v in range(0, len(assigned_nfts[0][1])):
-                    if assigned_nfts[0][2][v] == True:
-                        continue
+                print(assigned_tokens)
+                # get all the structure data from the contract for a given NFT
+                for p in range(0, len(assigned_tokens)):
+                    if assigned_tokens[p][5] == "":
+                        # set date
+                        setDateForNominee(data[i], t721[t][0], t721[t][1], 1, p)
+                    current_date = date.today()
+                    later_date = assigned_tokens[p][5]
+                    if current_date < later_date:
+                        # send mail to the can claim nominee
+                        nominee_details = contract.functions.getNomineeDetails(
+                            data[i], assigned_tokens[p][2]
+                        ).call()
+                        nominee_mail = nominee_details[1]
+                        message = "Hi, Congratulations you are nominated for cryptos!"
+                        sendMail(message, nominee_mail)
                     else:
-                        if no_res_days < (
-                            ((no_of_months_nominee * 30) * (v + 1))
-                            + (no_of_months_mail * 30)
-                        ):
-                            if assigned_nfts[0][3][v] == False:
-                                nominee_mail = contract.functions.getNomineeDetails(
-                                    assigned_nfts[0][1][v]
-                                ).call()[1]
-                                print("nominee number")
-                                print(v + 1)
-                                print(nominee_mail)
-                                # send mail to the nominee********************************************
-                                break
-                        else:
-                            if (
-                                assigned_nfts[0][2][v] == False
-                                and assigned_nfts[0][3][v] == False
-                            ):
-                                print("set not available in contract")
-                                # call contract function here********************************************
+                        # set date and can claim
+                        setDateForNominee(data[i], t721[t][0], t721[t][1], 1, p)
+                        changeCanClaim(data[i], t721[t][0], t721[t][1], 1, p)
         elif int(no_days) < (no_of_inactive_months * 30):
             print("Active Account!")
         else:
@@ -317,6 +301,53 @@ def setDate(owner):
     return
 
 
+# Function to set date for nominee
+def setDateForNominee(_owner, _tokenAddress, _tokenId, _category, _index):
+    days_after = date.today() + timedelta(days=30)
+    store_transaction = contract.functions.setDateForNominee(
+        _owner, _tokenAddress, _tokenId, _category, days_after, _index
+    ).build_transaction(
+        {
+            "chainId": chain_id,
+            "from": my_address,
+            "nonce": nonce,
+            "gasPrice": web3.eth.gas_price,
+        }
+    )
+    signed_store_txn = web3.eth.account.sign_transaction(
+        store_transaction, private_key=private_key
+    )
+    send_store_tx = web3.eth.send_raw_transaction(signed_store_txn.rawTransaction)
+    print(send_store_tx)
+
+    tx_receipt = web3.eth.wait_for_transaction_receipt(send_store_tx)
+    print(tx_receipt)
+    return
+
+
+# Function to change the canClaim
+def changeCanClaim(_owner, _tokenAddress, _tokenId, _category, _index):
+    store_transaction = contract.functions.changeCanClaim(
+        _owner, _tokenAddress, _tokenId, _category, _index
+    ).build_transaction(
+        {
+            "chainId": chain_id,
+            "from": my_address,
+            "nonce": nonce,
+            "gasPrice": web3.eth.gas_price,
+        }
+    )
+    signed_store_txn = web3.eth.account.sign_transaction(
+        store_transaction, private_key=private_key
+    )
+    send_store_tx = web3.eth.send_raw_transaction(signed_store_txn.rawTransaction)
+    print(send_store_tx)
+
+    tx_receipt = web3.eth.wait_for_transaction_receipt(send_store_tx)
+    print(tx_receipt)
+    return
+
+
 # Function to set owner is not alive in contract
 def setNotAlive(owner):
     store_transaction = contract.functions.setOwnerNotAlive(owner).buildTransaction(
@@ -354,15 +385,20 @@ def sendMail(message, email):
 
 
 def sayHello():
-    print("hello")
+    current_date = date.today()
+    days_after = date.today() + timedelta(days=30)
+    print((current_date))
+    print(days_after)
+    print(str(days_after > current_date))
 
 
 # getTransactionDetails()
 # call function every day
 # schedule.every(2).minutes.do(getTransactionDetails)
 # schedule.every(1).minutes.do(sayHello)
-getTransactionDetails()
+# getTransactionDetails()
 # getTokenAddresses()
+sayHello()
 
 # while True:
 #     schedule.run_pending()

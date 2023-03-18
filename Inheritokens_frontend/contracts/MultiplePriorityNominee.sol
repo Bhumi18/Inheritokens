@@ -40,6 +40,7 @@ contract MultiplePriorityNominee is Ownable {
         address canClaim;
         address[] nominee;
         bool isClaimed;
+        string claimingDate;
     }
     // mapping of owner address to token address to structure
     mapping(address => mapping(address => MultiplePriority[]))
@@ -394,6 +395,79 @@ contract MultiplePriorityNominee is Ownable {
         tokenCharge = _tokenCharge;
         nftCharge = _nftCharge;
         percentage = _percentage;
+    }
+
+    function setDateForNominee(
+        address _owner,
+        address _tokenAddress,
+        uint _tokenId,
+        uint _category,
+        string memory _date,
+        uint _index
+    ) public {
+        if (_category == 0) {
+            ownerToTokenToStruct[_owner][_tokenAddress][_index]
+                .claimingDate = _date;
+        } else if (_category == 1) {
+            ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][_index]
+                .claimingDate = _date;
+        }
+    }
+
+    function changeCanClaim(
+        address _owner,
+        address _tokenAddress,
+        uint _tokenId,
+        uint _category,
+        uint _index
+    ) public {
+        if (_category == 0) {
+            address temp = ownerToTokenToStruct[_owner][_tokenAddress][_index]
+                .canClaim;
+            for (
+                uint i = 0;
+                i <
+                ownerToTokenToStruct[_owner][_tokenAddress][_index]
+                    .nominee
+                    .length -
+                    1;
+                i++
+            ) {
+                if (
+                    ownerToTokenToStruct[_owner][_tokenAddress][_index].nominee[
+                        i
+                    ] == temp
+                ) {
+                    ownerToTokenToStruct[_owner][_tokenAddress][_index]
+                        .canClaim = ownerToTokenToStruct[_owner][_tokenAddress][
+                        _index
+                    ].nominee[i + 1];
+                }
+            }
+        } else if (_category == 1) {
+            address temp = ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][
+                _index
+            ].canClaim;
+            for (
+                uint i = 0;
+                i <
+                ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][_index]
+                    .nominee
+                    .length -
+                    1;
+                i++
+            ) {
+                if (
+                    ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][_index]
+                        .nominee[i] == temp
+                ) {
+                    ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][_index]
+                        .canClaim = ownerToNFTToStruct[_owner][_tokenAddress][
+                        _tokenId
+                    ][_index].nominee[i + 1];
+                }
+            }
+        }
     }
 
     function getAllStructs(

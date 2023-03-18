@@ -395,4 +395,17 @@ contract MultiplePriorityNominee is Ownable {
         nftCharge = _nftCharge;
         percentage = _percentage;
     }
+
+    function getAllStructs(
+        address _owner,
+        address _tokenAddress,
+        uint _tokenId,
+        uint _category
+    ) public view returns (MultiplePriority[] memory) {
+        if (_category == 0) {
+            return ownerToTokenToStruct[_owner][_tokenAddress];
+        } else if (_category == 1) {
+            return ownerToNFTToStruct[_owner][_tokenAddress][_tokenId];
+        }
+    }
 }

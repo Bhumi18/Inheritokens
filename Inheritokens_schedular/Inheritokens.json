@@ -287,6 +287,11 @@
         "type": "string"
       },
       {
+        "internalType": "string",
+        "name": "_cid",
+        "type": "string"
+      },
+      {
         "internalType": "address",
         "name": "_nominee",
         "type": "address"
@@ -339,6 +344,11 @@
         "internalType": "address",
         "name": "",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
     "name": "addressToNominee",
@@ -351,6 +361,11 @@
       {
         "internalType": "string",
         "name": "nominee_email",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "nominee_cid",
         "type": "string"
       },
       {
@@ -399,7 +414,7 @@
       },
       {
         "internalType": "bool",
-        "name": "isAlive",
+        "name": "isClaimable",
         "type": "bool"
       },
       {
@@ -548,6 +563,11 @@
         "type": "string"
       },
       {
+        "internalType": "string",
+        "name": "_cid",
+        "type": "string"
+      },
+      {
         "internalType": "address",
         "name": "_newNomineeAddress",
         "type": "address"
@@ -623,33 +643,16 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_nominee",
+        "name": "_owner",
         "type": "address"
       }
     ],
-    "name": "getNomineeDetails",
+    "name": "getIsClaimable",
     "outputs": [
       {
-        "components": [
-          {
-            "internalType": "string",
-            "name": "nominee_name",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "nominee_email",
-            "type": "string"
-          },
-          {
-            "internalType": "address",
-            "name": "nominee_address",
-            "type": "address"
-          }
-        ],
-        "internalType": "struct Inheritokens.Nominee",
+        "internalType": "bool",
         "name": "",
-        "type": "tuple"
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -694,7 +697,7 @@
           },
           {
             "internalType": "bool",
-            "name": "isAlive",
+            "name": "isClaimable",
             "type": "bool"
           },
           {
@@ -755,72 +758,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_owner",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_tokenAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_tokenId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_category",
-        "type": "uint256"
-      }
-    ],
-    "name": "getTokenStruct",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "address",
-            "name": "token_address",
-            "type": "address"
-          },
-          {
-            "internalType": "string",
-            "name": "token_name",
-            "type": "string"
-          },
-          {
-            "internalType": "uint256",
-            "name": "category",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "token_id",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "allocated_share",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bool",
-            "name": "isNominated",
-            "type": "bool"
-          }
-        ],
-        "internalType": "struct Inheritokens.Token",
-        "name": "",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "getTotalOwners",
     "outputs": [
@@ -854,6 +791,11 @@
   },
   {
     "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
       {
         "internalType": "address",
         "name": "",
@@ -977,8 +919,34 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_charityId",
+        "type": "uint256"
+      }
+    ],
+    "name": "removeWhiteListedCharities",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_contract",
+        "type": "address"
+      }
+    ],
+    "name": "setMultiplePriorityAddress",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1130,7 +1098,13 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      }
+    ],
     "name": "verifyOwnerEmail",
     "outputs": [],
     "stateMutability": "nonpayable",

@@ -20,14 +20,14 @@ web3 = Web3(Web3.HTTPProvider(alchemy_url))
 
 # inheritokens contract set up
 
-inheritokens_factory = "0xAE10a756BDCabA70ab9F13736fAf0DE4B2b3f4D7"
+inheritokens_factory = "0xBa9294771806D6909A3FD9C5b5240d71927Dfd2e"
 file = open("D:/Lampros Projects/Inheritokens/Inheritokens_schedular/Inheritokens.json")
 abi = json.load(file)
 contract = web3.eth.contract(address=inheritokens_factory, abi=abi)
 
 # multiple nominee contract set up
 
-multiple_nominee = "0x6a13Ab26Beb794247c5CfB4ADdA8a17Cc90CCf61"
+multiple_nominee = "0x9D4be64f5732bcaf6dB88998189D8B30BD84a4fF"
 file1 = open(
     "D:/Lampros Projects/Inheritokens/Inheritokens_schedular/MultipleNominee.json"
 )
@@ -47,212 +47,210 @@ nonce = web3.eth.get_transaction_count(my_address)
 def getTransactionDetails():
     # get all owners available on platform (address)
     data = contract.functions.getOwners().call()
-    # print(data)
+    print(data)
 
     # loop through owners
     for i in range(len(data)):
         # check owner is alive or not from contract
         owner_struct = contract.functions.getOwnerDetails(data[i]).call()
-        isAlive = owner_struct[5]
-        # print(isAlive)
 
-        if isAlive:
-            # check for inactivity of an account using moralis api
-            url = "https://deep-index.moralis.io/api/v2/" + data[i] + "?chain=mumbai"
-            headers = {"accept": "application/json", "X-API-Key": moralis_api_key}
-            response = requests.get(url, headers=headers)
-            json_data = response.json()
-            last_transaction = ""
+        # check for inactivity of an account using moralis api
+        url = "https://deep-index.moralis.io/api/v2/" + data[i] + "?chain=mumbai"
+        headers = {"accept": "application/json", "X-API-Key": moralis_api_key}
+        response = requests.get(url, headers=headers)
+        json_data = response.json()
+        last_transaction = ""
 
-            # get the block timestamp of the latest transaction done by owner
-            for j in range(len(json_data["result"])):
-                if json_data["result"][j]["from_address"].lower() == data[i].lower():
-                    last_transaction = json_data["result"][j]["block_timestamp"]
-                    break
-            # print(last_transaction)
+        # get the block timestamp of the latest transaction done by owner
+        for j in range(len(json_data["result"])):
+            if json_data["result"][j]["from_address"].lower() == data[i].lower():
+                last_transaction = json_data["result"][j]["block_timestamp"]
+                break
+        # print(last_transaction)
 
-            # last_transaction = "2023-02-19"
+        # last_transaction = "2023-02-19"
 
-            # convert timestamp into the proper date format
-            trans_month = last_transaction[5:7]
-            trans_year = last_transaction[:4]
-            trans_date = last_transaction[8:10]
-            last_trans_date = date(int(trans_year), int(trans_month), int(trans_date))
-            # print(last_trans_date)
+        # convert timestamp into the proper date format
+        trans_month = last_transaction[5:7]
+        trans_year = last_transaction[:4]
+        trans_date = last_transaction[8:10]
+        last_trans_date = date(int(trans_year), int(trans_month), int(trans_date))
+        # print(last_trans_date)
 
-            # find the difference between the current date and the converted timestamp date
-            today = date.today()
-            # print(today)
-            difference = str(today - last_trans_date)
-            # print(difference)
-            no_days = difference.split(" ")[0]
-            # print(no_days)
-            if no_days == "0:00:00":
-                no_days = 0
-            # print(no_days)
+        # find the difference between the current date and the converted timestamp date
+        today = date.today()
+        # print(today)
+        difference = str(today - last_trans_date)
+        # print(difference)
+        no_days = difference.split(" ")[0]
+        # print(no_days)
+        if no_days == "0:00:00":
+            no_days = 0
+        print("difference between current date and last transaction")
+        print(no_days)
 
-            # get email of owner from contract, and no of months owner wants to wait
-            owner_email = owner_struct[1]
-            # print(owner_email)
-            no_of_inactive_months = owner_struct[10]
-            # print(no_of_inactive_months)
-            no_of_months_mail = owner_struct[11]
-            # print(no_of_months_mail)
-            no_of_months_nominee = owner_struct[12]
-            # print(no_of_months_nominee)
+        # get email of owner from contract, and no of months owner wants to wait
+        owner_email = owner_struct[1]
+        # print(owner_email)
+        no_of_inactive_months = owner_struct[10]
+        # print(no_of_inactive_months)
+        no_of_months_mail = owner_struct[11]
+        # print(no_of_months_mail)
+        no_of_months_nominee = owner_struct[12]
+        # print(no_of_months_nominee)
 
-            # get all nominees
-            all_nominees = owner_struct[8]
-            # print(all_nominees)
+        # get all nominees
+        all_nominees = owner_struct[8]
+        # print(all_nominees)
 
-            # get response date and whether owner has responded or not from contract
-            response_date = owner_struct[3]
-            isResponded = owner_struct[6]
-            # print(response_date)
-            # print(isResponded)
+        # get response date and whether owner has responded or not from contract
+        response_date = owner_struct[3]
+        isResponded = owner_struct[6]
+        # print(response_date)
+        # print(isResponded)
+        # response_date = "2023-02-19"
 
-            if response_date == "":
-                # print("no res date")
+        if response_date == "":
+            # print("no res date")
+            no_res_days = 0
+        else:
+            # convert response date into proper date format
+            res_month = response_date[5:7]
+            res_year = response_date[:4]
+            res_date = response_date[8:]
+            # print((response_date))
+            temp_date = date(int(res_year), int(res_month), int(res_date))
+
+            # find the difference between the current date and the converted response date
+            today_date = date.today()
+            difference_date = str(today_date - temp_date)
+            no_res_days = difference_date.split(" ")[0]
+
+            if no_res_days == "0:00:00":
                 no_res_days = 0
-            else:
-                # convert response date into proper date format
-                res_month = response_date[5:7]
-                res_year = response_date[:4]
-                res_date = response_date[8:]
-                print((response_date))
-                temp_date = date(int(res_year), int(res_month), int(res_date))
+        print("since how many days we are sending mail to the owner")
+        print(no_res_days)
 
-                # find the difference between the current date and the converted response date
-                today_date = date.today()
-                difference_date = str(today_date - temp_date)
-                no_res_days = difference_date.split(" ")[0]
+        no_days = 31
+        no_res_days = 31
 
-                if no_res_days == "0:00:00":
-                    no_res_days = 0
-            print(no_res_days)
+        # owner's account is not active, owner's time period is not complete, owner has not responded yet, send mail to the owner
+        if (
+            int(no_days) > (no_of_inactive_months * 30)
+            and int(no_res_days) < no_of_months_mail * 30
+            and isResponded == False
+        ):
+            # response date is null then set the response date
+            if response_date == "":
+                print("call contract function")
+                setDate(data[i])
+                print("called")
 
-            no_days = 31
-            no_res_days = 61
+            # send mail to the owner--------------------------------------
+            # message = "Please tell me you are doing fine"
+            # sendMail(message, email)
+            print("Please tell me you are doing fine")
 
-            # owner's account is not active, owner's time period is not complete, owner has not responded yet, send mail to the owner
-            if (
-                int(no_days) > (no_of_inactive_months * 30)
-                and int(no_res_days) < no_of_months_mail * 30
-                and isResponded == False
-            ):
-                # response date is null then set the response date
-                if response_date == "":
-                    print("call contract function")
-                    # setDate(data[i])
-                    print("called")
+        # owner's account is not active, owner's time period is completed, owner has not responded, send mail to the nominee
+        elif (
+            int(no_days) > ((no_of_inactive_months * 30))
+            and int(no_res_days) > no_of_months_mail * 30
+            and isResponded == False
+        ):
+            print(contract.functions.getIsClaimable(data[i]).call())
+            break
+            # get all the ERC20 and ERC721 assets from moralis api
+            (t20, t721) = getTokenAddresses(data[i])
 
-                # send mail to the owner
-                # message = "Please tell me you are doing fine"
-                # sendMail(message, email)
-                print("Please tell me you are doing fine")
+            print("Nominee Part")
+            # print(t20)
+            # print(t721)
 
-            # owner's account is not active, owner's time period is completed, owner has not responded, send mail to the nominee
-            elif (
-                int(no_days) > ((no_of_inactive_months * 30))
-                and int(no_res_days) > no_of_months_mail * 30
-                and isResponded == False
-            ):
-                # get all the ERC20 and ERC721 assets from moralis api
-                (t20, t721) = getTokenAddresses(data[i])
+            # for i in range(len(data2)):
+            #     data3 = contract.functions.getNomineeDetails(data2[i]).call()
+            #     nominee_email.append(data3[2])
+            #     message = "Hi, Congratulations you are nominated for cryptos!"
+            #     sendMail(message, data3[2])
+            # setNotAlive(data[i])
 
-                print("more than 1 month")
-                # print(t20)
-                # print(t721)
+            # get all the structure data from the contract for a given token
+            for t in range(len(t20)):
+                assigned_tokens = contract1.functions.getAllStructs(
+                    data[i], Web3.to_checksum_address(t20[t]), 0, 0
+                ).call()
+                print(assigned_tokens)
 
-                #             # for i in range(len(data2)):
-                #             #     data3 = contract.functions.getNomineeDetails(data2[i]).call()
-                #             #     nominee_email.append(data3[2])
-                #             #     message = "Hi, Congratulations you are nominated for cryptos!"
-                #             #     sendMail(message, data3[2])
-                #             # setNotAlive(data[i])
-
-                # get all the structure data from the contract for a given token
-                for t in range(len(t20)):
-                    assigned_tokens = contract1.functions.getAllStructs(
-                        data[i], Web3.to_checksum_address(t20[t]), 0, 0
-                    ).call()
-                    print(assigned_tokens)
-
-                    for p in range(0, len(assigned_tokens)):
-                        for q in range(0, len(assigned_tokens[p][1])):
-                            if assigned_tokens[p][2][q] == True:
-                                continue
-                            else:
-                                if no_res_days < (
-                                    ((no_of_months_nominee * 30) * (q + 1))
-                                    + (no_of_months_mail * 30)
-                                ):
-                                    if assigned_tokens[p][3][q] == False:
-                                        nominee_mail = (
-                                            contract.functions.getNomineeDetails(
-                                                assigned_tokens[p][1][q]
-                                            ).call()[1]
-                                        )
-                                        print("nominee number")
-                                        print(q + 1)
-                                        print(nominee_mail)
-                                        # send mail to the nominee********************************************
-                                        break
-                                else:
-                                    if (
-                                        assigned_tokens[p][2][q] == False
-                                        and assigned_tokens[p][3][q] == False
-                                    ):
-                                        print("set not available in contract")
-                                        # call contract function here********************************************
-
-                temp = [
-                    {
-                        "token_address": "0x619ae6538afb1fb0275583791f6f2d9faa278b42",
-                        "token_id": "16",
-                    }
-                ]
-                print("NFT Part")
-                # get all the structure data from the contract for a given NFT
-                for u in range(len(temp)):
-                    assigned_nfts = contract1.functions.getAllStructs(
-                        data[i],
-                        Web3.to_checksum_address(temp[u]["token_address"]),
-                        int(temp[u]["token_id"]),
-                        1,
-                    ).call()
-                    print(assigned_nfts)
-
-                    for v in range(0, len(assigned_nfts[0][1])):
-                        if assigned_nfts[0][2][v] == True:
+                for p in range(0, len(assigned_tokens)):
+                    for q in range(0, len(assigned_tokens[p][1])):
+                        if assigned_tokens[p][2][q] == True:
                             continue
                         else:
                             if no_res_days < (
-                                ((no_of_months_nominee * 30) * (v + 1))
+                                ((no_of_months_nominee * 30) * (q + 1))
                                 + (no_of_months_mail * 30)
                             ):
-                                if assigned_nfts[0][3][v] == False:
+                                if assigned_tokens[p][3][q] == False:
                                     nominee_mail = contract.functions.getNomineeDetails(
-                                        assigned_nfts[0][1][v]
+                                        assigned_tokens[p][1][q]
                                     ).call()[1]
                                     print("nominee number")
-                                    print(v + 1)
+                                    print(q + 1)
                                     print(nominee_mail)
                                     # send mail to the nominee********************************************
                                     break
                             else:
                                 if (
-                                    assigned_nfts[0][2][v] == False
-                                    and assigned_nfts[0][3][v] == False
+                                    assigned_tokens[p][2][q] == False
+                                    and assigned_tokens[p][3][q] == False
                                 ):
                                     print("set not available in contract")
                                     # call contract function here********************************************
-            elif int(no_days) < (no_of_inactive_months * 30):
-                print("Active Account!")
-            else:
-                print("responded!")
+
+            temp = [
+                {
+                    "token_address": "0x619ae6538afb1fb0275583791f6f2d9faa278b42",
+                    "token_id": "16",
+                }
+            ]
+            print("NFT Part")
+            # get all the structure data from the contract for a given NFT
+            for u in range(len(temp)):
+                assigned_nfts = contract1.functions.getAllStructs(
+                    data[i],
+                    Web3.to_checksum_address(temp[u]["token_address"]),
+                    int(temp[u]["token_id"]),
+                    1,
+                ).call()
+                print(assigned_nfts)
+
+                for v in range(0, len(assigned_nfts[0][1])):
+                    if assigned_nfts[0][2][v] == True:
+                        continue
+                    else:
+                        if no_res_days < (
+                            ((no_of_months_nominee * 30) * (v + 1))
+                            + (no_of_months_mail * 30)
+                        ):
+                            if assigned_nfts[0][3][v] == False:
+                                nominee_mail = contract.functions.getNomineeDetails(
+                                    assigned_nfts[0][1][v]
+                                ).call()[1]
+                                print("nominee number")
+                                print(v + 1)
+                                print(nominee_mail)
+                                # send mail to the nominee********************************************
+                                break
+                        else:
+                            if (
+                                assigned_nfts[0][2][v] == False
+                                and assigned_nfts[0][3][v] == False
+                            ):
+                                print("set not available in contract")
+                                # call contract function here********************************************
+        elif int(no_days) < (no_of_inactive_months * 30):
+            print("Active Account!")
         else:
-            print("not alive")
+            print("responded!")
 
 
 # Function to get all the token address

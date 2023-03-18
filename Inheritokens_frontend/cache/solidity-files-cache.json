@@ -290,8 +290,8 @@
       ]
     },
     "D:\\Lampros Projects\\Inheritokens\\Inheritokens_frontend\\contracts\\MultiplePriorityNominee.sol": {
-      "lastModificationDate": 1678964721561,
-      "contentHash": "4cdf4d8b63780b6d20660d950d41e90a",
+      "lastModificationDate": 1678970565686,
+      "contentHash": "ef2170930398ee811022c4850b62f8b0",
       "sourceName": "contracts/MultiplePriorityNominee.sol",
       "solcConfig": {
         "version": "0.8.17",

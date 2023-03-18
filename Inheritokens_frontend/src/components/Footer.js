@@ -43,7 +43,9 @@ function Footer() {
         </div>
       </div>
       <div className="big-screen-copyright">
-        <span className="small-screen">Copyright © 2022 Inheritokens.com</span>
+        <span className="small-screen">
+          Copyright &#xa9; 2022 Inheritokens.com
+        </span>
       </div>
     </div>
   );

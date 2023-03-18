@@ -22,12 +22,13 @@ const API_TOKEN =
 
 const client = new Web3Storage({ token: API_TOKEN });
 
-function EditWalletRecoveryAdd({ setRecoveryEdit }) {
+function EditWalletRecoveryAdd({
+  setRecoveryEdit,
+  recoveryAddress,
+  setRecoveryAddress,
+}) {
   const w_add = useRef();
-  const navigate = useNavigate();
-  const location = useLocation();
 
-  const [fileName, setFileName] = useState("");
   // const [fileCid, setFileCid] = useState("");
   const [btnloading, setbtnLoading] = useState(false);
   const [waFormatWarn, setwaFormatWarn] = useState(false);
@@ -38,6 +39,8 @@ function EditWalletRecoveryAdd({ setRecoveryEdit }) {
   const [userData, setUserData] = useState({
     w_add: "",
   });
+  const [error, setError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const validateWalletAddress = (wa) => {
     console.log("inside wa validation");
@@ -56,20 +59,31 @@ function EditWalletRecoveryAdd({ setRecoveryEdit }) {
 
   const handleUpload = async (a) => {
     if (a) {
-      setSubmitNotClicked(false);
-      setbtnLoading(true);
-      const con = await inheritokensInstance();
-      const tx = await con.addWalletRecovery(
-        "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
-      );
-      await tx.wait();
-      console.log("inside handleUpload");
-      setbtnLoading(false);
-      setUploaded("Requesting...");
+      try {
+        setSubmitNotClicked(false);
+        setbtnLoading(true);
+
+        const con = await inheritokensInstance();
+        const tx = await con.addWalletRecovery(userData.w_add);
+        await tx.wait();
+        console.log("Wallet recovery address added successfully");
+        setRecoveryAddress(userData.w_add);
+        setbtnLoading(false);
+        setRecoveryEdit(false);
+      } catch (error) {
+        setbtnLoading(false);
+        setUploaded("Update");
+        let msg = error.message.split("(")[0];
+        setErrorMsg(msg);
+        setError(true);
+        console.log(error.message);
+      }
     }
   };
 
   const handleSubmit = (wa) => {
+    setError(false);
+    setErrorMsg("");
     let waVerified = false;
 
     if (validateWalletAddress(wa)) {
@@ -82,6 +96,8 @@ function EditWalletRecoveryAdd({ setRecoveryEdit }) {
 
   useEffect(() => {
     // console.log(userData);
+    setError(false);
+    setErrorMsg("");
     setwaFormatWarn(false);
   }, [userData.w_add]);
 
@@ -125,7 +141,7 @@ function EditWalletRecoveryAdd({ setRecoveryEdit }) {
               <input
                 type="text"
                 ref={w_add}
-                placeholder="Enter Recovery Wallet Address"
+                defaultValue={recoveryAddress}
                 onChange={(e) => {
                   setUserData({ ...userData, w_add: e.target.value });
                 }}
@@ -150,7 +166,11 @@ function EditWalletRecoveryAdd({ setRecoveryEdit }) {
               />
             </div> */}
             <button
-              className={userData.w_add === "" ? "disabled" : ""}
+              className={
+                userData.w_add === "" || userData.w_add === recoveryAddress
+                  ? "disabled"
+                  : ""
+              }
               onClick={() => {
                 // handleUpload();
                 handleSubmit(userData.w_add);
@@ -172,6 +192,13 @@ function EditWalletRecoveryAdd({ setRecoveryEdit }) {
                 <>{uploaded}</>
               )}
             </button>
+            {error ? (
+              <p style={{ color: "red", fontSize: "14px" }}>
+                {"* " + errorMsg}
+              </p>
+            ) : (
+              ""
+            )}
           </div>
         </div>
       </section>

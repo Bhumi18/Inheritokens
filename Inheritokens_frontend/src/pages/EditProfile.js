@@ -61,6 +61,7 @@ function EditProfile({ setShowEditProfile, data }) {
     let cid;
     if (fileInput.files.length > 0) {
       cid = await client.put(fileInput.files);
+      setUploaded("Image Uploaded");
     }
     console.log(cid);
     // const cid = await client.put(fileInput.files);
@@ -86,7 +87,7 @@ function EditProfile({ setShowEditProfile, data }) {
     }
     console.log(image_cid);
     setUserData({ ...userData, cid: image_cid });
-    setUploaded("Image Uploaded");
+    setUploaded("Requesting...");
     setbtnLoading(false);
     onSuccess(image_cid);
     // setFile(url);

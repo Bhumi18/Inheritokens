@@ -151,8 +151,8 @@ function AddNominee() {
         const { chainId } = await provider.getNetwork();
         console.log("switch case for this case is: " + chainId);
         if (chainId === 80001) {
-          const con = new ethers.Contract(CONTRACT_ADDRESS, contract, signer);
-          // const con = await inheritokensInstance();
+          // const con = new ethers.Contract(CONTRACT_ADDRESS, contract, signer);
+          const con = await inheritokensInstance();
           const tx = await con.addNomineesDetails(
             userData.name,
             userData.email,

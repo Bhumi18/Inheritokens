@@ -4,6 +4,7 @@ import "../styles/NomineesListPopupForToken.scss";
 import contract from "../artifacts/Main.json";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
+import { inheritokensInstance } from "./Contracts";
 export const CONTRACT_ADDRESS = "0xaEF8eb4EDCB0177A5ef6a5e3f46E581a5908eef4";
 export const BTTC_ADDRESS = "0xB987640A52415b64E2d19109E8f9d7a3492d5F54";
 
@@ -35,12 +36,14 @@ function NomineesListPopupForToken({
         const { chainId } = await provider.getNetwork();
         console.log("switch case for this case is: " + chainId);
         if (chainId === 80001) {
-          const con = new ethers.Contract(CONTRACT_ADDRESS, contract, signer);
-          const address_array = await con.getNominees(address);
+          // const con = new ethers.Contract(CONTRACT_ADDRESS, contract, signer);
+          const con = await inheritokensInstance();
+          const address_array = await con.getOwnerDetails(address);
           // console.log(address_array);
-          for (let i = 0; i < address_array.length; i++) {
+          for (let i = 0; i < address_array[8].length; i++) {
             // console.log(address_array[i]);
-            const nominee_details = await con.getNomineeDetails(
+            const nominee_details = await con.addressToNominee(
+              address,
               address_array[i]
             );
             // console.log(nominee_details[0]);

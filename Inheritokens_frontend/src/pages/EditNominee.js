@@ -17,6 +17,7 @@ import { useAccount } from "wagmi";
 import { ethers } from "ethers";
 
 import contract from "../artifacts/Main.json";
+import { inheritokensInstance } from "../components/Contracts";
 export const CONTRACT_ADDRESS = "0xaEF8eb4EDCB0177A5ef6a5e3f46E581a5908eef4";
 export const BTTC_ADDRESS = "0xB987640A52415b64E2d19109E8f9d7a3492d5F54";
 
@@ -29,14 +30,16 @@ function EditNominee() {
   const nameRef = useRef("");
   const emailRef = useRef(null);
   const waRef = useRef(null);
-
+  const profile_picture = useRef(null);
   const location = useLocation();
 
   const navigate = useNavigate();
 
   const [file, setFile] = useState(location.state.profile_cid);
   // console.log(location.state.profile_cid);
-  const [fileName, setFileName] = useState("");
+  const [fileName, setFileName] = useState(
+    location.state.profile_cid.split("/")[5]
+  );
   // const [fileCid, setFileCid] = useState("");
   const [emailFormatWarn, setEmailFormatWarn] = useState(false);
   const [waFormatWarn, setwaFormatWarn] = useState(false);
@@ -51,6 +54,7 @@ function EditNominee() {
     name: location.state.name,
     email: location.state.email,
     wallet_address: location.state.walletAddress,
+    profile_cid: location.state.profile_cid,
   });
 
   async function uploadImage(e) {
@@ -65,8 +69,24 @@ function EditNominee() {
     if (a && b) {
       setSubmitNotClicked(false);
       setbtnLoading(true);
-      // var fileInput = document.getElementById("input");
+      var fileInput = document.getElementById("input");
       // console.log(fileInput);
+      console.log(fileInput.files.length);
+
+      let cid;
+
+      if (fileInput.files.length > 0) {
+        cid = await client.put(fileInput.files);
+      }
+
+      let image_cid;
+      if (fileInput.files.length > 0) {
+        image_cid = cid + "/" + fileName;
+      } else {
+        image_cid = location.state.profile_cid;
+        console.log(image_cid);
+      }
+      console.log(cid);
       // const rootCid = await client.put(fileInput.files, {
       //   name: "inheritokens profile images",
       //   maxRetries: 3,
@@ -80,14 +100,19 @@ function EditNominee() {
       // console.log(files[0].cid);
       // setUserData({ ...userData, cid: files[0].cid });
       // setFileCid(files[0].cid);
+
+      console.log(image_cid);
+      setUserData({ ...userData, profile_cid: image_cid });
+      setUploaded("Image Uploaded");
+      setbtnLoading(false);
       setUploaded("Requesting...");
       setbtnLoading(false);
-      onSuccess();
+      onSuccess(image_cid);
     }
     // setFile(url);
   }
 
-  const onSuccess = async () => {
+  const onSuccess = async (image_cid) => {
     //contract code starts here...............................
     try {
       const { ethereum } = window;
@@ -101,12 +126,13 @@ function EditNominee() {
         const { chainId } = await provider.getNetwork();
         console.log("switch case for this case is: " + chainId);
         if (chainId === 80001) {
-          const con = new ethers.Contract(CONTRACT_ADDRESS, contract, signer);
+          // const con = new ethers.Contract(CONTRACT_ADDRESS, contract, signer);
+          const con = await inheritokensInstance();
           const tx = await con.editNomineeDetails(
-            address,
             location.state.walletAddress,
             userData.name,
             userData.email,
+            image_cid,
             userData.wallet_address
           );
           await tx.wait();
@@ -297,7 +323,7 @@ function EditNominee() {
             ) : (
               ""
             )}
-            {/* <div className="input-outer-div">
+            <div className="input-outer-div">
               <img src={profilepic} alt="profileicon" />
               <input
                 className="input-edit-profile"
@@ -337,17 +363,17 @@ function EditNominee() {
                   Choose file
                 </p>
               )}
-            </div> */}
-            {/* {file ? (
+            </div>
+            {file ? (
               <>
                 <div className="file-upload-div">
                   <img src={file} className="uploaded-img" alt="uploadsvg" />
                   <p></p>{" "}
                 </div>
               </>
-            ) : null} */}
+            ) : null}
             {/* <button className="file-upload-btn">Select Profile Image</button> */}
-            {/* {file && submitNotClicked ? (
+            {file && submitNotClicked ? (
               <>
                 <p className="reset-text">
                   * To reset the file, click on the reset button.
@@ -361,7 +387,7 @@ function EditNominee() {
               <>
                 <p className="reset-text"></p>
               </>
-            )} */}
+            )}
             <button
               className={
                 userData.email === location.state.email &&

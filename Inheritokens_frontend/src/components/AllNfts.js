@@ -9,6 +9,10 @@ import { useAccount } from "wagmi";
 import { ethers } from "ethers";
 import contract from "../artifacts/Main.json";
 import { useNavigate } from "react-router-dom";
+import {
+  inheritokensInstance,
+  MultiplePriorityNomineeInstance,
+} from "./Contracts";
 export const CONTRACT_ADDRESS = "0xaEF8eb4EDCB0177A5ef6a5e3f46E581a5908eef4";
 
 function AllNfts({ nftData }) {
@@ -45,14 +49,23 @@ function AllNfts({ nftData }) {
         setCheckChainId(chainId);
         // console.log("switch case for this case is: " + chainId);
         if (chainId === 80001) {
-          const con = new ethers.Contract(CONTRACT_ADDRESS, contract, signer);
+          // const con = new ethers.Contract(CONTRACT_ADDRESS, contract, signer);
+          const con2 = await inheritokensInstance();
+
           for (let i = 0; i < nftData.length; i++) {
             // const nft = JSON.parse(item.metadata);
+            console.log(nftData[i]);
             const nft = JSON.parse(nftData[i].metadata);
-            const isNominated = await con.checkIsNominated(
+            // const isNominated = await con.checkIsNominated(
+            //   address,
+            //   nftData[i].token_hash
+            // );
+            const dt = await con2.nftAddressToTokenStruct(
               address,
-              nftData[i].token_hash
+              nftData[i].token_address,
+              nftData[i].token_id
             );
+            console.log(dt);
             // console.log(i);
             // console.log(isNominated);
             // console.log(nft);
@@ -61,7 +74,7 @@ function AllNfts({ nftData }) {
                 nft,
                 nftData[i].token_id,
                 nftData[i].token_address,
-                isNominated,
+                dt.isNominated,
               ]);
             }
             // nftData.push([item]);

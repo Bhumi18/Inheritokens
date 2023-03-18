@@ -5,13 +5,13 @@ import CharityContract from "../artifacts/contracts/Charity.sol/CharityContract.
 import MultiplePriorityNomineeContract from "../artifacts/contracts/MultiplePriorityNominee.sol/MultiplePriorityNominee.json";
 
 export const Inheritokens_Contract_Address =
-  "0x32b5BBE1E87Da3C6114acD3d1a90da7Cb21fE8EB";
+  "0xBa9294771806D6909A3FD9C5b5240d71927Dfd2e";
 
 export const Charity_Contract_Address =
-  "0x9B236f9CF1477aaEc44D10202B28b0a35939f048";
+  "0x8c485Ed4D128c6C862642B39Cb70f3BC9fe8CFb7";
 
 export const MultiplePriorityNominee_Contract_Address =
-  "0x086022091DBd9072e61f718F9584bEcFDb8A5e43";
+  "0x9D4be64f5732bcaf6dB88998189D8B30BD84a4fF";
 
 export const inheritokensInstance = async () => {
   const { ethereum } = window;

@@ -13,9 +13,7 @@ import "./Inheritokens.sol";
 import "./Charity.sol";
 
 contract MultiplePriorityNominee is Ownable {
-    address public inheritokensAddress;
     Inheritokens public inheritokens;
-    address public charityContractAddress;
     CharityContract public charityContract;
     uint public tokenCharge = 1000000;
     uint public nftCharge = 5000000;
@@ -27,10 +25,8 @@ contract MultiplePriorityNominee is Ownable {
         address _inheritokensAddress,
         address _charityContractAddress
     ) Ownable() {
-        inheritokensAddress = _inheritokensAddress;
-        inheritokens = Inheritokens(inheritokensAddress);
-        charityContractAddress = _charityContractAddress;
-        charityContract = CharityContract(charityContractAddress);
+        inheritokens = Inheritokens(_inheritokensAddress);
+        charityContract = CharityContract(_charityContractAddress);
     }
 
     // structure for multiple and Priority nominee
@@ -55,12 +51,12 @@ contract MultiplePriorityNominee is Ownable {
         public ownerToNFTToStruct;
 
     // event
-    event TokensAssigned(
-        address indexed _owner,
-        address _tokenAddress,
-        uint _tokenId,
-        uint _category
-    );
+    // event TokensAssigned(
+    //     address indexed _owner,
+    //     address _tokenAddress,
+    //     uint _tokenId,
+    //     uint _category
+    // );
     event Claimed(
         address indexed _owner,
         address indexed _nominee,
@@ -95,7 +91,7 @@ contract MultiplePriorityNominee is Ownable {
         );
         require(
             inheritokens.checkEmailVerified(msg.sender),
-            "Your email has not yet been validated. Verify your registered email address first."
+            "Your email has not yet been validated."
         );
 
         // check passed nominees in data are added
@@ -117,9 +113,7 @@ contract MultiplePriorityNominee is Ownable {
                     }
                 }
                 if (flag == false) {
-                    revert(
-                        "Check that all the nominees you are nominating are added as nominees."
-                    );
+                    revert("Oops! nominees is not added!");
                 }
             }
             for (uint j = 0; j < listedCharities.length; j++) {
@@ -133,9 +127,7 @@ contract MultiplePriorityNominee is Ownable {
                 }
             }
             if (hasFlag == false) {
-                revert(
-                    "Check that the charity you are nominating is listed as a white-listed charity."
-                );
+                revert("Oops! charity is not white-listed.");
             }
         }
 
@@ -162,10 +154,7 @@ contract MultiplePriorityNominee is Ownable {
         }
 
         // proceed only if the total share is less than 100
-        require(
-            totalShare <= 100,
-            "Oops! You can only allocate a 100% share. Try to reduce the share amount."
-        );
+        require(totalShare <= 100, "Oops! You can only allocate a 100% share.");
         // if token is not nominated at least for once then assign data to Token struct of inheritokens contract
         if (!nominated) {
             inheritokens.assignTokenStruct(
@@ -181,21 +170,28 @@ contract MultiplePriorityNominee is Ownable {
             if (_category == 0) {
                 require(
                     _token.allowance(msg.sender, address(this)) >= tokenCharge,
-                    "The allowance to the contract is not enough!"
+                    "allowance is not enough!"
                 );
                 _token.transferFrom(msg.sender, address(this), tokenCharge);
                 delete ownerToTokenToStruct[msg.sender][_tokenAddress];
+                for (uint i = 0; i < data.length; i++) {
+                    ownerToTokenToStruct[msg.sender][_tokenAddress].push(
+                        data[i]
+                    );
+                }
             } else if (_category == 1) {
                 require(
                     _token.allowance(msg.sender, address(this)) >= nftCharge,
-                    "The allowance to the contract is not enough!"
+                    "allowance is not enough!"
                 );
                 _token.transferFrom(msg.sender, address(this), nftCharge);
                 delete ownerToNFTToStruct[msg.sender][_tokenAddress][_tokenId];
+                for (uint i = 0; i < data.length; i++) {
+                    ownerToNFTToStruct[msg.sender][_tokenAddress][_tokenId]
+                        .push(data[i]);
+                }
             } else {
-                revert(
-                    "The category value must be 0 for tokens and 1 for NFT."
-                );
+                revert("category is not matching.");
             }
         }
         inheritokens.updateAllocatedShare(
@@ -207,18 +203,19 @@ contract MultiplePriorityNominee is Ownable {
         );
 
         // assign data to the Multiple struct
-        if (_category == 0) {
-            for (uint i = 0; i < data.length; i++) {
-                ownerToTokenToStruct[msg.sender][_tokenAddress].push(data[i]);
-            }
-        } else if (_category == 1) {
-            for (uint i = 0; i < data.length; i++) {
-                ownerToNFTToStruct[msg.sender][_tokenAddress][_tokenId].push(
-                    data[i]
-                );
-            }
-        }
-        emit TokensAssigned(msg.sender, _tokenAddress, _tokenId, _category);
+        // if (_category == 0) {
+        //     for (uint i = 0; i < data.length; i++) {
+        //         ownerToTokenToStruct[msg.sender][_tokenAddress].push(data[i]);
+        //     }
+        // } else if (_category == 1) {
+        //     for (uint i = 0; i < data.length; i++) {
+        //         ownerToNFTToStruct[msg.sender][_tokenAddress][_tokenId].push(
+        //             data[i]
+        //         );
+        //     }
+        // }
+
+        // emit TokensAssigned(msg.sender, _tokenAddress, _tokenId, _category);
     }
 
     // claim
@@ -230,10 +227,7 @@ contract MultiplePriorityNominee is Ownable {
         uint _tokenId,
         uint _category
     ) public {
-        require(
-            inheritokens.getIsClaimable(_owner),
-            "Sorry! You can't claim this. We will mail you to claim this."
-        );
+        require(inheritokens.getIsClaimable(_owner), "claim is not allowed.");
         // address[] memory nominees = inheritokens.getAllNomineesOfOwner(_owner);
         uint transferToNominee;
         bool flag;
@@ -261,9 +255,7 @@ contract MultiplePriorityNominee is Ownable {
                 }
             }
             if (flag == false) {
-                revert(
-                    "Oops! You can't claim this right now. We will inform you when you can claim the token."
-                );
+                revert("claim is not allowed.");
             }
         } else if (_category == 1) {
             for (
@@ -289,9 +281,7 @@ contract MultiplePriorityNominee is Ownable {
                 }
             }
             if (flag == false) {
-                revert(
-                    "Oops! You can't claim this right now. We will inform you when you can claim the token."
-                );
+                revert("claim is not allowed.");
             }
         }
         emit Claimed(
@@ -358,7 +348,7 @@ contract MultiplePriorityNominee is Ownable {
         );
         require(
             !(inheritokens.getIsClaimable(_owner)),
-            "Sorry! You have not replied to us. Your assets may be claimed by the nominee."
+            "Your assets are already claimed by the nominee."
         );
         uint _totalToken;
         if (_category == 0) {
@@ -422,49 +412,72 @@ contract MultiplePriorityNominee is Ownable {
         uint _index
     ) public {
         if (_category == 0) {
-            address temp = ownerToTokenToStruct[_owner][_tokenAddress][_index]
-                .canClaim;
             for (
                 uint i = 0;
                 i <
                 ownerToTokenToStruct[_owner][_tokenAddress][_index]
                     .nominee
-                    .length -
-                    1;
+                    .length;
                 i++
             ) {
                 if (
-                    ownerToTokenToStruct[_owner][_tokenAddress][_index].nominee[
-                        i
-                    ] == temp
+                    i ==
+                    (ownerToTokenToStruct[_owner][_tokenAddress][_index]
+                        .nominee
+                        .length - 1)
                 ) {
                     ownerToTokenToStruct[_owner][_tokenAddress][_index]
                         .canClaim = ownerToTokenToStruct[_owner][_tokenAddress][
                         _index
-                    ].nominee[i + 1];
+                    ].charityAddress;
+                } else {
+                    if (
+                        ownerToTokenToStruct[_owner][_tokenAddress][_index]
+                            .nominee[i] ==
+                        ownerToTokenToStruct[_owner][_tokenAddress][_index]
+                            .canClaim
+                    ) {
+                        ownerToTokenToStruct[_owner][_tokenAddress][_index]
+                            .canClaim = ownerToTokenToStruct[_owner][
+                            _tokenAddress
+                        ][_index].nominee[i + 1];
+                    }
                 }
             }
         } else if (_category == 1) {
-            address temp = ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][
-                _index
-            ].canClaim;
             for (
                 uint i = 0;
                 i <
                 ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][_index]
                     .nominee
-                    .length -
-                    1;
+                    .length;
                 i++
             ) {
                 if (
-                    ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][_index]
-                        .nominee[i] == temp
+                    i ==
+                    (ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][_index]
+                        .nominee
+                        .length - 1)
                 ) {
                     ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][_index]
                         .canClaim = ownerToNFTToStruct[_owner][_tokenAddress][
                         _tokenId
-                    ][_index].nominee[i + 1];
+                    ][_index].charityAddress;
+                } else {
+                    if (
+                        ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][
+                            _index
+                        ].nominee[i] ==
+                        ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][
+                            _index
+                        ].canClaim
+                    ) {
+                        ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][
+                            _index
+                        ].canClaim = ownerToNFTToStruct[_owner][_tokenAddress][
+                            _tokenId
+                        ][_index].nominee[i + 1];
+                    }
                 }
             }
         }

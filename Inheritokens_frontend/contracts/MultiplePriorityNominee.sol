@@ -412,6 +412,18 @@ contract MultiplePriorityNominee is Ownable {
         uint _index
     ) public {
         if (_category == 0) {
+            uint len = ownerToTokenToStruct[_owner][_tokenAddress][_index]
+                .nominee
+                .length;
+            if (
+                ownerToTokenToStruct[_owner][_tokenAddress][_index].canClaim ==
+                ownerToTokenToStruct[_owner][_tokenAddress][_index].nominee[len]
+            ) {
+                ownerToTokenToStruct[_owner][_tokenAddress][_index]
+                    .canClaim = ownerToTokenToStruct[_owner][_tokenAddress][
+                    _index
+                ].charityAddress;
+            }
             for (
                 uint i = 0;
                 i <
@@ -421,30 +433,32 @@ contract MultiplePriorityNominee is Ownable {
                 i++
             ) {
                 if (
-                    i ==
-                    (ownerToTokenToStruct[_owner][_tokenAddress][_index]
-                        .nominee
-                        .length - 1)
+                    ownerToTokenToStruct[_owner][_tokenAddress][_index].nominee[
+                        i
+                    ] ==
+                    ownerToTokenToStruct[_owner][_tokenAddress][_index].canClaim
                 ) {
                     ownerToTokenToStruct[_owner][_tokenAddress][_index]
                         .canClaim = ownerToTokenToStruct[_owner][_tokenAddress][
                         _index
-                    ].charityAddress;
-                } else {
-                    if (
-                        ownerToTokenToStruct[_owner][_tokenAddress][_index]
-                            .nominee[i] ==
-                        ownerToTokenToStruct[_owner][_tokenAddress][_index]
-                            .canClaim
-                    ) {
-                        ownerToTokenToStruct[_owner][_tokenAddress][_index]
-                            .canClaim = ownerToTokenToStruct[_owner][
-                            _tokenAddress
-                        ][_index].nominee[i + 1];
-                    }
+                    ].nominee[i + 1];
                 }
             }
         } else if (_category == 1) {
+            uint len = ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][
+                _index
+            ].nominee.length;
+            if (
+                ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][_index]
+                    .canClaim ==
+                ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][_index]
+                    .nominee[len]
+            ) {
+                ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][_index]
+                    .canClaim = ownerToNFTToStruct[_owner][_tokenAddress][
+                    _tokenId
+                ][_index].charityAddress;
+            }
             for (
                 uint i = 0;
                 i <
@@ -454,30 +468,15 @@ contract MultiplePriorityNominee is Ownable {
                 i++
             ) {
                 if (
-                    i ==
-                    (ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][_index]
-                        .nominee
-                        .length - 1)
+                    ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][_index]
+                        .nominee[i] ==
+                    ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][_index]
+                        .canClaim
                 ) {
                     ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][_index]
                         .canClaim = ownerToNFTToStruct[_owner][_tokenAddress][
                         _tokenId
-                    ][_index].charityAddress;
-                } else {
-                    if (
-                        ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][
-                            _index
-                        ].nominee[i] ==
-                        ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][
-                            _index
-                        ].canClaim
-                    ) {
-                        ownerToNFTToStruct[_owner][_tokenAddress][_tokenId][
-                            _index
-                        ].canClaim = ownerToNFTToStruct[_owner][_tokenAddress][
-                            _tokenId
-                        ][_index].nominee[i + 1];
-                    }
+                    ][_index].nominee[i + 1];
                 }
             }
         }

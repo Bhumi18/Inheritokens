@@ -19,18 +19,18 @@ async function main() {
     `charityContract contract address is ${(await charityContract).address}`
   );
 
-  const MultiplePriorityNominee = await hre.ethers.getContractFactory(
-    "MultiplePriorityNominee"
-  );
-  const multiplePriorityNominee = MultiplePriorityNominee.deploy(
-    address,
-    charity_address
-  );
-  await (await multiplePriorityNominee).deployed();
+  const NominateTokens = await hre.ethers.getContractFactory("NominateTokens");
+  const nominateTokens = NominateTokens.deploy(address, charity_address);
+  await (await nominateTokens).deployed();
   console.log(
-    `multiplePriorityNominee contract address is ${
-      (await multiplePriorityNominee).address
-    }`
+    `nominateTokens contract address is ${(await nominateTokens).address}`
+  );
+
+  const NominateNFTs = await hre.ethers.getContractFactory("NominateNFTs");
+  const nominateNFTs = NominateNFTs.deploy(address, charity_address);
+  await (await nominateNFTs).deployed();
+  console.log(
+    `nominateNFTs contract address is ${(await nominateNFTs).address}`
   );
 }
 main().catch((error) => {
@@ -38,6 +38,7 @@ main().catch((error) => {
   process.exitCode = 1;
 });
 
-// Inheritokens contract address is 0xBa9294771806D6909A3FD9C5b5240d71927Dfd2e
-// charityContract contract address is 0x8c485Ed4D128c6C862642B39Cb70f3BC9fe8CFb7
-// multiplePriorityNominee contract address is 0x9D4be64f5732bcaf6dB88998189D8B30BD84a4fF
+// Inheritokens contract address is 0x62Df331E79c086c34ddaC03083EF5f75Ae4E30C9
+// charityContract contract address is 0x3ED2C92c7c8Bf3e58B10c179E77e20e0E6031EDB
+// nominateTokens contract address is 0x3fE3df775ABeC304467a3eDaB5E2260d05C72D8a
+// nominateNFTs contract address is 0x58D9512Ef1C325AeaD2c2A3f6bF3b56aB05c8e1E

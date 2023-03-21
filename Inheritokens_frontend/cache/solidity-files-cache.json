@@ -111,8 +111,8 @@
       ]
     },
     "D:\\Lampros Projects\\Inheritokens\\Inheritokens_frontend\\contracts\\Inheritokens.sol": {
-      "lastModificationDate": 1678960701653,
-      "contentHash": "7622e0cb07673f6eaace85ab281c73b2",
+      "lastModificationDate": 1679317436484,
+      "contentHash": "28e9eb7a298ab8b9608067d1b1af8dd9",
       "sourceName": "contracts/Inheritokens.sol",
       "solcConfig": {
         "version": "0.8.17",
@@ -289,10 +289,10 @@
         "IERC165"
       ]
     },
-    "D:\\Lampros Projects\\Inheritokens\\Inheritokens_frontend\\contracts\\MultiplePriorityNominee.sol": {
-      "lastModificationDate": 1679144300483,
-      "contentHash": "1a5ee15e011b66e2f680ee7abcd8fbb0",
-      "sourceName": "contracts/MultiplePriorityNominee.sol",
+    "D:\\Lampros Projects\\Inheritokens\\Inheritokens_frontend\\contracts\\NominateTokens.sol": {
+      "lastModificationDate": 1679300996421,
+      "contentHash": "d5195d0d95ee02f1dbcfcbfe17b62bbc",
+      "sourceName": "contracts/NominateTokens.sol",
       "solcConfig": {
         "version": "0.8.17",
         "settings": {
@@ -327,7 +327,48 @@
         "^0.8.0"
       ],
       "artifacts": [
-        "MultiplePriorityNominee"
+        "NominateTokens"
+      ]
+    },
+    "D:\\Lampros Projects\\Inheritokens\\Inheritokens_frontend\\contracts\\NominateNFTs.sol": {
+      "lastModificationDate": 1679301016582,
+      "contentHash": "337f5575079f60a95bc00eda0aed57c4",
+      "sourceName": "contracts/NominateNFTs.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../node_modules/@openzeppelin/contracts/access/Ownable.sol",
+        "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "../node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+        "./Inheritokens.sol",
+        "./Charity.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "NominateNFTs"
       ]
     }
   }

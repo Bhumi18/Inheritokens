@@ -59,8 +59,9 @@ contract Inheritokens is Ownable {
     mapping(address => mapping(address => mapping(uint => Token)))
         public nftAddressToTokenStruct;
 
-    // multiplePriorityNominee contract address
-    address multiplePriorityContract;
+    // contract addresses
+    address tokenContract;
+    address nftContract;
 
     // modifiers
     modifier ownerNotAdded() {
@@ -337,12 +338,12 @@ contract Inheritokens is Ownable {
         uint _tokenId,
         uint amount
     ) external ownerAdded(_owner) emailVerified(_owner) {
-        require(
-            msg.sender == multiplePriorityContract,
-            "Oops! You cannot call this function. The caller should be contract."
-        );
         // for token
         if (_category == 0) {
+            require(
+                msg.sender == tokenContract,
+                "Oops! You cannot call this function. The caller should be contract."
+            );
             tokenAddressToTokenStruct[_owner][_tokenAddress] = Token(
                 _tokenAddress,
                 _tokenName,
@@ -354,6 +355,10 @@ contract Inheritokens is Ownable {
         }
         // for NFT
         else if (_category == 1) {
+            require(
+                msg.sender == nftContract,
+                "Oops! You cannot call this function. The caller should be contract."
+            );
             nftAddressToTokenStruct[_owner][_tokenAddress][_tokenId] = Token(
                 _tokenAddress,
                 _tokenName,
@@ -375,17 +380,21 @@ contract Inheritokens is Ownable {
         uint _amount,
         uint _category
     ) external ownerAdded(_owner) emailVerified(_owner) {
-        require(
-            msg.sender == multiplePriorityContract,
-            "Oops! You cannot call this function. The caller should be contract."
-        );
         // for token
         if (_category == 0) {
+            require(
+                msg.sender == tokenContract,
+                "Oops! You cannot call this function. The caller should be contract."
+            );
             tokenAddressToTokenStruct[_owner][_tokenAddress]
                 .allocated_share = _amount;
         }
         // for NFT
         else {
+            require(
+                msg.sender == nftContract,
+                "Oops! You cannot call this function. The caller should be contract."
+            );
             nftAddressToTokenStruct[_owner][_tokenAddress][_tokenId]
                 .allocated_share = _amount;
         }
@@ -442,8 +451,12 @@ contract Inheritokens is Ownable {
         return addressToOwner[_owner].isClaimable;
     }
 
-    // set multiplePriorityContract address
-    function setMultiplePriorityAddress(address _contract) public onlyOwner {
-        multiplePriorityContract = _contract;
+    // set address
+    function setMultiplePriorityAddress(
+        address _token,
+        address _nft
+    ) public onlyOwner {
+        tokenContract = _token;
+        nftContract = _nft;
     }
 }

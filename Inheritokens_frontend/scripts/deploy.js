@@ -38,7 +38,7 @@ main().catch((error) => {
   process.exitCode = 1;
 });
 
-// Inheritokens contract address is 0x62Df331E79c086c34ddaC03083EF5f75Ae4E30C9
-// charityContract contract address is 0x3ED2C92c7c8Bf3e58B10c179E77e20e0E6031EDB
-// nominateTokens contract address is 0x3fE3df775ABeC304467a3eDaB5E2260d05C72D8a
-// nominateNFTs contract address is 0x58D9512Ef1C325AeaD2c2A3f6bF3b56aB05c8e1E
+// Inheritokens contract address is 0x0cBF5eCdA58ab39d3580A434989C96d458aDBfc6
+// charityContract contract address is 0x1e6dA5Ed2ce30146a0f38836501B8B7C479b9Ba9
+// nominateTokens contract address is 0x7510d3bADB044735779a80b646d13f7eE831dfA1
+// nominateNFTs contract address is 0x1AfacC0F9dCc5af70EB0B0eBC72F38d68fC67fBf

@@ -80,7 +80,12 @@
           font-family: "Josefin Sans";
           font-weight: 400;
         }
-
+        button.nominated-btn {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          pointer-events: none;
+        }
         button.below-nft-button {
           align-self: center;
           // cursor: pointer;

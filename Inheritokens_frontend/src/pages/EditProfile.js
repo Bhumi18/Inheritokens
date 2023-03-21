@@ -31,9 +31,12 @@ function EditProfile({ setShowEditProfile, data }) {
   const [file, setFile] = useState("https://ipfs.io/ipfs/" + data[0][3]);
   const [fileName, setFileName] = useState(data[0][2].split("/")[5]);
   const [fileChanged, setFileChanged] = useState(false);
+  const [error, setError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const [btnloading, setbtnLoading] = useState(false);
   const [submitNotClicked, setSubmitNotClicked] = useState(true);
   const [uploaded, setUploaded] = useState("Update");
+  const [imgMsg, setImgMsg] = useState("Uploading your image on ipfs...");
   const { address, isConnected } = useAccount();
   const [emailFormatWarn, setEmailFormatWarn] = useState(false);
 
@@ -87,6 +90,7 @@ function EditProfile({ setShowEditProfile, data }) {
     }
     console.log(image_cid);
     setUserData({ ...userData, cid: image_cid });
+    setImgMsg("Profile has been uploaded on ipfs");
     setUploaded("Requesting...");
     setbtnLoading(false);
     onSuccess(image_cid);
@@ -97,6 +101,9 @@ function EditProfile({ setShowEditProfile, data }) {
   //   setUploaded("Upload File");
   // };
   const onSuccess = async (image_cid) => {
+    setErrorMsg("");
+    setError(false);
+    setImgMsg("waiting for transaction...");
     //contract code starts here...............................
     try {
       const { ethereum } = window;
@@ -118,6 +125,7 @@ function EditProfile({ setShowEditProfile, data }) {
             image_cid
           );
           await tx.wait();
+          setShowEditProfile(false);
         } else if (chainId === 1029) {
           const con = new ethers.Contract(BTTC_ADDRESS, contract, signer);
           const tx = await con.editOwnerDetails(
@@ -126,7 +134,8 @@ function EditProfile({ setShowEditProfile, data }) {
             userData.email,
             data[0][3]
           );
-          tx.wait();
+          await tx.wait();
+          setShowEditProfile(false);
         } else {
           alert(
             "Please connect to the mumbai test network or BTTC test network!"
@@ -134,17 +143,14 @@ function EditProfile({ setShowEditProfile, data }) {
         }
       }
     } catch (error) {
-      console.log(error);
+      setbtnLoading(false);
+      setUploaded("Update");
+      let msg = error.message.split("(")[0];
+      setErrorMsg(msg);
+      setError(true);
+      console.log(error.message);
     }
     //contract code ends here.................................
-    setTimeout(() => {
-      setUploaded("Redirecting...");
-      // console.log(userData);
-    }, 1000);
-    setTimeout(() => {
-      setShowEditProfile(false);
-      // console.log(userData);
-    }, 2000);
   };
 
   const resetImage = () => {
@@ -177,9 +183,12 @@ function EditProfile({ setShowEditProfile, data }) {
 
   useEffect(() => {
     // console.log(userData);
-    console.log(data[0][3]);
-    console.log(data[0][2].split("/")[5]);
-  }, [userData]);
+    setErrorMsg("");
+    setError(false);
+    setSubmitNotClicked(true);
+    // console.log(data[0][3]);
+    // console.log(data[0][2].split("/")[5]);
+  }, [userData.email, userData.name]);
 
   return (
     <>
@@ -301,7 +310,7 @@ function EditProfile({ setShowEditProfile, data }) {
               </>
             ) : file && !submitNotClicked ? (
               <>
-                <p className="reset-text">Uploading your image on ipfs</p>
+                <p className="reset-text">{imgMsg}</p>
               </>
             ) : (
               <>
@@ -342,6 +351,13 @@ function EditProfile({ setShowEditProfile, data }) {
                 <>{uploaded}</>
               )}
             </button>
+            {error ? (
+              <p style={{ color: "red", fontSize: "14px" }}>
+                {"* " + errorMsg}
+              </p>
+            ) : (
+              ""
+            )}
           </div>
         </div>
       </section>

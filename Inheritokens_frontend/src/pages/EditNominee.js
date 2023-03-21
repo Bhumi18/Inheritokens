@@ -48,6 +48,8 @@ function EditNominee() {
   const [errorMsg, setErrorMsg] = useState("");
   const [submitNotClicked, setSubmitNotClicked] = useState(true);
   const [uploaded, setUploaded] = useState("Submit");
+  const [imgMsg, setImgMsg] = useState("Uploading your image on ipfs...");
+  const [fileChanged, setFileChanged] = useState(false);
   const { address, isConnected } = useAccount();
 
   const [userData, setUserData] = useState({
@@ -63,6 +65,7 @@ function EditNominee() {
     setFileName(document.getElementById("input").files[0].name);
     // console.log(URL.createObjectURL(e.target.files[0]));
     setFile(URL.createObjectURL(e.target.files[0]));
+    setFileChanged(true);
   }
 
   async function handleUpload(a, b) {
@@ -103,6 +106,7 @@ function EditNominee() {
 
       console.log(image_cid);
       setUserData({ ...userData, profile_cid: image_cid });
+      setImgMsg("Profile has been uploaded on ipfs");
       setUploaded("Image Uploaded");
       setbtnLoading(false);
       setUploaded("Requesting...");
@@ -113,6 +117,9 @@ function EditNominee() {
   }
 
   const onSuccess = async (image_cid) => {
+    setErrorMsg("");
+    setError(false);
+    setImgMsg("waiting for transaction...");
     //contract code starts here...............................
     try {
       const { ethereum } = window;
@@ -215,6 +222,7 @@ function EditNominee() {
   };
 
   const resetImage = () => {
+    setFileChanged(true);
     setFile("");
     setFileName("");
   };
@@ -381,7 +389,7 @@ function EditNominee() {
               </>
             ) : file && !submitNotClicked ? (
               <>
-                <p className="reset-text">Uploading your image on ipfs</p>
+                <p className="reset-text">{imgMsg}</p>
               </>
             ) : (
               <>
@@ -392,7 +400,8 @@ function EditNominee() {
               className={
                 userData.email === location.state.email &&
                 userData.name === location.state.name &&
-                userData.wallet_address === location.state.walletAddress
+                userData.wallet_address === location.state.walletAddress &&
+                !fileChanged
                   ? "disabled"
                   : ""
               }

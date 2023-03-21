@@ -106,8 +106,10 @@ function AllNfts({ nftData }) {
     temp();
   }, [nftData2, checkChainId]);
 
-  const handleChooseNominee = (item) => {
-    navigate("/nominee/nft", { state: { item: item } });
+  const handleChooseNominee = (item, isNominated) => {
+    navigate("/nominee/nft", {
+      state: { item: item, isNominated: isNominated },
+    });
   };
 
   // if (nftData.length === 0) {
@@ -167,6 +169,7 @@ function AllNfts({ nftData }) {
                           setNomineesComponent(true);
                           setIndexValue({ key });
                           // console.log(temp2.key);
+                          handleChooseNominee(nftData[key], item[3]);
                         }}
                       >
                         Edit Nominee
@@ -178,7 +181,7 @@ function AllNfts({ nftData }) {
                       onClick={() => {
                         // setNomineesComponent(true);
                         // setIndexValue({ key });
-                        handleChooseNominee(nftData[key]);
+                        handleChooseNominee(nftData[key], item[3]);
                         // console.log(temp2.key);
                       }}
                     >

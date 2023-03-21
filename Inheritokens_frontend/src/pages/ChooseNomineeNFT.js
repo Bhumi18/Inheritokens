@@ -206,27 +206,37 @@ function ChooseNomineeNFT({ nftsrc }) {
   const assignToken = async () => {
     try {
       const con2 = await MultiplePriorityNomineeInstance();
-      let nominees_address = [];
-      for (let i = 0; i < nominatedArr.length; i++) {
-        nominees_address.push(nominatedArr[i].w_add);
-      }
-      console.log(nominees_address);
-      const tx = await con2.assignTokensToMultipleNominees(
-        nftData.contract_add, // token address or nft address
-        nftData.name, // token name or nft name
-        1, // category
-        nftData.token_id, // token_id
-        [
+      if (!location.state.isNominated) {
+        let nominees_address = [];
+        for (let i = 0; i < nominatedArr.length; i++) {
+          nominees_address.push(nominatedArr[i].w_add);
+        }
+        console.log(nominees_address);
+        const tx = await con2.assignTokensToMultipleNominees(
+          nftData.contract_add, // token address or nft address
+          nftData.name, // token name or nft name
+          1, // category
+          nftData.token_id, // token_id
           [
-            100, // share
-            "0x0F0c3d49bcf3E9eDcB504672c0f795c377874ebc", // charity address
-            nominees_address[0], // null value by default
-            nominees_address,
-            false,
-          ],
-        ]
-      );
-      await tx.wait();
+            [
+              100, // share
+              "0x0F0c3d49bcf3E9eDcB504672c0f795c377874ebc", // charity address
+              nominees_address[0], // null value by default
+              nominees_address,
+              false,
+            ],
+          ]
+        );
+        await tx.wait();
+      } else {
+        const chargeData = await con2.nftCharge();
+        const chargeTokenAddress = await con2.chargeTokenAddress();
+        const charge = parseInt(chargeData, 10);
+        const contract_address = ethers.utils.getAddress(chargeTokenAddress); // chargeTokenAddress
+        // const contract = new ethers.Contract(contract_address, ERC20, signer);
+        // const tx1 = await contract.approve(CONTRACT_ADDRESS3, charge);
+        // tx1.wait();
+      }
     } catch (error) {
       console.log(error.message);
     }
@@ -248,6 +258,9 @@ function ChooseNomineeNFT({ nftsrc }) {
 
   useEffect(() => {
     if (location.state.item) {
+      console.log(location.state.isNominated);
+
+      console.log(location.state.item);
       const nft = location.state.item;
       const metadata = JSON.parse(nft.metadata);
       setNftData({

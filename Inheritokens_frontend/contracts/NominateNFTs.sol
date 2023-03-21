@@ -140,9 +140,8 @@ contract NominateNFTs is Ownable {
             );
             _token.transferFrom(msg.sender, address(this), nftCharge);
             delete ownerToNFTToStruct[msg.sender][_tokenAddress][_tokenId];
-            ownerToNFTToStruct[msg.sender][_tokenAddress][_tokenId] = (data);
         }
-
+        ownerToNFTToStruct[msg.sender][_tokenAddress][_tokenId] = (data);
         emit NFTsNominated(msg.sender, _tokenAddress, _tokenId, 1);
     }
 

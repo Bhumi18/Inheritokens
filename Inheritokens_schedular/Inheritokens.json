@@ -942,7 +942,12 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_contract",
+        "name": "_token",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_nft",
         "type": "address"
       }
     ],

@@ -154,9 +154,6 @@ contract NominateTokens is Ownable {
             );
             _token.transferFrom(msg.sender, address(this), tokenCharge);
             delete ownerToTokenToStruct[msg.sender][_tokenAddress];
-            for (uint i = 0; i < data.length; i++) {
-                ownerToTokenToStruct[msg.sender][_tokenAddress].push(data[i]);
-            }
         }
         inheritokens.updateAllocatedShare(
             msg.sender,
@@ -165,7 +162,9 @@ contract NominateTokens is Ownable {
             totalShare,
             0
         );
-
+        for (uint i = 0; i < data.length; i++) {
+            ownerToTokenToStruct[msg.sender][_tokenAddress].push(data[i]);
+        }
         emit TokensNominated(msg.sender, _tokenAddress, 0);
     }
 

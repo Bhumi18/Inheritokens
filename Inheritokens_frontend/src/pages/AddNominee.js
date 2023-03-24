@@ -18,6 +18,7 @@ import Navbar from "../components/Navbar";
 
 import contract from "../artifacts/Main.json";
 import { inheritokensInstance } from "../components/Contracts";
+import Footer from "../components/Footer";
 export const CONTRACT_ADDRESS = "0xaEF8eb4EDCB0177A5ef6a5e3f46E581a5908eef4";
 export const BTTC_ADDRESS = "0xB987640A52415b64E2d19109E8f9d7a3492d5F54";
 
@@ -39,6 +40,7 @@ function AddNominee() {
   const [error, setError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [uploaded, setUploaded] = useState("Add Nominee");
+  const [imgMsg, setImgMsg] = useState("Uploading your image on ipfs...");
   const nameRef = useRef("");
   const emailRef = useRef(null);
   const waRef = useRef(null);
@@ -127,7 +129,7 @@ function AddNominee() {
       console.log(image_cid);
       setUserData({ ...userData, cid: cid + "/" + fileName });
       // setFileCid(files[0].cid);
-      setUploaded("Requesting...");
+      setImgMsg("Profile has been uploaded on ipfs");
       setbtnLoading(false);
       onSuccess(image_cid);
       // setFile(url);
@@ -138,6 +140,7 @@ function AddNominee() {
   //   setUploaded("Upload File");
   // };
   const onSuccess = async (image_cid) => {
+    setImgMsg("waiting for transaction...");
     //contract code starts here...............................
     try {
       const { ethereum } = window;
@@ -397,7 +400,7 @@ function AddNominee() {
               </>
             ) : file && !submitNotClicked ? (
               <>
-                <p className="reset-text">Uploading your image on ipfs...</p>
+                <p className="reset-text">{imgMsg}</p>
               </>
             ) : (
               <>
@@ -443,6 +446,7 @@ function AddNominee() {
           </div>
         </div>
       </section>
+      <Footer />
     </>
   );
 }

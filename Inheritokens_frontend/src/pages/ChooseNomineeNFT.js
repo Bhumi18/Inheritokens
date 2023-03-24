@@ -18,6 +18,7 @@ import {
   NFT_ADDRESS,
   tokenContractInstance,
 } from "../components/Contracts";
+import Footer from "../components/Footer";
 export const CONTRACT_ADDRESS = "0xaEF8eb4EDCB0177A5ef6a5e3f46E581a5908eef4";
 export const BTTC_ADDRESS = "0xB987640A52415b64E2d19109E8f9d7a3492d5F54";
 
@@ -264,11 +265,11 @@ function ChooseNomineeNFT({ nftsrc }) {
         const tx2 = await approveUSDCNFT();
         console.log(tx2);
         if (tx2) {
-          const approvenft = await approveNFT(
-            nftData.contract_add,
-            nftData.token_id
-          );
-          console.log(approvenft);
+          // const approvenft = await approveNFT(
+          //   nftData.contract_add,
+          //   nftData.token_id
+          // );
+          // console.log(approvenft);
           let nominees_address = [];
           for (let i = 0; i < nominatedArr.length; i++) {
             nominees_address.push(nominatedArr[i].w_add);
@@ -637,6 +638,7 @@ function ChooseNomineeNFT({ nftsrc }) {
           </div>
         </div>
       </section>
+      <Footer />
     </>
   );
 }

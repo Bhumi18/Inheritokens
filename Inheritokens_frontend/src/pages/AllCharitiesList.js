@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import image from "../assets/images/defaultprofileimage.png";
+import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import "../styles/AllCharitiesList.scss";
 
@@ -183,6 +184,7 @@ function AllCharitiesList() {
           </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 }

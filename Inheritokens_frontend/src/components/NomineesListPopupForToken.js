@@ -21,6 +21,7 @@ function NomineesListPopupForToken({
   const [allCharities, setAllCharities] = useState(false);
   const [index, setIndex] = useState();
   const [indexChild, setIndexChild] = useState();
+  const [count, setCount] = useState(0);
   const [data, setData] = useState([]);
 
   const showNominees = async () => {
@@ -39,20 +40,18 @@ function NomineesListPopupForToken({
           // const con = new ethers.Contract(CONTRACT_ADDRESS, contract, signer);
           const con = await inheritokensInstance();
           const address_array = await con.getOwnerDetails(address);
-          // console.log(address_array);
+          console.log(address_array);
           for (let i = 0; i < address_array[8].length; i++) {
-            // console.log(address_array[i]);
+            console.log(address_array[i]);
             const nominee_details = await con.addressToNominee(
               address,
-              address_array[i]
+              address_array[8][i]
             );
             // console.log(nominee_details[0]);
             // console.log(nominee_details[1]);
             // console.log(nominee_details[2]);
             const url = "https://ipfs.io/ipfs/" + nominee_details[2];
-            console.log(
-              !data.find((item) => nominee_details[3] === item.w_add)
-            );
+            console.log(!data.find((item) => nominee_details[0] === item[0]));
             if (!data.find((item) => nominee_details[3] === item.w_add)) {
               data.push({
                 name: nominee_details[0],
@@ -113,6 +112,7 @@ function NomineesListPopupForToken({
           );
         }
       }
+      setCount((prev) => prev + 1);
     } catch (error) {
       console.log(error);
     }
@@ -120,8 +120,8 @@ function NomineesListPopupForToken({
   };
 
   useEffect(() => {
-    showNominees();
-  }, []);
+    if (count === 0) showNominees();
+  }, [count]);
 
   useEffect(() => {
     if (indexNumber) {

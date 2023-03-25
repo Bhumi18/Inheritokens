@@ -9,13 +9,14 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { ethers } from "ethers";
 import contract from "../artifacts/Main.json";
 import { Link } from "react-router-dom";
+import { inheritokensInstance } from "./Contracts";
 export const CONTRACT_ADDRESS = "0xaEF8eb4EDCB0177A5ef6a5e3f46E581a5908eef4";
 export const BTTC_ADDRESS = "0xB987640A52415b64E2d19109E8f9d7a3492d5F54";
 
 function Navbar({ userData }) {
   const [data, setData] = useState([]);
   const { address, isConnected } = useAccount("");
-  const [isLoading, setLoading] = React.useState(true);
+  const [isLoading, setLoading] = useState(true);
   // const [walletAdd, setWalletAdd] = useState(
   //   "0x054ae6107caadc187c304de87365bc52f8c2adb9"
   // );
@@ -33,7 +34,8 @@ function Navbar({ userData }) {
         const { chainId } = await provider.getNetwork();
         console.log("switch case for this case is: " + chainId);
         if (chainId === 80001) {
-          const con = new ethers.Contract(CONTRACT_ADDRESS, contract, signer);
+          // const con = new ethers.Contract(CONTRACT_ADDRESS, contract, signer);
+          const con = await inheritokensInstance();
           const owner_details = await con.getOwnerDetails(address);
           // console.log(owner_details);
           const url = "https://ipfs.io/ipfs/" + owner_details[2];
@@ -67,39 +69,40 @@ function Navbar({ userData }) {
   useEffect(() => {
     showProfile();
   }, [address]);
-  if (!isLoading)
-    return (
-      <>
-        <div className="navbar">
-          <div className="navbar-inside">
-            <div className="navbar-main">
-              <Link to="/">
-                <img className="logo" src={logo} alt="logo" />
-              </Link>
-              {/* <h1 className="navbar-h1">
-              <span>INHERITOKENS</span>
-            </h1> */}
-              <div className="profile-wallet-section">
-                <div className="wallet-address">
-                  {/* <span>
-                  {walletAdd.substring(0, 6) +
-                    "..." +
-                    walletAdd.substring(walletAdd.length - 5, walletAdd.length)}
-                </span> */}
-                  {/* <ConnectWalletNavbar /> */}
-                  <ConnectButton
-                    accountStatus={{
-                      smallScreen: "avatar",
-                      largeScreen: "full",
-                    }}
-                    showBalance={{
-                      smallScreen: false,
-                      largeScreen: true,
-                    }}
-                  />
-                </div>
-                <Link to="/user/profile">
-                  {data[0][2] !== "https://ipfs.io/ipfs/" ? (
+
+  return (
+    <>
+      <div className="navbar">
+        <div className="navbar-inside">
+          <div className="navbar-main">
+            <Link to="/">
+              <img className="logo" src={logo} alt="logo" />
+            </Link>
+            {/* <h1 className="navbar-h1">
+            <span>INHERITOKENS</span>
+          </h1> */}
+            <div className="profile-wallet-section">
+              <div className="wallet-address">
+                {/* <span>
+                {walletAdd.substring(0, 6) +
+                  "..." +
+                  walletAdd.substring(walletAdd.length - 5, walletAdd.length)}
+              </span> */}
+                {/* <ConnectWalletNavbar /> */}
+                <ConnectButton
+                  accountStatus={{
+                    smallScreen: "avatar",
+                    largeScreen: "full",
+                  }}
+                  showBalance={{
+                    smallScreen: false,
+                    largeScreen: true,
+                  }}
+                />
+              </div>
+              <Link to="/user/profile">
+                {data.length > 0 ? (
+                  data[0][2] !== "https://ipfs.io/ipfs/" ? (
                     <img
                       className="profile-icon"
                       src={data[0][2]}
@@ -111,56 +114,115 @@ function Navbar({ userData }) {
                       src={profilepic1}
                       alt="profileicon"
                     />
-                  )}
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </>
-    );
-  else
-    return (
-      <>
-        <div className="navbar">
-          <div className="navbar-inside">
-            <div className="navbar-main">
-              <img className="logo" src={logo} alt="logo" />
-              {/* <h1 className="navbar-h1">
-        <span>INHERITOKENS</span>
-      </h1> */}
-              <div className="profile-wallet-section">
-                <div className="wallet-address">
-                  {/* <span>
-            {walletAdd.substring(0, 6) +
-              "..." +
-              walletAdd.substring(walletAdd.length - 5, walletAdd.length)}
-          </span> */}
-                  {/* <ConnectWalletNavbar /> */}
-                  <ConnectButton
-                    accountStatus={{
-                      smallScreen: "avatar",
-                      largeScreen: "full",
-                    }}
-                    showBalance={{
-                      smallScreen: false,
-                      largeScreen: true,
-                    }}
-                  />
-                </div>
-                <Link to="/user/profile">
+                  )
+                ) : (
                   <img
                     className="profile-icon"
                     src={profilepic1}
                     alt="profileicon"
                   />
-                </Link>
-              </div>
+                )}
+              </Link>
             </div>
           </div>
         </div>
-      </>
-    );
+      </div>
+    </>
+  );
+  // if (!isLoading)
+  //   return (
+  //     <>
+  //       <div className="navbar">
+  //         <div className="navbar-inside">
+  //           <div className="navbar-main">
+  //             <Link to="/">
+  //               <img className="logo" src={logo} alt="logo" />
+  //             </Link>
+  //             {/* <h1 className="navbar-h1">
+  //             <span>INHERITOKENS</span>
+  //           </h1> */}
+  //             <div className="profile-wallet-section">
+  //               <div className="wallet-address">
+  //                 {/* <span>
+  //                 {walletAdd.substring(0, 6) +
+  //                   "..." +
+  //                   walletAdd.substring(walletAdd.length - 5, walletAdd.length)}
+  //               </span> */}
+  //                 {/* <ConnectWalletNavbar /> */}
+  //                 <ConnectButton
+  //                   accountStatus={{
+  //                     smallScreen: "avatar",
+  //                     largeScreen: "full",
+  //                   }}
+  //                   showBalance={{
+  //                     smallScreen: false,
+  //                     largeScreen: true,
+  //                   }}
+  //                 />
+  //               </div>
+  //               <Link to="/user/profile">
+  //                 {data[0][2] !== "https://ipfs.io/ipfs/" ? (
+  //                   <img
+  //                     className="profile-icon"
+  //                     src={data[0][2]}
+  //                     alt="profileicon"
+  //                   />
+  //                 ) : (
+  //                   <img
+  //                     className="profile-icon"
+  //                     src={profilepic1}
+  //                     alt="profileicon"
+  //                   />
+  //                 )}
+  //               </Link>
+  //             </div>
+  //           </div>
+  //         </div>
+  //       </div>
+  //     </>
+  //   );
+  // else
+  //   return (
+  //     <>
+  //       <div className="navbar">
+  //         <div className="navbar-inside">
+  //           <div className="navbar-main">
+  //             <img className="logo" src={logo} alt="logo" />
+  //             {/* <h1 className="navbar-h1">
+  //       <span>INHERITOKENS</span>
+  //     </h1> */}
+  //             <div className="profile-wallet-section">
+  //               <div className="wallet-address">
+  //                 {/* <span>
+  //           {walletAdd.substring(0, 6) +
+  //             "..." +
+  //             walletAdd.substring(walletAdd.length - 5, walletAdd.length)}
+  //         </span> */}
+  //                 {/* <ConnectWalletNavbar /> */}
+  //                 <ConnectButton
+  //                   accountStatus={{
+  //                     smallScreen: "avatar",
+  //                     largeScreen: "full",
+  //                   }}
+  //                   showBalance={{
+  //                     smallScreen: false,
+  //                     largeScreen: true,
+  //                   }}
+  //                 />
+  //               </div>
+  //               <Link to="/user/profile">
+  //                 <img
+  //                   className="profile-icon"
+  //                   src={profilepic1}
+  //                   alt="profileicon"
+  //                 />
+  //               </Link>
+  //             </div>
+  //           </div>
+  //         </div>
+  //       </div>
+  //     </>
+  //   );
 }
 
 export default Navbar;

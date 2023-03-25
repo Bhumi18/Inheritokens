@@ -175,7 +175,6 @@ function Tokens() {
                 {showNativeTokenBalance ? (
                   <tr>
                     <td className="token-symbol">
-                      {console.log(checkChainId)}
                       {checkChainId === 80001 ? "MATIC" : "BTT"}
                     </td>
                     <td>
@@ -231,10 +230,9 @@ function Tokens() {
                         <tr key={key}>
                           <td className="token-symbol">{val.symbol}</td>
                           <td>
-                            {String(val.balance / Math.pow(10, 18)).substring(
-                              0,
-                              showNativeTokenBalance.length - 1
-                            )}
+                            {String(
+                              val.balance / Math.pow(10, val.decimals)
+                            ).substring(0, showNativeTokenBalance.length - 1)}
                           </td>
                           <td>
                             <button

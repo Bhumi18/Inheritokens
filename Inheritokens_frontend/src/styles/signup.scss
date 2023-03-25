@@ -309,7 +309,7 @@ svg.animate-spin {
 
 @media (min-width: 500px) {
   .signup-main {
-    padding: calc(120px + 2rem) 0 0 0;
+    padding: calc(100px + 2rem) 0 50px 0;
   }
   .login-card.recovery-card {
     width: 500px;
@@ -355,6 +355,7 @@ svg.animate-spin {
 @media only screen and (max-width: 768px) {
   .signup-main {
     padding-top: 100px;
+    min-height: calc(100vh - 184px);
     .login-card {
       // margin-top: 100px;
     }

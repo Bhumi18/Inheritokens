@@ -6,8 +6,19 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
 import GetOrdinal from "../components/GetOrdinal";
+import ERC20 from "../artifacts/ERC20.json";
 
 import contract from "../artifacts/Main.json";
+import {
+  approveNFT,
+  approveUSDCNFT,
+  checkApproved,
+  inheritokensInstance,
+  nftContractInstance,
+  NFT_ADDRESS,
+  tokenContractInstance,
+} from "../components/Contracts";
+import Footer from "../components/Footer";
 export const CONTRACT_ADDRESS = "0xaEF8eb4EDCB0177A5ef6a5e3f46E581a5908eef4";
 export const BTTC_ADDRESS = "0xB987640A52415b64E2d19109E8f9d7a3492d5F54";
 
@@ -64,68 +75,6 @@ function ChooseNomineeNFT({ nftsrc }) {
     setArrChanged((prev) => prev + 1);
     printArr();
   };
-  // const data = [
-  //   {
-  //     img: image,
-  //     name: "Bhumi Sadariya",
-  //     email: "bhumi@gmail.com",
-  //     w_add: "0xeB88DDaEdA226129a8Fisj0137B2ae35aA42A975",
-  //   },
-  //   {
-  //     img: image,
-  //     name: "Jaydip Patel",
-  //     email: "jaydip@gmail.com",
-  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-  //   },
-  //   {
-  //     img: image,
-  //     name: "Lajja Vaniya",
-  //     email: "lajja@gmail.com",
-  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-  //   },
-  //   {
-  //     img: image,
-  //     name: "Deepak Rathore",
-  //     email: "deepak@gmail.com",
-  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-  //   },
-  //   {
-  //     img: image,
-  //     name: "Bhadresh",
-  //     email: "bhadresh@gmail.com",
-  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-  //   },
-  //   {
-  //     img: image,
-  //     name: "Rahul Rajan",
-  //     email: "rahul@gmail.com",
-  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-  //   },
-  //   {
-  //     img: image,
-  //     name: "Aakash Palan",
-  //     email: "akashpalan@gmail.com",
-  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-  //   },
-  //   {
-  //     img: image,
-  //     name: "Adithya",
-  //     email: "adithya@gmail.com",
-  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-  //   },
-  //   {
-  //     img: image,
-  //     name: "Sarvagna Kadiya",
-  //     email: "sarvagna@gmail.com",
-  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-  //   },
-  //   {
-  //     img: image,
-  //     name: "Prashant Suthar",
-  //     email: "prashant@gmail.com",
-  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-  //   },
-  // ];
 
   const showNominees = async () => {
     //contract code starts here...............................
@@ -140,13 +89,15 @@ function ChooseNomineeNFT({ nftsrc }) {
         const { chainId } = await provider.getNetwork();
         console.log("switch case for this case is: " + chainId);
         if (chainId === 80001) {
-          const con = new ethers.Contract(CONTRACT_ADDRESS, contract, signer);
-          const address_array = await con.getNominees(address);
+          // const con = new ethers.Contract(CONTRACT_ADDRESS, contract, signer);
+          const con = await inheritokensInstance();
+          const address_array = await con.getOwnerDetails(address);
           // console.log(address_array);
-          for (let i = 0; i < address_array.length; i++) {
+          for (let i = 0; i < address_array[8].length; i++) {
             // console.log(address_array[i]);
-            const nominee_details = await con.getNomineeDetails(
-              address_array[i]
+            const nominee_details = await con.addressToNominee(
+              address,
+              address_array[8][i]
             );
             // console.log(nominee_details[0]);
             // console.log(nominee_details[1]);
@@ -168,6 +119,7 @@ function ChooseNomineeNFT({ nftsrc }) {
           setData(data);
           setArr(data);
           console.log(data);
+          getNominated();
           // setLoading(false);
         } else if (chainId === 1029) {
           const con = new ethers.Contract(BTTC_ADDRESS, contract, signer);
@@ -208,9 +160,141 @@ function ChooseNomineeNFT({ nftsrc }) {
     //contract code ends here.................................
   };
 
-  useEffect(() => {
-    showNominees();
-  }, []);
+  // useEffect(() => {
+  //   showNominees();
+  // }, []);
+
+  // get nominated data
+  const getNominated = async () => {
+    console.log(address);
+    console.log("inside the getnomineedetails");
+    try {
+      const con = await nftContractInstance();
+      console.log(location.state.item);
+      console.log("first");
+      const nominated = await con.getAllStructs(
+        address,
+        location.state.item.token_address,
+        location.state.item.token_id
+      );
+      console.log(nominated);
+      console.log(nominated[2]);
+
+      for (let i = 0; i < nominated[2].length; i++) {
+        const con2 = await inheritokensInstance();
+        const nominee_details = await con2.addressToNominee(
+          address,
+          nominated[2][i]
+        );
+        console.log(nominee_details);
+        console.log("Hello");
+        const url = "https://ipfs.io/ipfs/" + nominee_details[2];
+        if (!nominatedArr.find((item) => nominee_details[3] === item.w_add)) {
+          nominatedArr.push({
+            name: nominee_details[0],
+            email: nominee_details[1],
+            img: url,
+            w_add: nominee_details[3],
+          });
+        }
+      }
+      setArrChanged((prev) => prev + 1);
+      // console.log(nominatedArr);
+      setNominatedArr(nominatedArr);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // nominate nft function
+
+  const assignNFT = async () => {
+    try {
+      const nft_contract = await nftContractInstance();
+      console.log(location.state.isNominated);
+      if (!location.state.isNominated) {
+        console.log("inside if ");
+        const chkApproved = await checkApproved(
+          nftData.contract_add,
+          nftData.token_id
+        );
+        console.log(chkApproved);
+        console.log(NFT_ADDRESS);
+        console.log(chkApproved !== NFT_ADDRESS);
+        if (chkApproved !== NFT_ADDRESS) {
+          const approvenft = await approveNFT(
+            nftData.contract_add,
+            nftData.token_id
+          );
+          console.log(approvenft);
+        }
+        let nominees_address = [];
+        for (let i = 0; i < nominatedArr.length; i++) {
+          nominees_address.push(nominatedArr[i].w_add);
+        }
+        console.log(nominees_address);
+        const tx = await nft_contract.nominateNFT(
+          nftData.contract_add, // token address or nft address
+          nftData.name, // token name or nft name
+          nftData.token_id, // token_id
+
+          [
+            "0x0F0c3d49bcf3E9eDcB504672c0f795c377874ebc", // charity address
+            nominees_address[0], // null value by default
+            nominees_address,
+            false,
+            "",
+          ]
+        );
+        await tx.wait();
+      } else {
+        console.log("inside else ");
+        const chkApproved = await checkApproved(
+          nftData.contract_add,
+          nftData.token_id
+        );
+        console.log(chkApproved);
+        if (chkApproved !== NFT_ADDRESS) {
+          const approvenft = await approveNFT(
+            nftData.contract_add,
+            nftData.token_id
+          );
+          console.log(approvenft);
+        }
+
+        const tx2 = await approveUSDCNFT();
+        console.log(tx2);
+        if (tx2) {
+          // const approvenft = await approveNFT(
+          //   nftData.contract_add,
+          //   nftData.token_id
+          // );
+          // console.log(approvenft);
+          let nominees_address = [];
+          for (let i = 0; i < nominatedArr.length; i++) {
+            nominees_address.push(nominatedArr[i].w_add);
+          }
+          console.log(nominees_address);
+          const tx = await nft_contract.nominateNFT(
+            nftData.contract_add, // token address or nft address
+            nftData.name, // token name or nft name
+            nftData.token_id, // token_id
+
+            [
+              "0x0F0c3d49bcf3E9eDcB504672c0f795c377874ebc", // charity address
+              nominees_address[0], // null value by default
+              nominees_address,
+              false,
+              "",
+            ]
+          );
+          await tx.wait();
+        }
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   // search bar components
 
@@ -228,6 +312,9 @@ function ChooseNomineeNFT({ nftsrc }) {
 
   useEffect(() => {
     if (location.state.item) {
+      console.log(location.state.isNominated);
+
+      console.log(location.state.item);
       const nft = location.state.item;
       const metadata = JSON.parse(nft.metadata);
       setNftData({
@@ -241,13 +328,8 @@ function ChooseNomineeNFT({ nftsrc }) {
         symbol: nft.symbol,
       });
     }
+    showNominees();
   }, []);
-
-  // useEffect(() => {
-  //   if (data) {
-  //     setArr(data);
-  //   }
-  // }, [data]);
 
   function searchList() {
     const filtered = filteredPersons.map((person, key) => (
@@ -283,20 +365,6 @@ function ChooseNomineeNFT({ nftsrc }) {
     ));
     return filtered;
   }
-
-  // function getOrdinal(n) {
-  //   let ord = "th";
-
-  //   if (n % 10 === 1 && n % 100 !== 11) {
-  //     ord = "st";
-  //   } else if (n % 10 === 2 && n % 100 !== 12) {
-  //     ord = "nd";
-  //   } else if (n % 10 === 3 && n % 100 !== 13) {
-  //     ord = "rd";
-  //   }
-
-  //   return ord;
-  // }
 
   return (
     <>
@@ -565,11 +633,12 @@ function ChooseNomineeNFT({ nftsrc }) {
               </div>
             )}
             <div className="save-btn-div">
-              <button>Save Nominees</button>
+              <button onClick={() => assignNFT()}>Save Nominees</button>
             </div>
           </div>
         </div>
       </section>
+      <Footer />
     </>
   );
 }

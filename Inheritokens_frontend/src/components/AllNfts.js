@@ -9,6 +9,10 @@ import { useAccount } from "wagmi";
 import { ethers } from "ethers";
 import contract from "../artifacts/Main.json";
 import { useNavigate } from "react-router-dom";
+import {
+  inheritokensInstance,
+  MultiplePriorityNomineeInstance,
+} from "./Contracts";
 export const CONTRACT_ADDRESS = "0xaEF8eb4EDCB0177A5ef6a5e3f46E581a5908eef4";
 
 function AllNfts({ nftData }) {
@@ -45,14 +49,23 @@ function AllNfts({ nftData }) {
         setCheckChainId(chainId);
         // console.log("switch case for this case is: " + chainId);
         if (chainId === 80001) {
-          const con = new ethers.Contract(CONTRACT_ADDRESS, contract, signer);
+          // const con = new ethers.Contract(CONTRACT_ADDRESS, contract, signer);
+          const con2 = await inheritokensInstance();
+
           for (let i = 0; i < nftData.length; i++) {
             // const nft = JSON.parse(item.metadata);
+            console.log(nftData[i]);
             const nft = JSON.parse(nftData[i].metadata);
-            const isNominated = await con.checkIsNominated(
+            // const isNominated = await con.checkIsNominated(
+            //   address,
+            //   nftData[i].token_hash
+            // );
+            const dt = await con2.nftAddressToTokenStruct(
               address,
-              nftData[i].token_hash
+              nftData[i].token_address,
+              nftData[i].token_id
             );
+            console.log(dt);
             // console.log(i);
             // console.log(isNominated);
             // console.log(nft);
@@ -61,7 +74,7 @@ function AllNfts({ nftData }) {
                 nft,
                 nftData[i].token_id,
                 nftData[i].token_address,
-                isNominated,
+                dt.isNominated,
               ]);
             }
             // nftData.push([item]);
@@ -93,8 +106,10 @@ function AllNfts({ nftData }) {
     temp();
   }, [nftData2, checkChainId]);
 
-  const handleChooseNominee = (item) => {
-    navigate("/nominee/nft", { state: { item: item } });
+  const handleChooseNominee = (item, isNominated) => {
+    navigate("/nominee/nft", {
+      state: { item: item, isNominated: isNominated },
+    });
   };
 
   // if (nftData.length === 0) {
@@ -139,13 +154,29 @@ function AllNfts({ nftData }) {
                   {item[3] ? (
                     <>
                       <button
-                        className="below-nft-button"
+                        className="nominated-btn"
                         onClick={() => {
                           // setNomineesComponent(true);
                           // setIndexValue({ key });
                           // console.log(temp2.key);
                         }}
                       >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          enableBackground="new 0 0 24 24"
+                          height="24px"
+                          viewBox="0 0 24 24"
+                          width="24px"
+                          fill="#0ba360"
+                        >
+                          <g>
+                            <rect fill="none" height="24" width="24" />
+                            <rect fill="none" height="24" width="24" />
+                          </g>
+                          <g>
+                            <path d="M23,12l-2.44-2.79l0.34-3.69l-3.61-0.82L15.4,1.5L12,2.96L8.6,1.5L6.71,4.69L3.1,5.5L3.44,9.2L1,12l2.44,2.79l-0.34,3.7 l3.61,0.82L8.6,22.5l3.4-1.47l3.4,1.46l1.89-3.19l3.61-0.82l-0.34-3.69L23,12z M9.38,16.01L7,13.61c-0.39-0.39-0.39-1.02,0-1.41 l0.07-0.07c0.39-0.39,1.03-0.39,1.42,0l1.61,1.62l5.15-5.16c0.39-0.39,1.03-0.39,1.42,0l0.07,0.07c0.39,0.39,0.39,1.02,0,1.41 l-5.92,5.94C10.41,16.4,9.78,16.4,9.38,16.01z" />
+                          </g>
+                        </svg>
                         Nominated
                       </button>
                       <button
@@ -154,6 +185,7 @@ function AllNfts({ nftData }) {
                           setNomineesComponent(true);
                           setIndexValue({ key });
                           // console.log(temp2.key);
+                          handleChooseNominee(nftData[key], item[3]);
                         }}
                       >
                         Edit Nominee
@@ -165,7 +197,7 @@ function AllNfts({ nftData }) {
                       onClick={() => {
                         // setNomineesComponent(true);
                         // setIndexValue({ key });
-                        handleChooseNominee(nftData[key]);
+                        handleChooseNominee(nftData[key], item[3]);
                         // console.log(temp2.key);
                       }}
                     >

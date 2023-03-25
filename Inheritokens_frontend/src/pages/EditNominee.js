@@ -17,6 +17,8 @@ import { useAccount } from "wagmi";
 import { ethers } from "ethers";
 
 import contract from "../artifacts/Main.json";
+import { inheritokensInstance } from "../components/Contracts";
+import Footer from "../components/Footer";
 export const CONTRACT_ADDRESS = "0xaEF8eb4EDCB0177A5ef6a5e3f46E581a5908eef4";
 export const BTTC_ADDRESS = "0xB987640A52415b64E2d19109E8f9d7a3492d5F54";
 
@@ -29,14 +31,16 @@ function EditNominee() {
   const nameRef = useRef("");
   const emailRef = useRef(null);
   const waRef = useRef(null);
-
+  const profile_picture = useRef(null);
   const location = useLocation();
 
   const navigate = useNavigate();
 
   const [file, setFile] = useState(location.state.profile_cid);
   // console.log(location.state.profile_cid);
-  const [fileName, setFileName] = useState("");
+  const [fileName, setFileName] = useState(
+    location.state.profile_cid.split("/")[5]
+  );
   // const [fileCid, setFileCid] = useState("");
   const [emailFormatWarn, setEmailFormatWarn] = useState(false);
   const [waFormatWarn, setwaFormatWarn] = useState(false);
@@ -45,12 +49,15 @@ function EditNominee() {
   const [errorMsg, setErrorMsg] = useState("");
   const [submitNotClicked, setSubmitNotClicked] = useState(true);
   const [uploaded, setUploaded] = useState("Submit");
+  const [imgMsg, setImgMsg] = useState("Uploading your image on ipfs...");
+  const [fileChanged, setFileChanged] = useState(false);
   const { address, isConnected } = useAccount();
 
   const [userData, setUserData] = useState({
     name: location.state.name,
     email: location.state.email,
     wallet_address: location.state.walletAddress,
+    profile_cid: location.state.profile_cid,
   });
 
   async function uploadImage(e) {
@@ -59,14 +66,31 @@ function EditNominee() {
     setFileName(document.getElementById("input").files[0].name);
     // console.log(URL.createObjectURL(e.target.files[0]));
     setFile(URL.createObjectURL(e.target.files[0]));
+    setFileChanged(true);
   }
 
   async function handleUpload(a, b) {
     if (a && b) {
       setSubmitNotClicked(false);
       setbtnLoading(true);
-      // var fileInput = document.getElementById("input");
+      var fileInput = document.getElementById("input");
       // console.log(fileInput);
+      console.log(fileInput.files.length);
+
+      let cid;
+
+      if (fileInput.files.length > 0) {
+        cid = await client.put(fileInput.files);
+      }
+
+      let image_cid;
+      if (fileInput.files.length > 0) {
+        image_cid = cid + "/" + fileName;
+      } else {
+        image_cid = location.state.profile_cid;
+        console.log(image_cid);
+      }
+      console.log(cid);
       // const rootCid = await client.put(fileInput.files, {
       //   name: "inheritokens profile images",
       //   maxRetries: 3,
@@ -80,14 +104,23 @@ function EditNominee() {
       // console.log(files[0].cid);
       // setUserData({ ...userData, cid: files[0].cid });
       // setFileCid(files[0].cid);
+
+      console.log(image_cid);
+      setUserData({ ...userData, profile_cid: image_cid });
+      setImgMsg("Profile has been uploaded on ipfs");
+      setUploaded("Image Uploaded");
+      setbtnLoading(false);
       setUploaded("Requesting...");
       setbtnLoading(false);
-      onSuccess();
+      onSuccess(image_cid);
     }
     // setFile(url);
   }
 
-  const onSuccess = async () => {
+  const onSuccess = async (image_cid) => {
+    setErrorMsg("");
+    setError(false);
+    setImgMsg("waiting for transaction...");
     //contract code starts here...............................
     try {
       const { ethereum } = window;
@@ -101,12 +134,13 @@ function EditNominee() {
         const { chainId } = await provider.getNetwork();
         console.log("switch case for this case is: " + chainId);
         if (chainId === 80001) {
-          const con = new ethers.Contract(CONTRACT_ADDRESS, contract, signer);
+          // const con = new ethers.Contract(CONTRACT_ADDRESS, contract, signer);
+          const con = await inheritokensInstance();
           const tx = await con.editNomineeDetails(
-            address,
             location.state.walletAddress,
             userData.name,
             userData.email,
+            image_cid,
             userData.wallet_address
           );
           await tx.wait();
@@ -189,6 +223,7 @@ function EditNominee() {
   };
 
   const resetImage = () => {
+    setFileChanged(true);
     setFile("");
     setFileName("");
   };
@@ -297,7 +332,7 @@ function EditNominee() {
             ) : (
               ""
             )}
-            {/* <div className="input-outer-div">
+            <div className="input-outer-div">
               <img src={profilepic} alt="profileicon" />
               <input
                 className="input-edit-profile"
@@ -337,17 +372,17 @@ function EditNominee() {
                   Choose file
                 </p>
               )}
-            </div> */}
-            {/* {file ? (
+            </div>
+            {file ? (
               <>
                 <div className="file-upload-div">
                   <img src={file} className="uploaded-img" alt="uploadsvg" />
                   <p></p>{" "}
                 </div>
               </>
-            ) : null} */}
+            ) : null}
             {/* <button className="file-upload-btn">Select Profile Image</button> */}
-            {/* {file && submitNotClicked ? (
+            {file && submitNotClicked ? (
               <>
                 <p className="reset-text">
                   * To reset the file, click on the reset button.
@@ -355,18 +390,19 @@ function EditNominee() {
               </>
             ) : file && !submitNotClicked ? (
               <>
-                <p className="reset-text">Uploading your image on ipfs</p>
+                <p className="reset-text">{imgMsg}</p>
               </>
             ) : (
               <>
                 <p className="reset-text"></p>
               </>
-            )} */}
+            )}
             <button
               className={
                 userData.email === location.state.email &&
                 userData.name === location.state.name &&
-                userData.wallet_address === location.state.walletAddress
+                userData.wallet_address === location.state.walletAddress &&
+                !fileChanged
                   ? "disabled"
                   : ""
               }
@@ -406,6 +442,7 @@ function EditNominee() {
           </div>
         </div>
       </section>
+      <Footer />
     </>
   );
 }

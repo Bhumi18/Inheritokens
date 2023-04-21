@@ -290,8 +290,8 @@
       ]
     },
     "D:\\Lampros Projects\\Inheritokens\\Inheritokens_frontend\\contracts\\NominateTokens.sol": {
-      "lastModificationDate": 1679300996421,
-      "contentHash": "d5195d0d95ee02f1dbcfcbfe17b62bbc",
+      "lastModificationDate": 1679392745680,
+      "contentHash": "fda30904cb2e58dda80e970bb6dbec2f",
       "sourceName": "contracts/NominateTokens.sol",
       "solcConfig": {
         "version": "0.8.17",
@@ -331,8 +331,8 @@
       ]
     },
     "D:\\Lampros Projects\\Inheritokens\\Inheritokens_frontend\\contracts\\NominateNFTs.sol": {
-      "lastModificationDate": 1679301016582,
-      "contentHash": "337f5575079f60a95bc00eda0aed57c4",
+      "lastModificationDate": 1679392562960,
+      "contentHash": "b3b0cbcba715d002ab9d44e4f345dfc3",
       "sourceName": "contracts/NominateNFTs.sol",
       "solcConfig": {
         "version": "0.8.17",

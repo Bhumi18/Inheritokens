@@ -213,7 +213,7 @@ function ChooseNomineeNFT({ nftsrc }) {
       const nft_contract = await nftContractInstance();
       console.log(location.state.isNominated);
       if (!location.state.isNominated) {
-        console.log("inside if ");
+        console.log("inside if not nominated");
         const chkApproved = await checkApproved(
           nftData.contract_add,
           nftData.token_id

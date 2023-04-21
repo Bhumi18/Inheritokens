@@ -14,7 +14,7 @@ function SelectNomineeForToken({ tokenDetails, setNomineesComponent }) {
   const navigate = useNavigate();
   const walletAdd = "0x054ae6107caadc187c304de87365bc52f8c2adb9";
   const { address, isConnected } = useAccount();
-  const [isLoading, setLoading] = React.useState(true);
+  const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const [index, setIndex] = useState();
 

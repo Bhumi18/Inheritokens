@@ -12,6 +12,7 @@ import GetOrdinal from "../components/GetOrdinal";
 import contract from "../artifacts/Main.json";
 import { ethers } from "ethers";
 import Footer from "../components/Footer";
+import { tokenContractInstance } from "../components/Contracts";
 export const CONTRACT_ADDRESS = "0xaEF8eb4EDCB0177A5ef6a5e3f46E581a5908eef4";
 export const BTTC_ADDRESS = "0xB987640A52415b64E2d19109E8f9d7a3492d5F54";
 
@@ -207,8 +208,8 @@ function ChooseNomineeToken() {
   // console.log(location.state);
 
   useEffect(() => {
-    if (location.state) {
-      let td = location.state;
+    if (location.state.item) {
+      let td = location.state.item;
       console.log(td);
       setTokenDetails({
         token_address: td.token_address,
@@ -230,6 +231,13 @@ function ChooseNomineeToken() {
     if (!address) navigate("/");
   }, [address, navigate]);
 
+  const assignTokenNominee = async () => {
+    try {
+      const token_contract = await tokenContractInstance();
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
   return (
     <>
       <Navbar />

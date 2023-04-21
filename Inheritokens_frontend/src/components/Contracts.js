@@ -127,5 +127,21 @@ export const approveUSDCNFT = async () => {
   const tx1 = await contract.approve(NFT_ADDRESS, charge);
   return await tx1.wait();
 };
+
+export const approveUSDCToken = async () => {
+  const { ethereum } = window;
+  const provider = new ethers.providers.Web3Provider(ethereum);
+  const signer = provider.getSigner();
+  const token_contract = await tokenContractInstance();
+  const chargeData = await token_contract.tokenCharge();
+  const chargeTokenAddress = await token_contract.chargeTokenAddress();
+  const charge = parseInt(chargeData, 10);
+  const contract_address = ethers.utils.getAddress(
+    chargeTokenAddress // chargeTokenAddress (make it dynamic)
+  );
+  const contract = new ethers.Contract(contract_address, ERC20, signer);
+  const tx1 = await contract.approve(TOKEN_ADDRESS, charge);
+  return await tx1.wait();
+};
 // inheritokensInstance();
 // export const prints = cons;

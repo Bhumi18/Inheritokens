@@ -7,6 +7,7 @@ import "../styles/token.scss";
 import { parse } from "@ethersproject/transactions";
 import SelectNomineeForToken from "./SelectNomineeForToken";
 import { ethers } from "ethers";
+import { inheritokensInstance } from "./Contracts";
 
 function Tokens() {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ function Tokens() {
   const { chain } = useNetwork();
   console.log(chain);
   const [showNativeTokenBalance, setNativeTokenBalance] = useState(0);
+  const [nativeTokenNominated, setNativeTokenNominated] = useState();
   const [allTokens, setAllTokens] = useState([]);
   const [showAllToken, setShowAllToken] = useState(false);
   const [showNomineesComponent, setNomineesComponent] = useState(false);
@@ -27,6 +29,7 @@ function Tokens() {
   };
 
   const fetchTokens = async () => {
+    const inheritokens_contract = await inheritokensInstance();
     const { ethereum } = window;
     if (ethereum) {
       const provider = new ethers.providers.Web3Provider(ethereum);
@@ -49,9 +52,15 @@ function Tokens() {
         };
         await axios
           .request(options)
-          .then(function (response) {
+          .then(async function (response) {
             console.log(response);
             console.log(response.data);
+            const isNominated =
+              await inheritokens_contract.tokenAddressToTokenStruct(
+                address,
+                "0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889"
+              );
+            setNativeTokenNominated(isNominated.isNominated);
             // if (!showNativeTokenBalance.length > 0) {
             //   showNativeTokenBalance.push(response.data.balance);
             //   setNativeTokenBalance(showNativeTokenBalance);
@@ -100,6 +109,7 @@ function Tokens() {
   };
 
   const fetchTokenAll = async () => {
+    const inheritokens_contract = await inheritokensInstance();
     const options = {
       method: "GET",
       url: "https://deep-index.moralis.io/api/v2/" + address + "/erc20",
@@ -113,17 +123,26 @@ function Tokens() {
 
     await axios
       .request(options)
-      .then(function (response) {
-        // console.log(response.data);
-        // console.log("inside the all token");
+      .then(async function (response) {
+        console.log(response.data);
+
         for (let i = 0; i < response.data.length; i++) {
+          const isNominated =
+            await inheritokens_contract.tokenAddressToTokenStruct(
+              address,
+              response.data[i].token_address
+            );
+          console.log(isNominated.isNominated);
           if (
             !allTokens.find(
               (temp) =>
                 response.data[i]["token_address"] === temp["token_address"]
             )
           ) {
-            allTokens.push(response.data[i]);
+            allTokens.push({
+              ...response.data[i],
+              isNominated: isNominated.isNominated,
+            });
           }
         }
         setAllTokens(allTokens);
@@ -139,8 +158,10 @@ function Tokens() {
     fetchTokenAll();
   }, []);
 
-  const handleClick = () => {
-    navigate("/nominee/token", { state: tokenDetails });
+  const handleClick = (isNominated) => {
+    navigate("/nominee/token", {
+      state: { item: tokenDetails, isNominated: isNominated },
+    });
   };
 
   return (
@@ -199,10 +220,12 @@ function Tokens() {
                               ),
                               token_decimals: 18,
                             };
-                            handleClick();
+                            handleClick(nativeTokenNominated);
                           }}
                         >
-                          Choose Nominee
+                          {nativeTokenNominated
+                            ? "Edit Nominee"
+                            : "Choose Nominee"}
                         </button>
                       ) : (
                         <button
@@ -245,10 +268,12 @@ function Tokens() {
                                   token_balance: val.balance,
                                   token_decimals: val.decimals,
                                 };
-                                handleClick();
+                                handleClick(val.isNominated);
                               }}
                             >
-                              Choose Nominee
+                              {val.isNominated
+                                ? "Edit Nominee"
+                                : "Choose Nominee"}
                             </button>
                           </td>
                         </tr>

@@ -50,7 +50,7 @@ function AllNfts({ nftData }) {
         // console.log("switch case for this case is: " + chainId);
         if (chainId === 80001) {
           // const con = new ethers.Contract(CONTRACT_ADDRESS, contract, signer);
-          const con2 = await inheritokensInstance();
+          const inheritokens_contract = await inheritokensInstance();
 
           for (let i = 0; i < nftData.length; i++) {
             // const nft = JSON.parse(item.metadata);
@@ -60,7 +60,7 @@ function AllNfts({ nftData }) {
             //   address,
             //   nftData[i].token_hash
             // );
-            const dt = await con2.nftAddressToTokenStruct(
+            const dt = await inheritokens_contract.nftAddressToTokenStruct(
               address,
               nftData[i].token_address,
               nftData[i].token_id

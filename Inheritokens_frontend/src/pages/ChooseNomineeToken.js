@@ -12,7 +12,12 @@ import GetOrdinal from "../components/GetOrdinal";
 import contract from "../artifacts/Main.json";
 import { ethers } from "ethers";
 import Footer from "../components/Footer";
-import { tokenContractInstance } from "../components/Contracts";
+import {
+  tokenContractInstance,
+  approveUSDCToken,
+  approveSelectedToken,
+  inheritokensInstance,
+} from "../components/Contracts";
 export const CONTRACT_ADDRESS = "0xaEF8eb4EDCB0177A5ef6a5e3f46E581a5908eef4";
 export const BTTC_ADDRESS = "0xB987640A52415b64E2d19109E8f9d7a3492d5F54";
 
@@ -57,7 +62,7 @@ function ChooseNomineeToken() {
   //   setArrChanged((prev) => prev + 1);
   // };
   const handleParentDelete = (key, k, ratio) => {
-    console.log("key", key, "k", k);
+    // console.log("key", key, "k", k);
     nominatedArr[key].ratio = nominatedArr[key].ratio - ratio;
     setTotalUsedRatio((prev) => prev - ratio);
     nominatedArr[key].nominees.splice(k, 1);
@@ -210,7 +215,7 @@ function ChooseNomineeToken() {
   useEffect(() => {
     if (location.state.item) {
       let td = location.state.item;
-      console.log(td);
+      // console.log(td);
       setTokenDetails({
         token_address: td.token_address,
         token_name: td.token_name,
@@ -224,7 +229,7 @@ function ChooseNomineeToken() {
 
   useEffect(() => {
     console.log(nominatedArr);
-    console.log(indexNumber);
+    // console.log(indexNumber);
   });
 
   useEffect(() => {
@@ -234,10 +239,141 @@ function ChooseNomineeToken() {
   const assignTokenNominee = async () => {
     try {
       const token_contract = await tokenContractInstance();
+      let arr = [];
+      for (let i = 0; i < nominatedArr.length; i++) {
+        for (let j = 0; j < nominatedArr[i].nominees.length; j++) {
+          let multipleNominee = [];
+          for (
+            let k = 0;
+            k < nominatedArr[i].nominees[j].priority_nominees.length;
+            k++
+          ) {
+            multipleNominee.push(
+              nominatedArr[i].nominees[j].priority_nominees[k].w_add
+            );
+          }
+          arr.push([
+            parseFloat(nominatedArr[i].nominees[j].single_nominee_ratio),
+            "0x0F0c3d49bcf3E9eDcB504672c0f795c377874ebc",
+            nominatedArr[i].nominees[j].priority_nominees[0].w_add,
+            multipleNominee,
+            false,
+            "",
+          ]);
+        }
+      }
+      console.log(arr);
+      if (location.state.isNominated) {
+      } else {
+        const approvalOfSelectedToken = await approveSelectedToken(
+          tokenDetails.token_address
+        );
+        // await approvalOfSelectedToken.wait();
+        console.log(approvalOfSelectedToken);
+      }
+      const approveUSDCtx = await approveUSDCToken();
+      // await approveUSDCtx.wait();
+      const tx = await token_contract.assignTokensToMultipleNominees(
+        tokenDetails.token_address, // token address
+        tokenDetails.token_name, // token name
+        arr
+      );
+      await tx.wait();
+      console.log(tx);
     } catch (error) {
       console.log(error.message);
     }
   };
+
+  // get nominated data
+  const getNominatedData = async () => {
+    try {
+      const token_contract = await tokenContractInstance();
+      const data = await token_contract.getAllStructs(
+        address,
+        tokenDetails.token_address
+      );
+      console.log(data);
+
+      for (let i = 0; i < data.length; i++) {
+        console.log("inside the function");
+        let nomineesDetails = [];
+        const con2 = await inheritokensInstance();
+        console.log(data[i][3]);
+        for (let j = 0; j < data[i][3].length; j++) {
+          console.log(data[i][3][j]);
+          const nominee_details = await con2.addressToNominee(
+            address,
+            data[i][3][j]
+          );
+          console.log(nominee_details);
+          nomineesDetails.push(nominee_details);
+        }
+
+        nominatedArr.push({
+          nominees: [
+            {
+              priority_nominees: nomineesDetails,
+              single_nominee_ratio: parseInt(data[i][0]),
+            },
+          ],
+        });
+        console.log(nominatedArr);
+        console.log(nominatedArr);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    const getNominatedData = async () => {
+      try {
+        const token_contract = await tokenContractInstance();
+        const data = await token_contract.getAllStructs(
+          address,
+          tokenDetails.token_address
+        );
+        console.log(data);
+
+        for (let i = 0; i < data.length; i++) {
+          console.log("inside the function");
+          let nomineesDetails = [];
+          const con2 = await inheritokensInstance();
+          console.log(data[i][3]);
+          for (let j = 0; j < data[i][3].length; j++) {
+            console.log(data[i][3][j]);
+            const nominee_details = await con2.addressToNominee(
+              address,
+              data[i][3][j]
+            );
+            console.log(nominee_details);
+            nomineesDetails.push({
+              name: nominee_details[0],
+              email: nominee_details[1],
+              img: "https://ipfs.io/ipfs/" + nominee_details[2],
+              w_add: nominee_details[3],
+            });
+          }
+
+          nominatedArr.push({
+            nominees: [
+              {
+                priority_nominees: nomineesDetails,
+                single_nominee_ratio: parseInt(data[i][0]),
+              },
+            ],
+          });
+          // console.log(nominatedArr);
+          console.log(nominatedArr);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    if (address) {
+      getNominatedData();
+    }
+  }, [address, getNominatedData]);
   return (
     <>
       <Navbar />
@@ -524,7 +660,7 @@ function ChooseNomineeToken() {
               </div>
             )} */}
 
-            {/* testing here ***************************************************************** */}
+            {/* here ***************************************************************** */}
             {arrChanged && nominatedArr.length > 0 ? (
               nominatedArr.map((item, key) => {
                 return (
@@ -700,7 +836,7 @@ function ChooseNomineeToken() {
               </button>
               <button
                 className="save-nominee"
-                onClick={() => setTokenNomineeDetails(true)}
+                onClick={() => assignTokenNominee()}
               >
                 Save Nominees
               </button>

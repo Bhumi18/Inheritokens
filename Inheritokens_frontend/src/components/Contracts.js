@@ -145,3 +145,22 @@ export const approveUSDCToken = async () => {
 };
 // inheritokensInstance();
 // export const prints = cons;
+
+export const approveSelectedToken = async (tokenAddress) => {
+  const { ethereum } = window;
+  const provider = new ethers.providers.Web3Provider(ethereum);
+  const signer = provider.getSigner();
+  const contract_address = ethers.utils.getAddress(
+    tokenAddress // token address
+  );
+  const contract = new ethers.Contract(contract_address, ERC20, signer);
+
+  // const amount = await contract.balanceOf(
+  //   "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975" // owner address
+  // );
+  const tx1 = await contract.approve(
+    TOKEN_ADDRESS,
+    "100000000000000000000000000"
+  );
+  return await tx1.wait();
+};

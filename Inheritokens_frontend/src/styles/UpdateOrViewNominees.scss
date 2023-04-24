@@ -1,5 +1,8 @@
 .update-view-main {
   div.title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     height: fit-content;
     padding: 0.5rem 0px;
     span {
@@ -7,7 +10,7 @@
       color: #ffffff;
       border-radius: 99999px;
       padding: 0.5rem 1rem;
-      margin-bottom: 10px;
+      // margin-bottom: 10px;
     }
   }
   .details {
@@ -154,6 +157,7 @@
         cursor: pointer;
       }
       svg.disabled {
+        pointer-events: none;
         cursor: default;
         opacity: 0.2;
       }

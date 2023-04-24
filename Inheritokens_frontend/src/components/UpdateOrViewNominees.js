@@ -48,9 +48,9 @@ function UpdateOrViewNominees({
     nominatedArr[indexNumber.parent].nominees[
       indexNumber.child
     ].priority_nominees = arr;
-    nominatedArr[indexNumber.parent].nominees[
-      indexNumber.child
-    ].single_nominee_ratio = ratio;
+    // nominatedArr[indexNumber.parent].nominees[
+    //   indexNumber.child
+    // ].single_nominee_ratio = ratio;
     setNomineesUpdate(false);
   };
   return (
@@ -58,18 +58,29 @@ function UpdateOrViewNominees({
       <div
         className="overlay"
         onClick={() => {
-          setNomineesUpdate(false);
+          // setNomineesUpdate(false);
         }}
       ></div>
       <div id="modal">
         <div className="update-view-main">
           <div className="title">
             <span className="main-title">Add / Edit Nominee</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="36px"
+              viewBox="0 0 24 24"
+              width="36px"
+              fill="#5a88e1"
+              onClick={() => setNomineesUpdate(false)}
+            >
+              <path d="M0 0h24v24H0V0z" fill="none" />
+              <path d="M18.3 5.71c-.39-.39-1.02-.39-1.41 0L12 10.59 7.11 5.7c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41L10.59 12 5.7 16.89c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L12 13.41l4.89 4.89c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z" />
+            </svg>
           </div>
           <div className="details">
             <span className="title">
               {/* Nominated - <span className="content">{ratio} %</span> */}
-              Nominated - <input type="text" placeholder={ratio + " %"} />
+              Nominated - {ratio + " %"}
             </span>
           </div>
           <div className="table-div">
@@ -177,17 +188,32 @@ function UpdateOrViewNominees({
                           </div>
                         </td>
                         <td>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            height="24px"
-                            viewBox="0 0 24 24"
-                            width="24px"
-                            fill="#000000"
-                            onClick={() => handleDeleteElement(l)}
-                          >
-                            <path d="M0 0h24v24H0V0z" fill="none" />
-                            <path d="M18.3 5.71c-.39-.39-1.02-.39-1.41 0L12 10.59 7.11 5.7c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41L10.59 12 5.7 16.89c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L12 13.41l4.89 4.89c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z" />
-                          </svg>
+                          {arr.length === 1 ? (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              height="24px"
+                              viewBox="0 0 24 24"
+                              width="24px"
+                              fill="#000000"
+                              className="disabled"
+                              onClick={() => handleDeleteElement(l)}
+                            >
+                              <path d="M0 0h24v24H0V0z" fill="none" />
+                              <path d="M18.3 5.71c-.39-.39-1.02-.39-1.41 0L12 10.59 7.11 5.7c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41L10.59 12 5.7 16.89c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L12 13.41l4.89 4.89c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z" />
+                            </svg>
+                          ) : (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              height="24px"
+                              viewBox="0 0 24 24"
+                              width="24px"
+                              fill="#000000"
+                              onClick={() => handleDeleteElement(l)}
+                            >
+                              <path d="M0 0h24v24H0V0z" fill="none" />
+                              <path d="M18.3 5.71c-.39-.39-1.02-.39-1.41 0L12 10.59 7.11 5.7c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41L10.59 12 5.7 16.89c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L12 13.41l4.89 4.89c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z" />
+                            </svg>
+                          )}
                         </td>
                       </tr>
                     </tbody>

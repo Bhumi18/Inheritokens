@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 
-import screenshot1 from "../assets/images/Screenshot1.png";
+import screenshot1 from "../assets/images/sc_final.gif";
+// import screenshot2 from "../assets/images/sc02.gif";
+
 import m1 from "../assets/images/mobilescreenshot01.png";
 import Cookies from "universal-cookie";
 
@@ -45,9 +47,6 @@ function InformationSlider({ setInformationSlider }) {
               <SwiperSlide>
                 <img src={m1} alt="screenshot1" width="100%" />
               </SwiperSlide>
-              <SwiperSlide>
-                <img src={m1} alt="screenshot1" width="100%" />
-              </SwiperSlide>
             </Swiper>
           </div>
         </>
@@ -71,12 +70,9 @@ function InformationSlider({ setInformationSlider }) {
               <SwiperSlide>
                 <img src={screenshot1} alt="screenshot1" width="100%" />
               </SwiperSlide>
-              <SwiperSlide>
-                <img src={screenshot1} alt="screenshot1" width="100%" />
-              </SwiperSlide>
-              <SwiperSlide>
-                <img src={screenshot1} alt="screenshot1" width="100%" />
-              </SwiperSlide>
+              {/* <SwiperSlide>
+                <img src={screenshot2} alt="screenshot1" width="100%" />
+              </SwiperSlide> */}
             </Swiper>
           </div>
         </>

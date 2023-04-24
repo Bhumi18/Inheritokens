@@ -12,7 +12,7 @@ function Footer() {
           <img src={logofull} className="big-screen" alt="logo" width="200px" />
 
           <span className="big-screen">
-            Copyright &#xa9; 2022 Inheritokens.com
+            Copyright &#xa9; 2022-2023 Inheritokens.com
           </span>
         </div>
         <div className="right">
@@ -44,7 +44,7 @@ function Footer() {
       </div>
       <div className="big-screen-copyright">
         <span className="small-screen">
-          Copyright &#xa9; 2022 Inheritokens.com
+          Copyright &#xa9; 2022-2023 Inheritokens.com
         </span>
       </div>
     </div>

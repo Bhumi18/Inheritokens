@@ -129,7 +129,7 @@ function AddNominee() {
       console.log(image_cid);
       setUserData({ ...userData, cid: cid + "/" + fileName });
       // setFileCid(files[0].cid);
-      setImgMsg("Profile has been uploaded on ipfs");
+      setImgMsg("Successfully uploaded on IPFS");
       setbtnLoading(false);
       onSuccess(image_cid);
       // setFile(url);

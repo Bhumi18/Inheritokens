@@ -244,25 +244,21 @@
           margin-top: 20px;
           box-shadow: none;
           border: none;
-          color: #ffffff;
+          // color: #ffffff;
           font-weight: 500;
           font-size: 1rem;
           letter-spacing: 2px;
           line-height: 1rem;
           padding: 0.5rem 1rem;
           border-radius: 9999px;
-          background: #dcd6fc;
-          background-image: linear-gradient(to right, #9f8ff7 0%, #5a88e1 100%);
-          background-image: -moz-linear-gradient(
-            left,
-            #9f8ff7 0%,
-            #5a88e1 100%
-          );
-          background-image: -webkit-linear-gradient(
-            left,
-            #9f8ff7 0%,
-            #5a88e1 100%
-          );
+          color: #0ba360;
+          background-color: #fff;
+          border: 1px solid #0ba360;
+          // background: linear-gradient(to top, #0ba360 0%, #3cba92 100%);
+          &:hover {
+            color: white;
+            background: linear-gradient(to top, #0ba360 0%, #3cba92 100%);
+          }
         }
       }
     }
@@ -340,6 +336,10 @@
             #9f8ff7 0%,
             #5a88e1 100%
           );
+        }
+        span.disabled {
+          opacity: 0.5;
+          pointer-events: none;
         }
         .nominee-details {
           display: flex;

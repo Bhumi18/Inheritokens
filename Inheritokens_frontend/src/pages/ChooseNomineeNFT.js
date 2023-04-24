@@ -19,6 +19,7 @@ import {
   tokenContractInstance,
 } from "../components/Contracts";
 import Footer from "../components/Footer";
+import LoadingForTrans from "../components/LoadingForTrans";
 export const CONTRACT_ADDRESS = "0xaEF8eb4EDCB0177A5ef6a5e3f46E581a5908eef4";
 export const BTTC_ADDRESS = "0xB987640A52415b64E2d19109E8f9d7a3492d5F54";
 
@@ -30,6 +31,7 @@ function ChooseNomineeNFT({ nftsrc }) {
   const [allNomiees, setAllNomiees] = useState(true);
   const [allCharities, setAllCharities] = useState(false);
   const [data, setData] = useState([]);
+  const [nominatedAddresses, setNominatedAddresses] = useState();
 
   const [arr, setArr] = useState([]);
   const [nftData, setNftData] = useState({
@@ -44,6 +46,11 @@ function ChooseNomineeNFT({ nftsrc }) {
 
   const [nominatedArr, setNominatedArr] = useState([]);
   const [arrChanged, setArrChanged] = useState(1);
+  const [loader, setLoader] = useState({
+    status: false,
+    msg: "",
+    info: "",
+  });
 
   const printArr = () => {
     console.log(arr);
@@ -88,18 +95,20 @@ function ChooseNomineeNFT({ nftsrc }) {
         }
         const { chainId } = await provider.getNetwork();
         console.log("switch case for this case is: " + chainId);
+        await getNominated();
         if (chainId === 80001) {
           // const con = new ethers.Contract(CONTRACT_ADDRESS, contract, signer);
           const con = await inheritokensInstance();
           const address_array = await con.getOwnerDetails(address);
-          // console.log(address_array);
+          console.log(address_array);
           for (let i = 0; i < address_array[8].length; i++) {
             // console.log(address_array[i]);
+
             const nominee_details = await con.addressToNominee(
               address,
               address_array[8][i]
             );
-            // console.log(nominee_details[0]);
+            // console.log(nominee_details);
             // console.log(nominee_details[1]);
             // console.log(nominee_details[2]);
             const url = "https://ipfs.io/ipfs/" + nominee_details[2];
@@ -119,7 +128,7 @@ function ChooseNomineeNFT({ nftsrc }) {
           setData(data);
           setArr(data);
           console.log(data);
-          getNominated();
+
           // setLoading(false);
         } else if (chainId === 1029) {
           const con = new ethers.Contract(BTTC_ADDRESS, contract, signer);
@@ -179,6 +188,8 @@ function ChooseNomineeNFT({ nftsrc }) {
       );
       console.log(nominated);
       console.log(nominated[2]);
+      console.log(typeof nominated[2]);
+      setNominatedAddresses(nominated[2]);
 
       for (let i = 0; i < nominated[2].length; i++) {
         const con2 = await inheritokensInstance();
@@ -210,6 +221,7 @@ function ChooseNomineeNFT({ nftsrc }) {
 
   const assignNFT = async () => {
     try {
+      setLoader({ ...loader, status: true });
       const nft_contract = await nftContractInstance();
       console.log(location.state.isNominated);
       if (!location.state.isNominated) {
@@ -222,6 +234,11 @@ function ChooseNomineeNFT({ nftsrc }) {
         console.log(NFT_ADDRESS);
         console.log(chkApproved !== NFT_ADDRESS);
         if (chkApproved !== NFT_ADDRESS) {
+          setLoader({
+            status: true,
+            msg: "Waiting for approval of the NFT...",
+            info: "",
+          });
           const approvenft = await approveNFT(
             nftData.contract_add,
             nftData.token_id
@@ -233,6 +250,11 @@ function ChooseNomineeNFT({ nftsrc }) {
           nominees_address.push(nominatedArr[i].w_add);
         }
         console.log(nominees_address);
+        setLoader({
+          status: true,
+          msg: "Waiting for transaction approval...",
+          info: "",
+        });
         const tx = await nft_contract.nominateNFT(
           nftData.contract_add, // token address or nft address
           nftData.name, // token name or nft name
@@ -247,6 +269,11 @@ function ChooseNomineeNFT({ nftsrc }) {
           ]
         );
         await tx.wait();
+        setLoader({
+          status: false,
+          msg: "Waiting for transaction approval...",
+          info: "",
+        });
       } else {
         console.log("inside else ");
         const chkApproved = await checkApproved(
@@ -255,13 +282,22 @@ function ChooseNomineeNFT({ nftsrc }) {
         );
         console.log(chkApproved);
         if (chkApproved !== NFT_ADDRESS) {
+          setLoader({
+            status: true,
+            msg: "Waiting for approval of the NFT...",
+            info: "",
+          });
           const approvenft = await approveNFT(
             nftData.contract_add,
             nftData.token_id
           );
           console.log(approvenft);
         }
-
+        setLoader({
+          status: true,
+          msg: "Waiting for approval of the USDC...",
+          info: "",
+        });
         const tx2 = await approveUSDCNFT();
         console.log(tx2);
         if (tx2) {
@@ -275,6 +311,11 @@ function ChooseNomineeNFT({ nftsrc }) {
             nominees_address.push(nominatedArr[i].w_add);
           }
           console.log(nominees_address);
+          setLoader({
+            status: true,
+            msg: "Waiting for transaction approval...",
+            info: "",
+          });
           const tx = await nft_contract.nominateNFT(
             nftData.contract_add, // token address or nft address
             nftData.name, // token name or nft name
@@ -289,10 +330,20 @@ function ChooseNomineeNFT({ nftsrc }) {
             ]
           );
           await tx.wait();
+          setLoader({
+            status: false,
+            msg: "Waiting for transaction approval...",
+            info: "",
+          });
         }
       }
     } catch (error) {
       console.log(error.message);
+      setLoader({
+        status: false,
+        info: "",
+        msg: "",
+      });
     }
   };
 
@@ -355,6 +406,11 @@ function ChooseNomineeNFT({ nftsrc }) {
         </td>
         <td className="add-this">
           <span
+            // className={
+            //   nominatedAddresses.includes(person.w_add)
+            //     ? "action-btn disabled"
+            //     : "action-btn"
+            // }
             className="action-btn"
             onClick={() => handleAddElement(filteredPersons[key])}
           >
@@ -639,6 +695,11 @@ function ChooseNomineeNFT({ nftsrc }) {
         </div>
       </section>
       <Footer />
+      {loader.status ? (
+        <LoadingForTrans loader={loader} setLoader={setLoader} />
+      ) : (
+        ""
+      )}
     </>
   );
 }

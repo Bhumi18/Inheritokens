@@ -85,69 +85,6 @@ function ChooseNomineeToken() {
   //   setArrChanged((prev) => prev + 1);
   //   printArr();
   // };
-  // const data = [
-  //   {
-  //     img: image,
-  //     name: "Bhumi Sadariya",
-  //     email: "bhumi@gmail.com",
-  //     w_add: "0xeB88DDaEdA226129a8Fisj0137B2ae35aA42A975",
-  //   },
-  //   {
-  //     img: image,
-  //     name: "Jaydip Patel",
-  //     email: "jaydip@gmail.com",
-  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-  //   },
-  //   {
-  //     img: image,
-  //     name: "Lajja Vaniya",
-  //     email: "lajja@gmail.com",
-  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-  //   },
-  //   {
-  //     img: image,
-  //     name: "Deepak Rathore",
-  //     email: "deepak@gmail.com",
-  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-  //   },
-  //   {
-  //     img: image,
-  //     name: "Bhadresh",
-  //     email: "bhadresh@gmail.com",
-  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-  //   },
-  //   {
-  //     img: image,
-  //     name: "Rahul Rajan",
-  //     email: "rahul@gmail.com",
-  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-  //   },
-  //   {
-  //     img: image,
-  //     name: "Aakash Palan",
-  //     email: "akashpalan@gmail.com",
-  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-  //   },
-  //   {
-  //     img: image,
-  //     name: "Adithya",
-  //     email: "adithya@gmail.com",
-  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-  //   },
-  //   {
-  //     img: image,
-  //     name: "Sarvagna Kadiya",
-  //     email: "sarvagna@gmail.com",
-  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-  //   },
-  //   {
-  //     img: image,
-  //     name: "Prashant Suthar",
-  //     email: "prashant@gmail.com",
-  //     w_add: "0xeB88DDaEdA2261298F1b740137B2ae35aA42A975",
-  //   },
-  // ];
-  // search bar components
 
   const [searchField, setSearchField] = useState("");
   const handleChange = (e) => {
@@ -264,6 +201,8 @@ function ChooseNomineeToken() {
       }
       console.log(arr);
       if (location.state.isNominated) {
+        // approve selected token function if already approved selected token is less than available balance
+        // not required to approve selected token as we already approved more than enough token right now
       } else {
         const approvalOfSelectedToken = await approveSelectedToken(
           tokenDetails.token_address
@@ -286,45 +225,46 @@ function ChooseNomineeToken() {
   };
 
   // get nominated data
-  const getNominatedData = async () => {
-    try {
-      const token_contract = await tokenContractInstance();
-      const data = await token_contract.getAllStructs(
-        address,
-        tokenDetails.token_address
-      );
-      console.log(data);
+  // const getNominatedData = async () => {
+  //   try {
+  //     const token_contract = await tokenContractInstance();
+  //     const data = await token_contract.getAllStructs(
+  //       address,
+  //       tokenDetails.token_address
+  //     );
+  //     console.log(data);
 
-      for (let i = 0; i < data.length; i++) {
-        console.log("inside the function");
-        let nomineesDetails = [];
-        const con2 = await inheritokensInstance();
-        console.log(data[i][3]);
-        for (let j = 0; j < data[i][3].length; j++) {
-          console.log(data[i][3][j]);
-          const nominee_details = await con2.addressToNominee(
-            address,
-            data[i][3][j]
-          );
-          console.log(nominee_details);
-          nomineesDetails.push(nominee_details);
-        }
+  //     for (let i = 0; i < data.length; i++) {
+  //       console.log("inside the function");
+  //       let nomineesDetails = [];
+  //       const con2 = await inheritokensInstance();
+  //       console.log(data[i][3]);
+  //       for (let j = 0; j < data[i][3].length; j++) {
+  //         console.log(data[i][3][j]);
+  //         const nominee_details = await con2.addressToNominee(
+  //           address,
+  //           data[i][3][j]
+  //         );
+  //         console.log(nominee_details);
+  //         nomineesDetails.push(nominee_details);
+  //       }
 
-        nominatedArr.push({
-          nominees: [
-            {
-              priority_nominees: nomineesDetails,
-              single_nominee_ratio: parseInt(data[i][0]),
-            },
-          ],
-        });
-        console.log(nominatedArr);
-        console.log(nominatedArr);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  //       nominatedArr.push({
+  //         nominees: [
+  //           {
+  //             priority_nominees: nomineesDetails,
+  //             single_nominee_ratio: parseInt(data[i][0]),
+  //           },
+  //         ],
+  //       });
+  //       console.log(nominatedArr);
+  //       console.log(nominatedArr);
+  //     }
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
+
   useEffect(() => {
     const getNominatedData = async () => {
       try {
@@ -334,38 +274,44 @@ function ChooseNomineeToken() {
           tokenDetails.token_address
         );
         console.log(data);
-
+        let tempArr = [];
         for (let i = 0; i < data.length; i++) {
           console.log("inside the function");
           let nomineesDetails = [];
           const con2 = await inheritokensInstance();
           console.log(data[i][3]);
-          for (let j = 0; j < data[i][3].length; j++) {
-            console.log(data[i][3][j]);
-            const nominee_details = await con2.addressToNominee(
-              address,
-              data[i][3][j]
-            );
-            console.log(nominee_details);
-            nomineesDetails.push({
-              name: nominee_details[0],
-              email: nominee_details[1],
-              img: "https://ipfs.io/ipfs/" + nominee_details[2],
-              w_add: nominee_details[3],
-            });
-          }
+          if (tempArr.length < data.length) {
+            for (let j = 0; j < data[i][3].length; j++) {
+              console.log(data[i][3][j]);
+              const nominee_details = await con2.addressToNominee(
+                address,
+                data[i][3][j]
+              );
+              console.log(nominee_details);
+              nomineesDetails.push({
+                name: nominee_details[0],
+                email: nominee_details[1],
+                img: "https://ipfs.io/ipfs/" + nominee_details[2],
+                w_add: nominee_details[3],
+              });
+            }
 
-          nominatedArr.push({
-            nominees: [
-              {
-                priority_nominees: nomineesDetails,
-                single_nominee_ratio: parseInt(data[i][0]),
-              },
-            ],
-          });
+            tempArr.push({
+              nominees: [
+                {
+                  priority_nominees: nomineesDetails,
+                  single_nominee_ratio: parseInt(data[i][0]),
+                },
+              ],
+              ratio: parseInt(data[i][0]),
+            });
+            setTotalUsedRatio((prev) => prev + parseInt(data[i][0]));
+          }
           // console.log(nominatedArr);
-          console.log(nominatedArr);
+          console.log(tempArr);
         }
+        setNominatedArr(tempArr);
+        // setArrChanged((prev) => prev + 1);
       } catch (err) {
         console.log(err);
       }
@@ -373,7 +319,8 @@ function ChooseNomineeToken() {
     if (address) {
       getNominatedData();
     }
-  }, [address, getNominatedData]);
+  }, [address, tokenDetails.token_address]);
+
   return (
     <>
       <Navbar />

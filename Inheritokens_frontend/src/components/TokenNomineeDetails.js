@@ -179,11 +179,17 @@ function TokenNomineeDetails({
             className="proportion-input"
             type="number"
             placeholder="Enter Proportion"
+            step="1"
+            pattern="\d+"
             min={0}
             max={parseFloat(100) - parseFloat(totalUsedRatio)}
             onChange={(e) => {
-              if (e.target.value > 100) {
-                e.target.value = 0;
+              if (Number.isInteger(e.target.value)) {
+                if (e.target.value > 100) {
+                  e.target.value = 0;
+                }
+              } else {
+                e.target.value = Math.floor(e.target.value);
               }
               setRatio(e.target.value);
             }}

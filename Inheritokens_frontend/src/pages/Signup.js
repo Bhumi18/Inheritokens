@@ -11,6 +11,7 @@ import Navbar from "../components/Navbar";
 import { useAccount } from "wagmi";
 import { ethers } from "ethers";
 import "../styles/signup.scss";
+import { getParsedEthersError } from "@enzoferey/ethers-error-parser";
 // import MailSvg from "../components/MailSvg";
 
 import contract from "../artifacts/Main.json";
@@ -149,6 +150,7 @@ function Signup() {
 
   const onSuccess = async (image_cid, otp) => {
     setError(false);
+    setErrorMsg("");
     setUploaded("Requesting...");
     // setTimeout(() => {
     //   setUploaded("Requesting...");
@@ -232,12 +234,14 @@ function Signup() {
         }
       }
     } catch (error) {
+      const parsedEthersError = getParsedEthersError(error);
+      console.log(parsedEthersError.context.split(`(`)[0]);
       setbtnLoading(false);
       setUploaded("Sign Up");
-      let msg = error.message.split("(")[0];
+      let msg = parsedEthersError.context.split(`(`)[0];
       setErrorMsg(msg);
       setError(true);
-      console.log(error.message);
+      // console.log(error.message);
     }
     //contract code ends here.................................
 

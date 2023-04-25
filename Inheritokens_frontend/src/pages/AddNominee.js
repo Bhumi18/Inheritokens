@@ -9,6 +9,7 @@ import closeicon from "../assets/images/close.png";
 import namepic from "../assets/images/Name.svg";
 import { useAccount } from "wagmi";
 import { ethers } from "ethers";
+import { getParsedEthersError } from "@enzoferey/ethers-error-parser";
 // import PhoneInput from "react-phone-input-2";
 // import "react-phone-input-2/lib/style.css";
 
@@ -129,8 +130,9 @@ function AddNominee() {
       console.log(image_cid);
       setUserData({ ...userData, cid: cid + "/" + fileName });
       // setFileCid(files[0].cid);
-      setImgMsg("Successfully uploaded on IPFS");
       setbtnLoading(false);
+      setImgMsg("Successfully uploaded on IPFS");
+
       onSuccess(image_cid);
       // setFile(url);
     }
@@ -140,6 +142,7 @@ function AddNominee() {
   //   setUploaded("Upload File");
   // };
   const onSuccess = async (image_cid) => {
+    setbtnLoading(true);
     setImgMsg("waiting for transaction...");
     //contract code starts here...............................
     try {
@@ -181,9 +184,12 @@ function AddNominee() {
         }
       }
     } catch (error) {
+      const parsedEthersError = getParsedEthersError(error);
+      console.log(parsedEthersError.context.split(`(`)[0]);
+      console.log(error);
       setbtnLoading(false);
       setUploaded("Add Nominee");
-      let msg = error.message.split("(")[0];
+      let msg = parsedEthersError.context.split(`(`)[0];
       setErrorMsg(msg);
       setError(true);
       console.log(error.message);
@@ -202,6 +208,8 @@ function AddNominee() {
   };
 
   const handleSubmit = (email, wa) => {
+    setError(false);
+    setErrorMsg("");
     let emailVerified = false;
     let waVerified = false;
     if (validateEmail(email)) {

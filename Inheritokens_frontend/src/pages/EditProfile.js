@@ -16,6 +16,7 @@ import "../styles/signup.scss";
 import contract from "../artifacts/Main.json";
 import { inheritokensInstance } from "../components/Contracts";
 import Footer from "../components/Footer";
+import { getParsedEthersError } from "@enzoferey/ethers-error-parser";
 export const CONTRACT_ADDRESS = "0xaEF8eb4EDCB0177A5ef6a5e3f46E581a5908eef4";
 export const BTTC_ADDRESS = "0xB987640A52415b64E2d19109E8f9d7a3492d5F54";
 const API_TOKEN =
@@ -144,12 +145,14 @@ function EditProfile({ setShowEditProfile, data }) {
         }
       }
     } catch (error) {
+      const parsedEthersError = getParsedEthersError(error);
+      console.log(parsedEthersError.context.split(`(`)[0]);
       setbtnLoading(false);
       setUploaded("Update");
-      let msg = error.message.split("(")[0];
+      let msg = parsedEthersError.context.split(`(`)[0];
       setErrorMsg(msg);
       setError(true);
-      console.log(error.message);
+      // console.log(error.message);
     }
     //contract code ends here.................................
   };
@@ -190,6 +193,10 @@ function EditProfile({ setShowEditProfile, data }) {
     // console.log(data[0][3]);
     // console.log(data[0][2].split("/")[5]);
   }, [userData.email, userData.name]);
+
+  useEffect(() => {
+    if (!address) navigate("/");
+  }, [address, navigate]);
 
   return (
     <>

@@ -100,12 +100,6 @@ function Profile() {
   };
 
   useEffect(() => {
-    if (!address) {
-      navigate("/");
-    }
-  }, [address, navigate]);
-
-  useEffect(() => {
     showProfile();
   }, []);
 
@@ -249,6 +243,10 @@ function Profile() {
     fetchNfts();
   }, [showAllNfts]);
 
+  useEffect(() => {
+    if (!isConnected && !address) navigate("/");
+  }, [isConnected, address, navigate]);
+
   if (showProfileComponent && !isLoading) {
     if (showEditProfile) {
       return (
@@ -263,7 +261,7 @@ function Profile() {
           setRecoveryAddress={setRecoveryAddress}
         />
       );
-    } else {
+    } else if (address) {
       return (
         <>
           <Navbar userData={data[0][2]} />

@@ -7,6 +7,7 @@ import emailpic from "../assets/images/Mail.svg";
 import namepic from "../assets/images/Name.svg";
 import walletpic from "../assets/images/wallet_icon.svg";
 import closeicon from "../assets/images/close.png";
+import { getParsedEthersError } from "@enzoferey/ethers-error-parser";
 // import PhoneInput from "react-phone-input-2";
 // import "react-phone-input-2/lib/style.css";
 
@@ -111,7 +112,6 @@ function EditNominee() {
       setUploaded("Image Uploaded");
       setbtnLoading(false);
       setUploaded("Requesting...");
-      setbtnLoading(false);
       onSuccess(image_cid);
     }
     // setFile(url);
@@ -163,12 +163,14 @@ function EditNominee() {
         }
       }
     } catch (error) {
+      const parsedEthersError = getParsedEthersError(error);
+      console.log(parsedEthersError.context.split(`(`)[0]);
       setbtnLoading(false);
       setUploaded("Submit");
-      let msg = error.message.split("(")[0];
+      let msg = parsedEthersError.context.split(`(`)[0];
       setErrorMsg(msg);
       setError(true);
-      console.log(error.message);
+      // console.log(error.message);
     }
     //contract code ends here.................................
   };
@@ -236,6 +238,10 @@ function EditNominee() {
     // console.log(userData);
     setwaFormatWarn(false);
   }, [userData.wallet_address]);
+
+  useEffect(() => {
+    if (!address) navigate("/");
+  }, [address, navigate]);
 
   return (
     <>

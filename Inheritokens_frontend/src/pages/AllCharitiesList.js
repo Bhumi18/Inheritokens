@@ -3,10 +3,13 @@ import image from "../assets/images/defaultprofileimage.png";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import "../styles/AllCharitiesList.scss";
+import { useNavigate } from "react-router-dom";
+import { useAccount } from "wagmi";
 
 function AllCharitiesList() {
   const [arr, setArr] = useState([]);
-
+  const { address } = useAccount();
+  const navigate = useNavigate();
   const [allCharities, setAllCharities] = useState(true);
   const [allWhitelistedCharities, setAllWhitelistedCharities] = useState(false);
 
@@ -77,6 +80,9 @@ function AllCharitiesList() {
     setArr(data);
   }, []);
 
+  useEffect(() => {
+    if (!address) navigate("/");
+  }, [address, navigate]);
   // search bar components
 
   const [searchField, setSearchField] = useState("");

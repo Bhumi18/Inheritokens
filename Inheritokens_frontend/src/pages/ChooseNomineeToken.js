@@ -464,8 +464,14 @@ function ChooseNomineeToken() {
             {/* Available ratio */}
             <div>
               <span className="available-ratio">
-                Available Ratio :
-                {parseFloat(100 - parseFloat(totalUsedRatio)).toFixed(2)} %
+                Percentage available to nominate :
+                <b>
+                  {" " +
+                    parseFloat(100 - parseFloat(totalUsedRatio)).toFixed(
+                      2
+                    )}{" "}
+                  %
+                </b>
               </span>
             </div>
             <div className="save-btn-div">

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../styles/TokenNomineeDetails.scss";
+import "react-tooltip/dist/react-tooltip.css";
+import { Tooltip } from "react-tooltip";
 import NomineesListPopupForToken from "./NomineesListPopupForToken";
 
 function TokenNomineeDetails({
@@ -63,16 +65,24 @@ function TokenNomineeDetails({
         </p>
         <div className="field-main">
           <span className="input-title">Nominees</span>
+
           <svg
             xmlns="http://www.w3.org/2000/svg"
             height="18px"
             viewBox="0 0 24 24"
             width="18px"
             fill="#cccccc"
+            className="info-1"
           >
             <path d="M0 0h24v24H0V0z" fill="none" />
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 15c-.55 0-1-.45-1-1v-4c0-.55.45-1 1-1s1 .45 1 1v4c0 .55-.45 1-1 1zm1-8h-2V7h2v2z" />
           </svg>
+
+          <Tooltip
+            // Don't forget the `#`!
+            anchorSelect=".info-1"
+            content="Your nominees who will have access to your assets in the event of losing the private key, inactivity/death"
+          />
         </div>
         <div className="nominees-list">
           {arrChanged && arr.length > 0 ? (
@@ -149,23 +159,31 @@ function TokenNomineeDetails({
         </div>
         <div className="field-main">
           <span>
-            {"Available Proportion - "}
-            {parseFloat(100) - parseFloat(totalUsedRatio)}
-            {" %"}
+            {"Available Percentage - "}
+            <b>
+              {parseFloat(100) - parseFloat(totalUsedRatio)}
+              {" %"}
+            </b>
           </span>
         </div>
         <div className="field-main">
-          <span className="input-title">Proportion</span>
+          <span className="input-title">Percentage</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             height="18px"
             viewBox="0 0 24 24"
             width="18px"
             fill="#cccccc"
+            className="info-2"
           >
             <path d="M0 0h24v24H0V0z" fill="none" />
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 15c-.55 0-1-.45-1-1v-4c0-.55.45-1 1-1s1 .45 1 1v4c0 .55-.45 1-1 1zm1-8h-2V7h2v2z" />
           </svg>
+          <Tooltip
+            // Don't forget the `#`!
+            anchorSelect=".info-2"
+            content="Percentage of this token that this nominee will receive."
+          />
         </div>
 
         <div
@@ -214,10 +232,16 @@ function TokenNomineeDetails({
             viewBox="0 0 24 24"
             width="18px"
             fill="#cccccc"
+            className="info-3"
           >
             <path d="M0 0h24v24H0V0z" fill="none" />
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 15c-.55 0-1-.45-1-1v-4c0-.55.45-1 1-1s1 .45 1 1v4c0 .55-.45 1-1 1zm1-8h-2V7h2v2z" />
           </svg>
+          <Tooltip
+            // Don't forget the `#`!
+            anchorSelect=".info-3"
+            content="When more than one nominee is added, the percentage is divided equally among all of them."
+          />
         </div>
         <div className="input-field disabled">
           <input

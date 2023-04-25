@@ -4,7 +4,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import screenshot1 from "../assets/images/sc_final.gif";
 // import screenshot2 from "../assets/images/sc02.gif";
 
-import m1 from "../assets/images/mobilescreenshot01.png";
+import m1 from "../assets/images/sc_final_small.gif";
 import Cookies from "universal-cookie";
 
 // Import Swiper styles
@@ -44,9 +44,9 @@ function InformationSlider({ setInformationSlider }) {
               <SwiperSlide>
                 <img src={m1} alt="screenshot1" width="100%" />
               </SwiperSlide>
-              <SwiperSlide>
+              {/* <SwiperSlide>
                 <img src={m1} alt="screenshot1" width="100%" />
-              </SwiperSlide>
+              </SwiperSlide> */}
             </Swiper>
           </div>
         </>

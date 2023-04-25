@@ -347,6 +347,9 @@ function ChooseNomineeNFT({ nftsrc }) {
     }
   };
 
+  useEffect(() => {
+    if (!address) navigate("/");
+  }, [address, navigate]);
   // search bar components
 
   const [searchField, setSearchField] = useState("");

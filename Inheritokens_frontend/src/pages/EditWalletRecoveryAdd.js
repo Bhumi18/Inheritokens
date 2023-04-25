@@ -10,6 +10,7 @@ import Navbar from "../components/Navbar";
 import { useLocation } from "react-router-dom";
 import { useAccount } from "wagmi";
 import { ethers } from "ethers";
+import { getParsedEthersError } from "@enzoferey/ethers-error-parser";
 
 import "../styles/signup.scss";
 // import MailSvg from "../components/MailSvg";
@@ -29,7 +30,7 @@ function EditWalletRecoveryAdd({
   setRecoveryAddress,
 }) {
   const w_add = useRef();
-
+  const navigate = useNavigate();
   // const [fileCid, setFileCid] = useState("");
   const [btnloading, setbtnLoading] = useState(false);
   const [waFormatWarn, setwaFormatWarn] = useState(false);
@@ -72,12 +73,14 @@ function EditWalletRecoveryAdd({
         setbtnLoading(false);
         setRecoveryEdit(false);
       } catch (error) {
+        const parsedEthersError = getParsedEthersError(error);
+        console.log(parsedEthersError.context.split(`(`)[0]);
         setbtnLoading(false);
         setUploaded("Update");
-        let msg = error.message.split("(")[0];
+        let msg = parsedEthersError.context.split(`(`)[0];
         setErrorMsg(msg);
         setError(true);
-        console.log(error.message);
+        // console.log(error.message);
       }
     }
   };
@@ -101,6 +104,10 @@ function EditWalletRecoveryAdd({
     setErrorMsg("");
     setwaFormatWarn(false);
   }, [userData.w_add]);
+
+  useEffect(() => {
+    if (!address) navigate("/");
+  }, [address, navigate]);
 
   return (
     <>
